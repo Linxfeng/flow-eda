@@ -4,6 +4,7 @@ import com.flow.eda.common.http.ApiError;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class FlowException extends RuntimeException {
     private String error;
-    private int httpStatus = ApiError.BAD_REQUEST;
+    private HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
     private String message;
     private List<ApiError.SubError> errors;
     private String description;
@@ -26,7 +27,7 @@ public class FlowException extends RuntimeException {
         this.message = message;
     }
 
-    public FlowException(int httpStatus, String error, String message) {
+    public FlowException(HttpStatus httpStatus, String error, String message) {
         this.httpStatus = httpStatus;
         this.error = error;
         this.message = message;
@@ -43,7 +44,7 @@ public class FlowException extends RuntimeException {
     public ApiError getApiError() {
         return new ApiError()
                 .error(this.error)
-                .status(httpStatus)
+                .status(httpStatus.value())
                 .message(getMessage())
                 .description(description);
     }

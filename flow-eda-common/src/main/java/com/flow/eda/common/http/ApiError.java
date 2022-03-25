@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,8 +26,6 @@ public class ApiError {
     public static final String INVALID_PARAMETER = "invalid_parameter";
     public static final String INVALID_VERIFY = "invalid_verify_token";
     public static final String INVALID_STATE = "invalid_state";
-    public static final int HTTP_OK = 200;
-    public static final int BAD_REQUEST = 400;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private String error;
     private int status = 200;
@@ -75,8 +74,12 @@ public class ApiError {
     }
 
     @JsonIgnore
-    public int getHttpStatus() {
-        return status;
+    public HttpStatus getHttpStatus() {
+        try {
+            return HttpStatus.valueOf(status);
+        } catch (IllegalArgumentException e) {
+            return HttpStatus.OK;
+        }
     }
 
     @JsonIgnore
@@ -86,7 +89,7 @@ public class ApiError {
 
     @JsonGetter
     public Integer getStatus() {
-        if (status == 0 || status == HTTP_OK) {
+        if (status == 0 || status == 200) {
             return null;
         }
         return status;
