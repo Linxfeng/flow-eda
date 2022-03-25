@@ -33,14 +33,9 @@ public class FlowService {
     }
 
     public Flow updateFlow(Flow flow) {
-        Flow old = this.findById(flow.getId());
-        if (flow.getStatus() == null) {
-            flow.setStatus(old.getStatus());
-        }
         flow.setUpdateDate(new Date());
         flowMapper.update(flow);
-        flow.setCreateDate(old.getCreateDate());
-        return flow;
+        return findById(flow.getId());
     }
 
     public void deleteFlow(List<Long> ids) {

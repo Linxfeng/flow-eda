@@ -22,7 +22,10 @@ public interface FlowMapper {
     void insert(Flow flow);
 
     @Update(
-            "UPDATE eda_flow SET `name`=#{name},description=#{description},`status`=#{status},update_date=#{updateDate} WHERE id=#{id}")
+            "<script>UPDATE eda_flow SET <if test='name!=null'>`name`=#{name},</if>"
+                    + "<if test='description!=null'>description=#{description},</if>"
+                    + "<if test='status!=null'>`status`=#{status},</if>"
+                    + "update_date=#{updateDate} WHERE id=#{id}</script>")
     void update(Flow flow);
 
     @Delete(
