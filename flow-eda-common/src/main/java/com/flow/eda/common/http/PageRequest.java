@@ -10,4 +10,8 @@ public class PageRequest {
     private int limit = 10;
     /** 默认从第1页开始 */
     private int page = 0;
+
+    public int getStart() {
+        return page * limit;
+    }
 }
