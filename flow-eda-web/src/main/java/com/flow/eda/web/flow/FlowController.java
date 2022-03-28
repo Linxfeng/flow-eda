@@ -1,11 +1,13 @@
 package com.flow.eda.web.flow;
 
+import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.common.exception.MissingPropertyException;
 import com.flow.eda.common.http.PageResult;
 import com.flow.eda.common.http.Result;
 import com.flow.eda.common.utils.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class FlowController {
 
     @PostMapping("/flow")
     public Result<Flow> addFlow(@RequestBody Flow flow) {
+        this.checkName(flow);
         flowService.addFlow(flow);
         log.info("Create flow {}", flow.getName());
         return Result.of(flow);
@@ -46,6 +49,13 @@ public class FlowController {
     private void check(Flow flow) {
         if (flow == null || flow.getId() == null) {
             throw new MissingPropertyException("id");
+        }
+        this.checkName(flow);
+    }
+
+    private void checkName(Flow flow) {
+        if (flow == null || !StringUtils.hasText(flow.getName())) {
+            throw new InvalidParameterException("name", "null");
         }
     }
 }
