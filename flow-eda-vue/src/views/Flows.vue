@@ -9,69 +9,84 @@
     </div>
     <div class="container">
       <div class="handle-box">
-        <el-input v-model="params.name" placeholder="名称" class="handle-input mr10"></el-input>
-        <el-select v-model="params.status" placeholder="状态" class="handle-select mr10">
+        <el-input v-model="params.name" class="handle-input mr10" placeholder="名称"></el-input>
+        <el-select v-model="params.status" class="handle-select mr10" placeholder="状态">
           <el-option key="1" label="启用" value="true"></el-option>
           <el-option key="0" label="禁用" value="false"></el-option>
         </el-select>
-        <el-button type="primary" icon="el-icon-search" @click="handleSearch">查询</el-button>
-        <el-button type="primary" icon="el-icon-refresh" @click="cleanSearch">重置</el-button>
-        <el-button type="primary" icon="el-icon-delete" style="float: right" @click="delAllSelection"
-                   :disabled="!hasSelection">批量删除
+        <el-button icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
+        <el-button icon="el-icon-refresh" type="primary" @click="cleanSearch">重置</el-button>
+        <el-button :disabled="!hasSelection" icon="el-icon-delete" style="float: right" type="primary"
+                   @click="delAllSelection">批量删除
         </el-button>
-        <el-button type="primary" icon="el-icon-plus" style="float: right" @click="handleAdd">新增</el-button>
+        <el-button icon="el-icon-plus" style="float: right" type="primary" @click="handleAdd">新增</el-button>
       </div>
-      <el-table :data="tableData"
+      <el-table ref="multipleTable"
+                :data="tableData"
                 border
                 class="table"
-                ref="multipleTable"
                 header-cell-class-name="table-header"
-                @selection-change="handleSelectionChange"
-                size="small">
-        <el-table-column type="selection" width="55" align="center"></el-table-column>
-        <el-table-column prop="name" label="名称" width="250" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="status" :formatter="statusFormat" label="状态" width="65"></el-table-column>
-        <el-table-column prop="content" label="内容" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="description" label="描述" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="createAt" :formatter="dateFormat" label="创建日期" width="170"></el-table-column>
-        <el-table-column prop="updateAt" :formatter="dateFormat" label="更新日期" width="170"></el-table-column>
-        <el-table-column label="操作" width="280" align="center">
+                size="small"
+                @selection-change="handleSelectionChange">
+        <el-table-column align="center" type="selection" width="55"></el-table-column>
+        <el-table-column label="名称" prop="name" show-overflow-tooltip width="250"></el-table-column>
+        <el-table-column :formatter="statusFormat" label="状态" prop="status" width="90"></el-table-column>
+        <el-table-column label="描述" prop="description" show-overflow-tooltip></el-table-column>
+        <el-table-column :formatter="dateFormat" label="创建日期" prop="createDate" width="180"></el-table-column>
+        <el-table-column :formatter="dateFormat" label="更新日期" prop="updateDate" width="180"></el-table-column>
+        <el-table-column align="center" label="操作" width="280">
           <template #default="scope">
-            <el-switch v-bind:value="scope.row.status" active-color="#13ce66" inactive-color="#dcdfe6"
-                       @click="handleEnable(scope.row)" class="mr10"></el-switch>
-            <el-button type="text" icon="el-icon-search" @click="handleShow(scope.$index, scope.row)">查看</el-button>
-            <el-button type="text" icon="el-icon-edit" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button type="text" icon="el-icon-delete" class="red" @click="handleDelete(scope.row)">删除</el-button>
+            <el-switch active-color="#13ce66" class="mr10" inactive-color="#dcdfe6"
+                       v-bind:value="scope.row.status" @click="handleEnable(scope.row)"></el-switch>
+            <el-button icon="el-icon-search" type="text" @click="handleShow(scope.$index, scope.row)">查看</el-button>
+            <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button class="red" icon="el-icon-delete" type="text" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div class="pagination">
-        <el-pagination background layout="total, prev, pager, next" :current-page="params.page + 1"
-                       :page-size="params.limit" :total="pageTotal" @current-change="handlePageChange"></el-pagination>
+        <el-pagination :current-page="params.page" :total="pageTotal" background layout="total, prev, pager, next"
+                       @current-change="handlePageChange"></el-pagination>
       </div>
     </div>
+    <!-- 新增/编辑弹出框 -->
+    <el-dialog v-model="dialogVisible" :title="form.title" center width="30%">
+      <el-form label-width="70px">
+        <el-form-item label="名称">
+          <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model="form.description"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {reactive, ref} from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
-import {listFlows} from "../api/flow";
+import {addFlow, deleteFlow, listFlow, updateFlow} from "../api/flow";
 import Moment from "moment";
 
 export default {
   name: "Flows",
   setup() {
     const params = reactive({
-      page: 0,
-      limit: 10,
+      page: 1
     });
     const tableData = ref([]);
     const pageTotal = ref(0);
 
     // 查询工作流列表
     function getData() {
-      listFlows(params).then(res => {
+      listFlow(params).then(res => {
         if (res.message !== undefined) {
           ElMessage.error(res.message);
         } else {
@@ -81,26 +96,31 @@ export default {
       });
     }
 
+    // 进入页面加载列表
     getData();
     // 查询操作
     const handleSearch = () => {
-      params.page = 0;
+      params.page = 1;
       getData();
     };
+    // 重置查询
     const cleanSearch = () => {
-      params.page = 0;
+      params.page = 1;
       params.name = undefined;
       params.status = undefined;
       getData();
     };
     // 新增操作
+    const dialogVisible = ref(false);
+    let form = ref({});
     const handleAdd = () => {
-      params.page = 0;
-      getData();
+      form.value = {};
+      form.value.title = "新增工作流";
+      dialogVisible.value = true;
     };
     // 分页导航
     const handlePageChange = (val) => {
-      params.page = val - 1;
+      params.page = val;
       getData();
     };
     // 启用/禁用操作
@@ -115,30 +135,92 @@ export default {
       ElMessageBox.confirm(msg, "提示", {
         type: "warning",
       }).then(() => {
-        row.status = !row.status;
-        ElMessage.success("操作成功");
+        let body = {
+          id: row.id,
+          status: !row.status
+        }
+        updateFlow(body).then(res => {
+          if (res.message !== undefined) {
+            ElMessage.error(res.message);
+          } else {
+            row.status = body.status;
+            ElMessage.success("操作成功");
+          }
+        });
       }).catch(err => {
       });
     };
     // 编辑操作
     const handleEdit = (index, row) => {
-      console.log(index)
-      console.log(row.name)
+      form.value.name = row.name;
+      form.value.description = row.description;
+      form.value.title = "编辑工作流";
+      dialogVisible.value = true;
     };
-    // 删除操作
-    const handleDelete = (row) => {
-      console.log(row)
+    //新增/编辑弹框提交表单
+    const submitForm = () => {
+      let body = {
+        name: form.value.name,
+        description: form.value.description
+      }
+      if (form.value.title === "新增工作流") {
+        addFlow(body).then(res => {
+          if (res.message !== undefined) {
+            ElMessage.error(res.message);
+          } else {
+            ElMessage.success("操作成功");
+            dialogVisible.value = false;
+            getData();
+          }
+        });
+      } else {
+        body.id = form.value.id;
+        updateFlow(body).then(res => {
+          if (res.message !== undefined) {
+            ElMessage.error(res.message);
+          } else {
+            ElMessage.success("操作成功");
+            dialogVisible.value = false;
+            getData();
+          }
+        });
+      }
     };
     // 多选操作
     let multipleSelection = [];
     let hasSelection = ref(false);
     const handleSelectionChange = (val) => {
-      multipleSelection = val.map(i => i._id);
+      multipleSelection = val.map(i => i.id);
       hasSelection.value = multipleSelection.length > 0;
     };
-    // 批量删除
-    const delAllSelection = () => {
+    // 删除操作
+    const handleDelete = (row) => {
+      let msg = "确定要删除吗？删除后将无法恢复！";
+      let ids = [row.id];
+      deleteBatch(msg, ids);
     };
+    // 批量删除操作
+    const delAllSelection = () => {
+      let msg = "确定要删除所选中的项吗？删除后将无法恢复！";
+      deleteBatch(msg, multipleSelection);
+    };
+    const deleteBatch = (msg, ids) => {
+      params.page = 1;
+      multipleSelection = [];
+      ElMessageBox.confirm(msg, "提示", {
+        type: "warning",
+      }).then(() => {
+        deleteFlow(ids).then(res => {
+          if (res.message !== undefined) {
+            ElMessage.error(res.message);
+          } else {
+            ElMessage.success("操作成功");
+            getData();
+          }
+        });
+      }).catch(err => {
+      });
+    }
     // 状态字段转换
     const statusFormat = (row) => {
       if (row.status === true) {
@@ -156,6 +238,8 @@ export default {
       tableData,
       pageTotal,
       hasSelection,
+      dialogVisible,
+      form,
       handleSearch,
       cleanSearch,
       handleAdd,
@@ -165,6 +249,7 @@ export default {
       handleDelete,
       handleSelectionChange,
       delAllSelection,
+      submitForm,
       statusFormat,
       dateFormat
     };

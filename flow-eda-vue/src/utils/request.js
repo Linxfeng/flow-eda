@@ -24,12 +24,11 @@ service.interceptors.response.use(
         if (response.status === 200) {
             return response.data;
         } else {
-            return Promise.reject();
+            return response;
         }
     },
     error => {
-        console.log(error);
-        return Promise.reject();
+        return error.response.data;
     }
 );
 
