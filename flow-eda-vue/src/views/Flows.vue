@@ -38,7 +38,7 @@
           <template #default="scope">
             <el-switch active-color="#13ce66" class="mr10" inactive-color="#dcdfe6"
                        v-bind:value="scope.row.status" @click="handleEnable(scope.row)"></el-switch>
-            <el-button icon="el-icon-search" type="text" @click="handleShow(scope.$index, scope.row)">查看</el-button>
+            <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row)">查看</el-button>
             <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button class="red" icon="el-icon-delete" type="text" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -71,6 +71,7 @@
 
 <script>
 import {reactive, ref} from "vue";
+import {useRouter} from "vue-router";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {addFlow, deleteFlow, listFlow, updateFlow} from "../api/flow";
 import Moment from "moment";
@@ -149,6 +150,11 @@ export default {
         });
       }).catch(err => {
       });
+    };
+    // 查看详情,打开流编辑器
+    const router = useRouter();
+    const handleShow = (row) => {
+      router.push('/flows/editor/' + row.id);
     };
     // 编辑操作
     const handleEdit = (index, row) => {
@@ -245,6 +251,7 @@ export default {
       handleAdd,
       handlePageChange,
       handleEnable,
+      handleShow,
       handleEdit,
       handleDelete,
       handleSelectionChange,

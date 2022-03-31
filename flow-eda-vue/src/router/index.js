@@ -17,6 +17,14 @@ const routes = [
                     title: '工作流管理'
                 },
                 component: () => import ("../views/Flows.vue")
+            },
+            {
+                path: "/flows/editor/:id",
+                name: "Editor",
+                meta: {
+                    title: '编辑工作流'
+                },
+                component: () => import ("../views/Editor.vue")
             }
         ]
     }
