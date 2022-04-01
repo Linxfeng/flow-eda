@@ -1,0 +1,507 @@
+<template>
+  <div class="flow_region">
+    <div class="nodes-wrap">
+      <div v-for="item in nodeTypeList" :key="item.type" class="node" draggable="true" @dragstart="drag(item)">
+        <div class="log">
+          <img :src="item.svg" alt="">
+        </div>
+        <div class="name">{{ item.typeName }}</div>
+      </div>
+    </div>
+    <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop($event)" @drop="drop($event)">
+      <div id="flow">
+        <div v-show="auxiliaryLine.isShowXLine" :style="{width: auxiliaryLinePos.width, top:auxiliaryLinePos.y + 'px', left: auxiliaryLinePos.offsetX + 'px'}"
+             class="auxiliary-line-x"></div>
+        <div v-show="auxiliaryLine.isShowYLine" :style="{height: auxiliaryLinePos.height, left:auxiliaryLinePos.x + 'px', top: auxiliaryLinePos.offsetY + 'px'}"
+             class="auxiliary-line-y"></div>
+        <flowNode v-for="item in data.nodeList" :id="item.id" :key="item.id" :node="item"
+                  @changeLineState="changeLineState" @deleteNode="deleteNode" @setNodeName="setNodeName"/>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import {nextTick, reactive, ref} from 'vue';
+import {nodeTypeList} from '../components/editor/nodeType.js';
+import {jsplumbSetting} from '../components/editor/jsplumbConfig.js';
+import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../components/editor/jsplumbConfig";
+import {generateUniqueID} from "../utils/util";
+import {ElMessageBox} from "element-plus";
+import jsplumb from "jsplumb";
+import panzoom from "panzoom";
+import testData from '../components/editor/data-test.json';
+import flowNode from "../components/editor/NodeItem.vue";
+
+export default {
+  name: "Editor",
+  components: {flowNode},
+  setup() {
+    // 面板上的节点数据
+    const data = reactive({
+      lineList: testData.lineList,
+      nodeList: []
+    });
+    const jsPlumb = jsplumb.jsPlumb.getInstance();
+    const flowWrap = ref(null);
+    const nodeTypeObj = {};
+    // 对齐辅助线
+    const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
+    const auxiliaryLinePos = reactive({width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20});
+    // 初始化节点类型
+    const initNodeType = () => {
+      nodeTypeList.map(v => {
+        nodeTypeObj[v.type] = v;
+      });
+    };
+    // 初始化节点数据
+    const initNode = () => {
+      testData.nodeList.map(v => {
+        v.svg = nodeTypeObj[v.type].svg;
+        v.background = nodeTypeObj[v.type].background;
+        data.nodeList.push(v);
+      });
+    };
+    //初始化节点位置
+    const fixNodesPosition = () => {
+      console.log("fixNodesPosition");
+      if (data.nodeList && flowWrap.value) {
+        console.log("fixNodesPosition-if");
+        const nodeWidth = 120;
+        const nodeHeight = 40;
+        let wrapInfo = flowWrap.value.getBoundingClientRect();
+        let maxLeft = 0, minLeft = wrapInfo.width, maxTop = 0, minTop = wrapInfo.height;
+        let nodePoint = {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0
+        };
+        let fixTop = 0, fixLeft = 0;
+        data.nodeList.forEach(el => {
+          let top = Number(el.top.substring(0, el.top.length - 2));
+          let left = Number(el.left.substring(0, el.left.length - 2));
+          maxLeft = left > maxLeft ? left : maxLeft;
+          minLeft = left < minLeft ? left : minLeft;
+          maxTop = top > maxTop ? top : maxTop;
+          minTop = top < minTop ? top : minTop;
+        });
+        nodePoint.left = minLeft;
+        nodePoint.right = wrapInfo.width - maxLeft - nodeWidth;
+        nodePoint.top = minTop;
+        nodePoint.bottom = wrapInfo.height - maxTop - nodeHeight;
+
+        fixTop = nodePoint.top !== nodePoint.bottom ? (nodePoint.bottom - nodePoint.top) / 2 : 0;
+        fixLeft = nodePoint.left !== nodePoint.right ? (nodePoint.right - nodePoint.left) / 2 : 0;
+
+        data.nodeList.map(el => {
+          let top = Number(el.top.substring(0, el.top.length - 2)) + fixTop;
+          let left = Number(el.left.substring(0, el.left.length - 2)) + fixLeft;
+          el.top = (Math.round(top / 20)) * 20 + 'px';
+          el.left = (Math.round(left / 20)) * 20 + 'px';
+          console.log("fixNodesPosition-el");
+          console.log(el);
+        });
+        console.log(nodePoint);
+      }
+    };
+    // 初始化画板
+    const init = () => {
+      jsPlumb.ready(() => {
+        // 导入默认配置
+        jsPlumb.importDefaults(jsplumbSetting);
+        //完成连线前的校验
+        jsPlumb.bind("beforeDrop", evt => {
+          //此处可以添加是否创建连接的校验，返回 false 则不添加；
+          return () => {
+          };
+        });
+        // 连线创建成功后，维护本地数据
+        jsPlumb.bind("connection", evt => {
+          addLine(evt);
+        });
+        //连线双击删除事件
+        jsPlumb.bind("dblclick", (conn) => {
+          confirmDeleteLine(conn);
+        });
+        //断开连线后，维护本地数据
+        jsPlumb.bind("connectionDetached", evt => {
+          deleteLine(evt);
+        });
+        // 加载流程图
+        loadEasyFlow();
+        // 使整个jsPlumb立即重绘。
+        jsPlumb.setSuspendDrawing(false, true);
+      });
+      initPanZoom();
+    };
+
+    const addLine = (line) => {
+      let from = line.source.id;
+      let to = line.target.id;
+      data.lineList.push({
+        from: from,
+        to: to,
+        label: "连线名称",
+        id: generateUniqueID(8),
+        Remark: ""
+      });
+    };
+
+    const confirmDeleteLine = (line) => {
+      ElMessageBox.confirm("确认删除该连线？", "提示", {
+        type: "warning",
+      }).then(() => {
+        jsPlumb.deleteConnection(line);
+      }).catch(() => {
+      });
+    };
+
+    const deleteLine = (line) => {
+      data.lineList.forEach((item, index) => {
+        if (item.from === line.sourceId && item.to === line.targetId) {
+          data.lineList.splice(index, 1);
+        }
+      });
+    };
+
+    // 加载流程图
+    const loadEasyFlow = () => {
+      console.log("loadEasyFlow");
+      // 初始化节点
+      for (let i = 0; i < data.nodeList.length; i++) {
+        let node = data.nodeList[i];
+        // 设置源点，可以拖出线连接其他节点
+        jsPlumb.makeSource(node.id, jsplumbSourceOptions);
+        // 设置目标点，其他源点拖出的线可以连接该节点
+        jsPlumb.makeTarget(node.id, jsplumbTargetOptions);
+        // 注册节点拖动事件
+        draggableNode(node.id);
+      }
+      //取消连接事件
+      jsPlumb.unbind("connection");
+      // 初始化连线
+      for (let i = 0; i < data.lineList.length; i++) {
+        let line = data.lineList[i];
+        jsPlumb.connect(
+            {
+              source: line.from,
+              target: line.to
+            },
+            jsplumbConnectOptions
+        );
+      }
+      //注册连接事件
+      jsPlumb.bind("connection", evt => {
+        let from = evt.source.id;
+        let to = evt.target.id;
+        data.lineList.push({
+          from: from,
+          to: to,
+          label: "连线名称",
+          id: generateUniqueID(8),
+          Remark: ""
+        });
+      });
+    };
+
+    // 拖动节点事件
+    const draggableNode = (nodeId) => {
+      console.log("draggableNode");
+      jsPlumb.draggable(nodeId, {
+        //节点移动最小距离
+        grid: [5, 5],
+        drag: (params) => {
+          alignForLine(nodeId, params.pos);
+        },
+        start: () => {
+        },
+        stop: (params) => {
+          auxiliaryLine.isShowXLine = false;
+          auxiliaryLine.isShowYLine = false;
+          changeNodePosition(nodeId, params.pos);
+        }
+      });
+    };
+
+    const changeNodePosition = (nodeId, pos) => {
+      console.log("changeNodePosition");
+      console.log(pos);
+      data.nodeList.map(v => {
+        if (nodeId === v.id) {
+          v.left = pos[0] + 'px';
+          v.top = pos[1] + 'px';
+          console.log(v)
+          return v;
+        }
+      });
+    };
+
+    //移动节点时，动态显示对齐线
+    const alignForLine = (nodeId, position) => {
+      let showXLine = false;
+      let showYLine = false;
+      data.nodeList.some(el => {
+        if (el.id !== nodeId && el.left === position[0] + 'px') {
+          auxiliaryLinePos.x = position[0] + 60;
+          showYLine = true;
+        }
+        if (el.id !== nodeId && el.top === position[1] + 'px') {
+          auxiliaryLinePos.y = position[1] + 20;
+          showXLine = true;
+        }
+      })
+      auxiliaryLine.isShowYLine = showYLine;
+      auxiliaryLine.isShowXLine = showXLine;
+    };
+
+    const initPanZoom = () => {
+      console.log("initPanZoom");
+      const mainContainer = jsPlumb.getContainer();
+      const mainContainerWrap = mainContainer.parentNode;
+      console.log("mainContainer");
+      const pan = panzoom(mainContainer, {
+        smoothScroll: false,
+        bounds: true,
+        zoomDoubleClickSpeed: 1,
+        minZoom: 0.5,
+        maxZoom: 2,
+        //设置滚动缩放的组合键，默认不需要组合键
+        beforeWheel: () => {
+        },
+        beforeMouseDown: function (e) {
+          return e.ctrlKey;
+        }
+      });
+      jsPlumb.mainContainerWrap = mainContainerWrap;
+      jsPlumb.pan = pan;
+      // 缩放时设置jsPlumb的缩放比率
+      pan.on("zoom", e => {
+        const {x, y, scale} = e.getTransform();
+        jsPlumb.setZoom(scale);
+        //根据缩放比例，缩放对齐辅助线长度和位置
+        auxiliaryLinePos.width = (1 / scale) * 100 + '%';
+        auxiliaryLinePos.height = (1 / scale) * 100 + '%';
+        auxiliaryLinePos.offsetX = -(x / scale);
+        auxiliaryLinePos.offsetY = -(y / scale);
+      });
+      pan.on("panend", (e) => {
+        const {x, y, scale} = e.getTransform();
+        auxiliaryLinePos.width = (1 / scale) * 100 + '%';
+        auxiliaryLinePos.height = (1 / scale) * 100 + '%';
+        auxiliaryLinePos.offsetX = -(x / scale);
+        auxiliaryLinePos.offsetY = -(y / scale);
+      });
+      // 平移时设置鼠标样式
+      mainContainerWrap.style.cursor = "grab";
+      mainContainerWrap.addEventListener("mousedown", function wrapMousedown(style) {
+        style.cursor = "grabbing";
+        mainContainerWrap.addEventListener("mouseout", function wrapMouseout(style) {
+          style.cursor = "grab";
+        });
+      });
+      mainContainerWrap.addEventListener("mouseup", function wrapMouseup(style) {
+        style.cursor = "grab";
+      });
+    };
+
+    const setNodeName = (nodeId, name) => {
+      console.log("setNodeName");
+      data.nodeList.map((v) => {
+        if (v.id === nodeId) {
+          v.nodeName = name;
+          return v;
+        }
+      });
+    };
+
+    let currentItem = null;
+    const drag = (item) => {
+      currentItem = item;
+    };
+
+    const drop = (event) => {
+      console.log("drop");
+      const containerRect = jsPlumb.getContainer().getBoundingClientRect();
+      const scale = getScale();
+      let left = (event.pageX - containerRect.left - 60) / scale;
+      let top = (event.pageY - containerRect.top - 20) / scale;
+      let temp = {
+        ...currentItem,
+        id: generateUniqueID(8),
+        top: (Math.round(top / 20)) * 20 + "px",
+        left: (Math.round(left / 20)) * 20 + "px"
+      };
+      addNode(temp);
+    };
+
+    // dragover取消默认事件后，才会触发drag事件
+    const allowDrop = (event) => {
+      event.preventDefault();
+    };
+
+    const getScale = () => {
+      let scale1;
+      if (jsPlumb.pan) {
+        const {scale} = jsPlumb.pan.getTransform();
+        scale1 = scale;
+      } else {
+        const matrix = window.getComputedStyle(jsPlumb.getContainer()).transform;
+        scale1 = matrix.split(", ")[3] * 1;
+      }
+      jsPlumb.setZoom(scale1);
+      return scale1;
+    };
+
+    const addNode = (temp) => {
+      console.log("addNode");
+      data.nodeList.push(temp);
+      nextTick(() => {
+        jsPlumb.makeSource(temp.id, jsplumbSourceOptions);
+        jsPlumb.makeTarget(temp.id, jsplumbTargetOptions);
+        draggableNode(temp.id);
+      });
+    };
+
+    const deleteNode = (node) => {
+      console.log("deleteNode");
+      data.nodeList.map((v, index) => {
+        if (v.id === node.id) {
+          data.nodeList.splice(index, 1);
+          jsPlumb.remove(v.id);
+          return v;
+        }
+      });
+    };
+
+    //更改连线状态
+    const changeLineState = (nodeId, val) => {
+      let lines = jsPlumb.getAllConnections();
+      lines.forEach(line => {
+        if (line.targetId === nodeId || line.sourceId === nodeId) {
+          if (val) {
+            line.canvas.classList.add('active');
+          } else {
+            line.canvas.classList.remove('active');
+          }
+        }
+      });
+    };
+
+    initNodeType();
+    initNode();
+    fixNodesPosition();
+    nextTick(() => {
+      init();
+    });
+
+    return {
+      data,
+      nodeTypeList,
+      auxiliaryLine,
+      auxiliaryLinePos,
+      drag,
+      drop,
+      allowDrop,
+      setNodeName,
+      deleteNode,
+      changeLineState,
+    };
+  }
+};
+</script>
+
+<style lang="less" scoped>
+.flow_region {
+  display: flex;
+  width: 100%;
+  height: 99%;
+  border: 1px solid #ccc;
+
+  .nodes-wrap {
+    width: 150px;
+    height: 100%;
+    border-right: 1px solid #ccc;
+
+    .node {
+      display: flex;
+      height: 40px;
+      width: 80%;
+      margin: 5px auto;
+      border: 1px solid #ccc;
+      line-height: 40px;
+
+      &:hover {
+        cursor: grab;
+      }
+
+      &:active {
+        cursor: grabbing;
+      }
+
+      .log {
+        width: 40px;
+        height: 40px;
+      }
+
+      .name {
+        width: 0;
+        flex-grow: 1;
+        text-align: center;
+      }
+    }
+  }
+
+  .flow-wrap {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    outline: none !important;
+    flex-grow: 1;
+    background-image: url("../assets/img/point.png");
+
+    #flow {
+      position: relative;
+      width: 100%;
+      height: 100%;
+
+      .auxiliary-line-x {
+        position: absolute;
+        border: .5px dashed #2ab1e8;
+        z-index: 9999;
+      }
+
+      .auxiliary-line-y {
+        position: absolute;
+        border: .5px dashed #2ab1e8;
+        z-index: 9999;
+      }
+    }
+  }
+}
+</style>
+
+<style lang="less">
+.jtk-connector.active {
+  z-index: 9999;
+
+  path {
+    stroke: #150042;
+    stroke-width: 1.5;
+    animation: ring;
+    animation-duration: 3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    stroke-dasharray: 5;
+  }
+}
+
+@keyframes ring {
+  from {
+    stroke-dashoffset: 50;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+</style>
