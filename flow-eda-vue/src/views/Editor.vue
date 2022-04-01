@@ -30,8 +30,8 @@ import {generateUniqueID} from "../utils/util";
 import {ElMessageBox} from "element-plus";
 import jsplumb from "jsplumb";
 import panzoom from "panzoom";
-import testData from '../components/editor/data-test.json';
-import flowNode from "../components/editor/NodeItem.vue";
+import testData from '../components/editor/testData.json';
+import flowNode from "../components/editor/FlowNode.vue";
 
 export default {
   name: "Editor",
