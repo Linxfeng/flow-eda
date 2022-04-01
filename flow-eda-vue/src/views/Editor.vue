@@ -1,22 +1,28 @@
 <template>
-  <div class="flow_region">
-    <div class="nodes-wrap">
-      <div v-for="item in nodeTypeList" :key="item.type" class="node" draggable="true" @dragstart="drag(item)">
-        <div class="log">
-          <img :src="item.svg" alt="">
+  <div style="height: 100%">
+    <toolbar/>
+    <div class="flow_region">
+      <div class="nodes-wrap">
+        <div v-for="item in nodeTypeList" :key="item.type" class="node" draggable="true" @dragstart="drag(item)">
+          <div class="log">
+            <img :src="item.svg" alt="">
+          </div>
+          <div class="name">{{ item.typeName }}</div>
         </div>
-        <div class="name">{{ item.typeName }}</div>
       </div>
-    </div>
-    <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop($event)" @drop="drop($event)">
-      <div id="flow">
-        <div v-show="auxiliaryLine.isShowXLine" :style="{width: auxiliaryLinePos.width, top:auxiliaryLinePos.y + 'px', left: auxiliaryLinePos.offsetX + 'px'}"
-             class="auxiliary-line-x"></div>
-        <div v-show="auxiliaryLine.isShowYLine" :style="{height: auxiliaryLinePos.height, left:auxiliaryLinePos.x + 'px', top: auxiliaryLinePos.offsetY + 'px'}"
-             class="auxiliary-line-y"></div>
-        <flowNode v-for="item in data.nodeList" :id="item.id" :key="item.id" :node="item"
-                  @changeLineState="changeLineState" @deleteNode="deleteNode" @setNodeName="setNodeName"/>
+      <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop($event)" @drop="drop($event)">
+        <div id="flow">
+          <div v-show="auxiliaryLine.isShowXLine"
+               :style="{width: auxiliaryLinePos.width, top:auxiliaryLinePos.y + 'px', left: auxiliaryLinePos.offsetX + 'px'}"
+               class="auxiliary-line-x"></div>
+          <div v-show="auxiliaryLine.isShowYLine"
+               :style="{height: auxiliaryLinePos.height, left:auxiliaryLinePos.x + 'px', top: auxiliaryLinePos.offsetY + 'px'}"
+               class="auxiliary-line-y"></div>
+          <flowNode v-for="item in data.nodeList" :id="item.id" :key="item.id" :node="item"
+                    @changeLineState="changeLineState" @deleteNode="deleteNode" @setNodeName="setNodeName"/>
+        </div>
       </div>
+      <!--      <div>右侧详情栏</div>-->
     </div>
   </div>
 </template>
@@ -30,12 +36,13 @@ import {generateUniqueID} from "../utils/util";
 import {ElMessageBox} from "element-plus";
 import jsplumb from "jsplumb";
 import panzoom from "panzoom";
+import toolbar from '../components/editor/Toolbar.vue';
 import testData from '../components/editor/testData.json';
 import flowNode from "../components/editor/FlowNode.vue";
 
 export default {
   name: "Editor",
-  components: {flowNode},
+  components: {flowNode, toolbar},
   setup() {
     // 面板上的节点数据
     const data = reactive({
@@ -167,7 +174,6 @@ export default {
 
     // 加载流程图
     const loadEasyFlow = () => {
-      console.log("loadEasyFlow");
       // 初始化节点
       for (let i = 0; i < data.nodeList.length; i++) {
         let node = data.nodeList[i];
@@ -207,7 +213,6 @@ export default {
 
     // 拖动节点事件
     const draggableNode = (nodeId) => {
-      console.log("draggableNode");
       jsPlumb.draggable(nodeId, {
         //节点移动最小距离
         grid: [5, 5],
@@ -225,13 +230,10 @@ export default {
     };
 
     const changeNodePosition = (nodeId, pos) => {
-      console.log("changeNodePosition");
-      console.log(pos);
       data.nodeList.map(v => {
         if (nodeId === v.id) {
           v.left = pos[0] + 'px';
           v.top = pos[1] + 'px';
-          console.log(v)
           return v;
         }
       });
@@ -256,10 +258,8 @@ export default {
     };
 
     const initPanZoom = () => {
-      console.log("initPanZoom");
       const mainContainer = jsPlumb.getContainer();
       const mainContainerWrap = mainContainer.parentNode;
-      console.log("mainContainer");
       const pan = panzoom(mainContainer, {
         smoothScroll: false,
         bounds: true,
@@ -306,7 +306,6 @@ export default {
     };
 
     const setNodeName = (nodeId, name) => {
-      console.log("setNodeName");
       data.nodeList.map((v) => {
         if (v.id === nodeId) {
           v.nodeName = name;
@@ -321,7 +320,6 @@ export default {
     };
 
     const drop = (event) => {
-      console.log("drop");
       const containerRect = jsPlumb.getContainer().getBoundingClientRect();
       const scale = getScale();
       let left = (event.pageX - containerRect.left - 60) / scale;
@@ -354,7 +352,6 @@ export default {
     };
 
     const addNode = (temp) => {
-      console.log("addNode");
       data.nodeList.push(temp);
       nextTick(() => {
         jsPlumb.makeSource(temp.id, jsplumbSourceOptions);
@@ -364,7 +361,6 @@ export default {
     };
 
     const deleteNode = (node) => {
-      console.log("deleteNode");
       data.nodeList.map((v, index) => {
         if (v.id === node.id) {
           data.nodeList.splice(index, 1);
@@ -415,7 +411,7 @@ export default {
 .flow_region {
   display: flex;
   width: 100%;
-  height: 99%;
+  height: 94%;
   border: 1px solid #ccc;
 
   .nodes-wrap {
