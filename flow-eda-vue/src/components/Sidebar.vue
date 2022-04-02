@@ -25,6 +25,11 @@ export default {
         index: "/flows",
         title: "工作流管理"
       },
+      {
+        icon: "el-icon-lx-apps",
+        index: "/flows/nodeTypes",
+        title: "节点类型管理"
+      },
     ];
 
     const route = useRoute();

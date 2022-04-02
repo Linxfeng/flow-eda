@@ -25,6 +25,14 @@ const routes = [
                     title: '编辑工作流'
                 },
                 component: () => import ("../views/Editor.vue")
+            },
+            {
+                path: "/flows/nodeTypes",
+                name: "NodeTypes",
+                meta: {
+                    title: '节点类型管理'
+                },
+                component: () => import ("../views/NodeTypes.vue")
             }
         ]
     }
