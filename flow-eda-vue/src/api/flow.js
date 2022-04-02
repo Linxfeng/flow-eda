@@ -1,4 +1,4 @@
-import request from '../utils/request'
+import request from '../utils/request';
 
 // 查询工作流列表
 export function listFlow(params) {
@@ -6,7 +6,7 @@ export function listFlow(params) {
         url: '/api/v1/flow',
         method: 'get',
         params: params
-    })
+    });
 }
 
 // 新增工作流
@@ -15,7 +15,7 @@ export function addFlow(body) {
         url: '/api/v1/flow',
         method: 'post',
         data: body
-    })
+    });
 }
 
 // 修改/启用/禁用工作流
@@ -24,7 +24,7 @@ export function updateFlow(body) {
         url: '/api/v1/flow',
         method: 'put',
         data: body
-    })
+    });
 }
 
 // 删除工作流
@@ -33,5 +33,5 @@ export function deleteFlow(body) {
         url: '/api/v1/flow',
         method: 'delete',
         data: body
-    })
+    });
 }
