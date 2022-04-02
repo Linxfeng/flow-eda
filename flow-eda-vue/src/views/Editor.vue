@@ -10,7 +10,7 @@
           <div class="name">{{ item.typeName }}</div>
         </div>
       </div>
-      <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop($event)" @drop="drop($event)">
+      <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop" @drop="drop" @keyup.delete="deleteNode">
         <div id="flow">
           <div v-show="auxiliaryLine.isShowXLine"
                :style="{width: auxiliaryLinePos.width, top:auxiliaryLinePos.y + 'px', left: auxiliaryLinePos.offsetX + 'px'}"
@@ -19,17 +19,16 @@
                :style="{height: auxiliaryLinePos.height, left:auxiliaryLinePos.x + 'px', top: auxiliaryLinePos.offsetY + 'px'}"
                class="auxiliary-line-y"></div>
           <flowNode v-for="item in data.nodeList" :id="item.id" :key="item.id" :node="item"
-                    @changeLineState="changeLineState" @deleteNode="deleteNode" @setNodeName="setNodeName"
-                    @showNodeDetail="showNodeDetail"/>
+                    @changeLineState="changeLineState" @deleteNode="deleteNode" @showNodeDetail="showNodeDetail"/>
         </div>
       </div>
-      <nodeDetail :node="data.selectedNode" v-if="data.selectedNode"/>
+      <nodeDetail v-if="data.selectedNode" :node="data.selectedNode"/>
     </div>
   </div>
 </template>
 
 <script>
-import {nextTick, reactive, ref} from 'vue';
+import {nextTick, reactive} from 'vue';
 import {nodeTypeList} from '../components/editor/nodeType.js';
 import {jsplumbSetting} from '../components/editor/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../components/editor/jsplumbConfig";
@@ -53,7 +52,6 @@ export default {
       selectedNode: null
     });
     const jsPlumb = jsplumb.jsPlumb.getInstance();
-    const flowWrap = ref(null);
     const nodeTypeObj = {};
     // 对齐辅助线
     const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
@@ -72,67 +70,18 @@ export default {
         data.nodeList.push(v);
       });
     };
-    //初始化节点位置
-    const fixNodesPosition = () => {
-      console.log("fixNodesPosition");
-      if (data.nodeList && flowWrap.value) {
-        console.log("fixNodesPosition-if");
-        const nodeWidth = 120;
-        const nodeHeight = 40;
-        let wrapInfo = flowWrap.value.getBoundingClientRect();
-        let maxLeft = 0, minLeft = wrapInfo.width, maxTop = 0, minTop = wrapInfo.height;
-        let nodePoint = {
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0
-        };
-        let fixTop = 0, fixLeft = 0;
-        data.nodeList.forEach(el => {
-          let top = Number(el.top.substring(0, el.top.length - 2));
-          let left = Number(el.left.substring(0, el.left.length - 2));
-          maxLeft = left > maxLeft ? left : maxLeft;
-          minLeft = left < minLeft ? left : minLeft;
-          maxTop = top > maxTop ? top : maxTop;
-          minTop = top < minTop ? top : minTop;
-        });
-        nodePoint.left = minLeft;
-        nodePoint.right = wrapInfo.width - maxLeft - nodeWidth;
-        nodePoint.top = minTop;
-        nodePoint.bottom = wrapInfo.height - maxTop - nodeHeight;
-
-        fixTop = nodePoint.top !== nodePoint.bottom ? (nodePoint.bottom - nodePoint.top) / 2 : 0;
-        fixLeft = nodePoint.left !== nodePoint.right ? (nodePoint.right - nodePoint.left) / 2 : 0;
-
-        data.nodeList.map(el => {
-          let top = Number(el.top.substring(0, el.top.length - 2)) + fixTop;
-          let left = Number(el.left.substring(0, el.left.length - 2)) + fixLeft;
-          el.top = (Math.round(top / 20)) * 20 + 'px';
-          el.left = (Math.round(left / 20)) * 20 + 'px';
-          console.log("fixNodesPosition-el");
-          console.log(el);
-        });
-        console.log(nodePoint);
-      }
-    };
     // 初始化画板
     const init = () => {
       jsPlumb.ready(() => {
         // 导入默认配置
         jsPlumb.importDefaults(jsplumbSetting);
-        //完成连线前的校验
-        jsPlumb.bind("beforeDrop", evt => {
-          //此处可以添加是否创建连接的校验，返回 false 则不添加；
-          return () => {
-          };
-        });
         // 连线创建成功后，维护本地数据
         jsPlumb.bind("connection", evt => {
           addLine(evt);
         });
         //连线双击删除事件
-        jsPlumb.bind("dblclick", (conn) => {
-          confirmDeleteLine(conn);
+        jsPlumb.bind("dblclick", (evt, line) => {
+          confirmDeleteLine(line);
         });
         //断开连线后，维护本地数据
         jsPlumb.bind("connectionDetached", evt => {
@@ -143,6 +92,7 @@ export default {
         // 使整个jsPlumb立即重绘。
         jsPlumb.setSuspendDrawing(false, true);
       });
+      // 初始化绘制面板
       initPanZoom();
     };
 
@@ -308,15 +258,6 @@ export default {
       });
     };
 
-    const setNodeName = (nodeId, name) => {
-      data.nodeList.map((v) => {
-        if (v.id === nodeId) {
-          v.nodeName = name;
-          return v;
-        }
-      });
-    };
-
     let currentItem = null;
     const drag = (item) => {
       currentItem = item;
@@ -363,14 +304,16 @@ export default {
       });
     };
 
-    const deleteNode = (node) => {
-      data.nodeList.map((v, index) => {
-        if (v.id === node.id) {
-          data.nodeList.splice(index, 1);
-          jsPlumb.remove(v.id);
-          return v;
-        }
-      });
+    const deleteNode = () => {
+      if (data.selectedNode) {
+        data.nodeList.map((v, index) => {
+          if (v.id === data.selectedNode.id) {
+            data.nodeList.splice(index, 1);
+            jsPlumb.remove(v.id);
+            return v;
+          }
+        });
+      }
     };
 
     //更改连线状态
@@ -398,7 +341,6 @@ export default {
 
     initNodeType();
     initNode();
-    fixNodesPosition();
     nextTick(() => {
       init();
     });
@@ -411,7 +353,6 @@ export default {
       drag,
       drop,
       allowDrop,
-      setNodeName,
       deleteNode,
       changeLineState,
       showNodeDetail

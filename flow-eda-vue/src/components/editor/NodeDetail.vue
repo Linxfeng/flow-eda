@@ -2,12 +2,12 @@
   <div class="node-detail">
     <div class="detail-header">
       <div class="title">{{ node.typeName }}</div>
-      <el-button class="button el-button--small" style="float: right" type="primary" @click="editNode">保存</el-button>
+      <el-button class="button el-button--small" style="float: right" type="primary" @click="">保存</el-button>
     </div>
     <div class="detail-body">
       <div class="row">
         <div class="title">ID：</div>
-        <el-input class="input"/>
+        <el-input v-model="node.nodeName" class="input"/>
       </div>
       <div class="row">
         <div class="title">名称：</div>

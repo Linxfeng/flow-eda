@@ -1,12 +1,12 @@
 <template>
-  <div ref="node" v-click-outside="setNotActive"
+  <div id="node" ref="node"
+       v-click-outside="setNotActive"
        :class="[(data.isActive || data.isSelected) ? 'active' : '']"
        :style="{top: node.top, left: node.left}"
        class="node-item"
        @click="setActive"
        @mouseenter="showAnchor"
-       @mouseleave="hideAnchor"
-       @dblclick.prevent="editNode">
+       @mouseleave="hideAnchor">
     <div class="log-wrap">
       <img :src="node.svg" alt="">
     </div>
@@ -22,7 +22,6 @@
 <script>
 import vClickOutside from 'click-outside-vue3'
 import {reactive} from "vue";
-
 
 export default {
   name: "FlowNode",
@@ -73,22 +72,12 @@ export default {
       data.isActive = false;
     };
 
-    const editNode = () => {
-      console.log("editNode");
-    };
-
-    const deleteNode = () => {
-      context.emit("deleteNode", props.node);
-    };
-
-
     return {
       data,
       setNotActive,
       setActive,
       showAnchor,
-      hideAnchor,
-      editNode
+      hideAnchor
     };
   }
 };
