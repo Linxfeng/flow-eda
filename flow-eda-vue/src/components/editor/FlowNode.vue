@@ -56,7 +56,8 @@ export default {
       data.isActive = true;
       data.isSelected = false;
       setTimeout(() => {
-        context.emit("changeLineState", props.node.id, true)
+        context.emit("changeLineState", props.node.id, true);
+        context.emit("showNodeDetail", props.node, true);
       }, 0);
     };
 
@@ -68,6 +69,7 @@ export default {
         return;
       }
       context.emit("changeLineState", props.node.id, false);
+      context.emit("showNodeDetail", props.node, false);
       data.isActive = false;
     };
 

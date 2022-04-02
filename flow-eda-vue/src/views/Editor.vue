@@ -19,10 +19,11 @@
                :style="{height: auxiliaryLinePos.height, left:auxiliaryLinePos.x + 'px', top: auxiliaryLinePos.offsetY + 'px'}"
                class="auxiliary-line-y"></div>
           <flowNode v-for="item in data.nodeList" :id="item.id" :key="item.id" :node="item"
-                    @changeLineState="changeLineState" @deleteNode="deleteNode" @setNodeName="setNodeName"/>
+                    @changeLineState="changeLineState" @deleteNode="deleteNode" @setNodeName="setNodeName"
+                    @showNodeDetail="showNodeDetail"/>
         </div>
       </div>
-      <!--      <div>右侧详情栏</div>-->
+      <nodeDetail :node="data.selectedNode" v-if="data.selectedNode"/>
     </div>
   </div>
 </template>
@@ -39,15 +40,17 @@ import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import testData from '../components/editor/testData.json';
 import flowNode from "../components/editor/FlowNode.vue";
+import nodeDetail from "../components/editor/NodeDetail.vue";
 
 export default {
   name: "Editor",
-  components: {flowNode, toolbar},
+  components: {flowNode, toolbar, nodeDetail},
   setup() {
     // 面板上的节点数据
     const data = reactive({
       lineList: testData.lineList,
-      nodeList: []
+      nodeList: [],
+      selectedNode: null
     });
     const jsPlumb = jsplumb.jsPlumb.getInstance();
     const flowWrap = ref(null);
@@ -384,6 +387,15 @@ export default {
       });
     };
 
+    // 右侧栏展示节点详情
+    const showNodeDetail = (node, show) => {
+      if (show) {
+        data.selectedNode = node;
+      } else {
+        data.selectedNode = null;
+      }
+    };
+
     initNodeType();
     initNode();
     fixNodesPosition();
@@ -402,6 +414,7 @@ export default {
       setNodeName,
       deleteNode,
       changeLineState,
+      showNodeDetail
     };
   }
 };
