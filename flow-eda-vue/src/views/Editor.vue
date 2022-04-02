@@ -3,7 +3,7 @@
     <toolbar/>
     <div class="flow_region">
       <div class="nodes-wrap">
-        <div v-for="item in nodeTypeList" :key="item.type" class="node" draggable="true" @dragstart="drag(item)">
+        <div v-for="item in data.nodeTypeList" :key="item.type" class="node" draggable="true" @dragstart="drag(item)">
           <div class="log">
             <img :src="item.svg" alt="">
           </div>
@@ -29,11 +29,11 @@
 
 <script>
 import {nextTick, reactive} from 'vue';
-import {nodeTypeList} from '../components/editor/nodeType.js';
 import {jsplumbSetting} from '../components/editor/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../components/editor/jsplumbConfig";
 import {generateUniqueID} from "../utils/util";
-import {ElMessageBox} from "element-plus";
+import {getNodeTypes} from "../api/nodeType";
+import {ElMessage, ElMessageBox} from "element-plus";
 import jsplumb from "jsplumb";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
@@ -47,6 +47,7 @@ export default {
   setup() {
     // 面板上的节点数据
     const data = reactive({
+      nodeTypeList: null,
       lineList: testData.lineList,
       nodeList: [],
       selectedNode: null
@@ -58,17 +59,25 @@ export default {
     const auxiliaryLinePos = reactive({width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20});
     // 初始化节点类型
     const initNodeType = () => {
-      nodeTypeList.map(v => {
-        nodeTypeObj[v.type] = v;
+      const params = {limit: 1000};
+      getNodeTypes(params).then(res => {
+        if (res.message !== undefined) {
+          ElMessage.error(res.message);
+        } else {
+          data.nodeTypeList = res.result;
+          data.nodeTypeList.map(v => {
+            nodeTypeObj[v.type] = v;
+          });
+        }
       });
     };
     // 初始化节点数据
     const initNode = () => {
-      testData.nodeList.map(v => {
-        v.svg = nodeTypeObj[v.type].svg;
-        v.background = nodeTypeObj[v.type].background;
-        data.nodeList.push(v);
-      });
+      // testData.nodeList.map(v => {
+      //   v.svg = nodeTypeObj[v.type].svg;
+      //   v.background = nodeTypeObj[v.type].background;
+      //   data.nodeList.push(v);
+      // });
     };
     // 初始化画板
     const init = () => {
@@ -347,7 +356,6 @@ export default {
 
     return {
       data,
-      nodeTypeList,
       auxiliaryLine,
       auxiliaryLinePos,
       drag,
@@ -395,9 +403,11 @@ export default {
       }
 
       .name {
+        font-size: 14px;
         width: 0;
         flex-grow: 1;
         text-align: center;
+        padding-right: 6px;
       }
     }
   }

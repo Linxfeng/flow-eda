@@ -3,17 +3,13 @@
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
-          <i class="el-icon-lx-home"></i> 工作流管理
+          <i class="el-icon-lx-apps"></i> 节点类型管理
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="container">
       <div class="handle-box">
         <el-input v-model="params.name" class="handle-input mr10" placeholder="名称"></el-input>
-        <el-select v-model="params.status" class="handle-select mr10" placeholder="状态">
-          <el-option key="1" label="启用" value="true"></el-option>
-          <el-option key="0" label="禁用" value="false"></el-option>
-        </el-select>
         <el-button icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
         <el-button icon="el-icon-refresh" type="primary" @click="cleanSearch">重置</el-button>
         <el-button :disabled="!hasSelection" icon="el-icon-delete" style="float: right" type="primary"
@@ -29,16 +25,10 @@
                 size="small"
                 @selection-change="handleSelectionChange">
         <el-table-column align="center" type="selection" width="55"></el-table-column>
-        <el-table-column label="名称" prop="name" show-overflow-tooltip width="250"></el-table-column>
-        <el-table-column :formatter="statusFormat" label="状态" prop="status" width="90"></el-table-column>
+        <el-table-column label="名称" prop="typeName" show-overflow-tooltip width="250"></el-table-column>
         <el-table-column label="描述" prop="description" show-overflow-tooltip></el-table-column>
-        <el-table-column :formatter="dateFormat" label="创建日期" prop="createDate" width="180"></el-table-column>
-        <el-table-column :formatter="dateFormat" label="更新日期" prop="updateDate" width="180"></el-table-column>
         <el-table-column align="center" label="操作" width="280">
           <template #default="scope">
-            <el-switch active-color="#13ce66" class="mr10" inactive-color="#dcdfe6"
-                       v-bind:value="scope.row.status" @click="handleEnable(scope.row)"></el-switch>
-            <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row)">查看</el-button>
             <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button class="red" icon="el-icon-delete" type="text" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -70,24 +60,25 @@
 </template>
 
 <script>
+
 import {reactive, ref} from "vue";
-import {useRouter} from "vue-router";
+import {addNodeType, deleteNodeType, getNodeTypes, updateNodeType} from "../api/nodeType.js";
 import {ElMessage, ElMessageBox} from "element-plus";
-import {addFlow, deleteFlow, listFlow, updateFlow} from "../api/flow";
-import Moment from "moment";
 
 export default {
-  name: "Flows",
+  name: "NodeTypes",
   setup() {
+
     const params = reactive({
+      name: undefined,
       page: 1
     });
     const tableData = ref([]);
     const pageTotal = ref(0);
 
-    // 查询工作流列表
+    // 查询节点类型列表
     function getData() {
-      listFlow(params).then(res => {
+      getNodeTypes(params).then(res => {
         if (res.message !== undefined) {
           ElMessage.error(res.message);
         } else {
@@ -108,15 +99,21 @@ export default {
     const cleanSearch = () => {
       params.page = 1;
       params.name = undefined;
-      params.status = undefined;
       getData();
     };
-    // 新增操作
+    // 定义弹出框数据
     const dialogVisible = ref(false);
-    let form = ref({});
+    let form = ref({
+      title: "",
+      id: undefined,
+      name: undefined,
+      description: undefined
+    });
+    // 新增操作
     const handleAdd = () => {
-      form.value = {};
-      form.value.title = "新增工作流";
+      form.value.name = undefined;
+      form.value.description = undefined;
+      form.value.title = "新增节点类型";
       dialogVisible.value = true;
     };
     // 分页导航
@@ -124,53 +121,22 @@ export default {
       params.page = val;
       getData();
     };
-    // 启用/禁用操作
-    const handleEnable = (row) => {
-      // 二次确认弹框
-      let msg;
-      if (row.status) {
-        msg = "是否确定禁用？禁用后该工作流会立即停止运行！";
-      } else {
-        msg = "是否确定启用？启用后该工作流会立即开始运行！";
-      }
-      ElMessageBox.confirm(msg, "提示", {
-        type: "warning",
-      }).then(() => {
-        let body = {
-          id: row.id,
-          status: !row.status
-        }
-        updateFlow(body).then(res => {
-          if (res.message !== undefined) {
-            ElMessage.error(res.message);
-          } else {
-            row.status = body.status;
-            ElMessage.success("操作成功");
-          }
-        });
-      }).catch(err => {
-      });
-    };
-    // 查看详情,打开流编辑器
-    const router = useRouter();
-    const handleShow = (row) => {
-      router.push('/flows/editor/' + row.id);
-    };
     // 编辑操作
     const handleEdit = (index, row) => {
-      form.value.name = row.name;
+      form.value.name = row.typeName;
       form.value.description = row.description;
       form.value.title = "编辑工作流";
       dialogVisible.value = true;
     };
-    //新增/编辑弹框提交表单
+    // 新增/编辑弹框提交表单
     const submitForm = () => {
       let body = {
+        id: undefined,
         name: form.value.name,
         description: form.value.description
       }
       if (form.value.title === "新增工作流") {
-        addFlow(body).then(res => {
+        addNodeType(body).then(res => {
           if (res.message !== undefined) {
             ElMessage.error(res.message);
           } else {
@@ -181,7 +147,7 @@ export default {
         });
       } else {
         body.id = form.value.id;
-        updateFlow(body).then(res => {
+        updateNodeType(body).then(res => {
           if (res.message !== undefined) {
             ElMessage.error(res.message);
           } else {
@@ -216,7 +182,7 @@ export default {
       ElMessageBox.confirm(msg, "提示", {
         type: "warning",
       }).then(() => {
-        deleteFlow(ids).then(res => {
+        deleteNodeType(ids).then(res => {
           if (res.message !== undefined) {
             ElMessage.error(res.message);
           } else {
@@ -226,19 +192,8 @@ export default {
         });
       }).catch(err => {
       });
-    }
-    // 状态字段转换
-    const statusFormat = (row) => {
-      if (row.status === true) {
-        return "启用";
-      } else {
-        return "禁用";
-      }
     };
-    // 日期格式化
-    const dateFormat = (row, column) => {
-      return Moment(row[column.property]).format('YYYY-MM-DD HH:mm:ss')
-    };
+
     return {
       params,
       tableData,
@@ -250,15 +205,11 @@ export default {
       cleanSearch,
       handleAdd,
       handlePageChange,
-      handleEnable,
-      handleShow,
       handleEdit,
       handleDelete,
       handleSelectionChange,
       delAllSelection,
       submitForm,
-      statusFormat,
-      dateFormat
     };
   },
 };
@@ -267,10 +218,6 @@ export default {
 <style scoped>
 .handle-box {
   margin-bottom: 20px;
-}
-
-.handle-select {
-  width: 120px;
 }
 
 .handle-input {
