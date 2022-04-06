@@ -1,21 +1,17 @@
 <template>
-  <div class="node-detail" v-click-outside="hideDetail">
+  <div v-click-outside="hideDetail" class="node-detail">
     <div class="detail-header">
-      <div class="title">{{ node.nodeName }}</div>
-      <el-button class="button el-button--small" style="float: right" type="primary" @click="">保存</el-button>
+      <div class="title">{{ node.typeName }}</div>
+      <el-button class="button el-button--small" style="float: right" type="primary" @click="updateNode">保存</el-button>
     </div>
     <div class="detail-body">
       <div class="row">
-        <div class="title">ID：</div>
-        <el-input v-model="node.nodeName" class="input"/>
-      </div>
-      <div class="row">
         <div class="title">名称：</div>
         <el-input v-model="node.nodeName" class="input"/>
       </div>
-      <div class="row">
-        <div class="title">名称：</div>
-        <el-input v-model="node.nodeName" class="input"/>
+      <div v-for="item in data.params" :id="item.key" :key="item.key" class="row">
+        <div class="title">{{ item.key }}：</div>
+        <el-input v-model="item.value" class="input"/>
       </div>
     </div>
   </div>
@@ -23,6 +19,7 @@
 
 <script>
 import vClickOutside from 'click-outside-vue3'
+import {reactive} from "vue";
 
 export default {
   name: "NodeDetail",
@@ -33,13 +30,29 @@ export default {
     clickOutside: vClickOutside.directive
   },
   setup(props, context) {
+    // 节点参数
+    const data = reactive({
+      params: []
+    });
+    if (props.node.parameter) {
+      const args = props.node.parameter.split(",");
+      args.map(p => {
+        data.params.push({key: p, value: ""});
+      });
+    }
 
     const hideDetail = () => {
       context.emit("showNodeDetail", props.node, false);
     };
 
+    const updateNode = () => {
+      console.log(data.params);
+    };
+
     return {
-      hideDetail
+      data,
+      hideDetail,
+      updateNode
     };
   }
 };
