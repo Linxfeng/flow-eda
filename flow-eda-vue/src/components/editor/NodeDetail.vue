@@ -1,7 +1,7 @@
 <template>
-  <div class="node-detail">
+  <div class="node-detail" v-click-outside="hideDetail">
     <div class="detail-header">
-      <div class="title">{{ node.typeName }}</div>
+      <div class="title">{{ node.nodeName }}</div>
       <el-button class="button el-button--small" style="float: right" type="primary" @click="">保存</el-button>
     </div>
     <div class="detail-body">
@@ -22,13 +22,25 @@
 </template>
 
 <script>
+import vClickOutside from 'click-outside-vue3'
+
 export default {
   name: "NodeDetail",
   props: {
     node: Object
   },
-  setup() {
+  directives: {
+    clickOutside: vClickOutside.directive
+  },
+  setup(props, context) {
 
+    const hideDetail = () => {
+      context.emit("showNodeDetail", props.node, false);
+    };
+
+    return {
+      hideDetail
+    };
   }
 };
 </script>
