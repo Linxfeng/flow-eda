@@ -3,11 +3,16 @@
     <toolbar/>
     <div class="flow_region">
       <div class="nodes-wrap">
-        <div v-for="item in data.nodeTypeList" :key="item.type" class="node" draggable="true" @dragstart="drag(item)">
+        <div v-for="item in data.nodeTypeList" :key="item.type" class="node" :style="{background: item.background}"
+             draggable="true" @dragstart="drag(item)" @mousemove="moveDes($event,item)" @mouseout="hideDes(item)">
           <div class="log">
             <img :src="item.svg" alt="">
           </div>
           <div class="name">{{ item.typeName }}</div>
+          <div v-show="showDescription.show" class="description"
+               :style="{left: showDescription.left,top: showDescription.top}">
+            {{ showDescription.data }}
+          </div>
         </div>
       </div>
       <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop" @drop="drop" @keyup.delete="deleteNode">
@@ -22,7 +27,7 @@
                     @changeLineState="changeLineState" @deleteNode="deleteNode" @showNodeDetail="showNodeDetail"/>
         </div>
       </div>
-      <nodeDetail v-if="data.selectedNode" :node="data.selectedNode"/>
+      <nodeDetail v-if="data.selectedNode" :node="data.selectedNode" @showNodeDetail="showNodeDetail"/>
     </div>
   </div>
 </template>
@@ -57,6 +62,9 @@ export default {
     // 对齐辅助线
     const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
     const auxiliaryLinePos = reactive({width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20});
+    // 展示节点类型的描述
+    let showDescription = reactive({show: false, data: '', left: '0px', top: '0px'});
+
     // 初始化节点类型
     const initNodeType = () => {
       const params = {limit: 1000};
@@ -66,11 +74,13 @@ export default {
         } else {
           data.nodeTypeList = res.result;
           data.nodeTypeList.map(v => {
+            v.nodeName = v.typeName;
             nodeTypeObj[v.type] = v;
           });
         }
       });
     };
+
     // 初始化节点数据
     const initNode = () => {
       // testData.nodeList.map(v => {
@@ -79,6 +89,7 @@ export default {
       //   data.nodeList.push(v);
       // });
     };
+
     // 初始化画板
     const init = () => {
       jsPlumb.ready(() => {
@@ -89,7 +100,7 @@ export default {
           addLine(evt);
         });
         //连线双击删除事件
-        jsPlumb.bind("dblclick", (evt, line) => {
+        jsPlumb.bind("dblclick", line => {
           confirmDeleteLine(line);
         });
         //断开连线后，维护本地数据
@@ -168,7 +179,7 @@ export default {
           to: to,
           label: "连线名称",
           id: generateUniqueID(8),
-          Remark: ""
+          remark: ""
         });
       });
     };
@@ -339,6 +350,18 @@ export default {
       });
     };
 
+    // 展示左侧节点类型的描述
+    const moveDes = (e, node) => {
+      showDescription.show = true;
+      showDescription.data = node.description;
+      showDescription.left = (e.pageX - 246) + 'px';
+      showDescription.top = (e.pageY - 114) + 'px';
+    };
+    const hideDes = () => {
+      showDescription.show = false;
+      showDescription.data = '';
+    };
+
     // 右侧栏展示节点详情
     const showNodeDetail = (node, show) => {
       if (show) {
@@ -358,12 +381,15 @@ export default {
       data,
       auxiliaryLine,
       auxiliaryLinePos,
+      showDescription,
       drag,
       drop,
       allowDrop,
       deleteNode,
       changeLineState,
-      showNodeDetail
+      showNodeDetail,
+      moveDes,
+      hideDes
     };
   }
 };
@@ -408,6 +434,19 @@ export default {
         flex-grow: 1;
         text-align: center;
         padding-right: 6px;
+      }
+
+      .description {
+        font-size: 12px;
+        position: absolute;
+        line-height: 32px;
+        height: 32px;
+        background-color: #dcdfe6;
+        text-align: left;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-radius: 10px;
+        z-index: 9999;
       }
     }
   }
