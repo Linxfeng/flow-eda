@@ -6,7 +6,7 @@
         <div v-for="item in data.nodeTypeList" :key="item.type" class="node" :style="{background: item.background}"
              draggable="true" @dragstart="drag(item)" @mousemove="moveDes($event,item)" @mouseout="hideDes(item)">
           <div class="log">
-            <img :src="item.svg" alt="">
+            <img :src="item.svg" alt="" style="padding: 4px">
           </div>
           <div class="name">{{ item.typeName }}</div>
           <div v-show="showDescription.show" class="description"

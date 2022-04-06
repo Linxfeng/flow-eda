@@ -8,7 +8,7 @@
        @mouseenter="showAnchor"
        @mouseleave="hideAnchor">
     <div class="log-wrap">
-      <img :src="node.svg" alt="">
+      <img :src="node.svg" alt="" style="padding: 4px">
     </div>
     <div class="nodeName">{{ node.nodeName }}</div>
     <!--节点选中时四周边框样式-->
