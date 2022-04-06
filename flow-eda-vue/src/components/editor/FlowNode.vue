@@ -2,7 +2,7 @@
   <div id="node" ref="node"
        v-click-outside="setNotActive"
        :class="[(data.isActive || data.isSelected) ? 'active' : '']"
-       :style="{top: node.top, left: node.left}"
+       :style="{top: node.top, left: node.left, background: node.background}"
        class="node-item"
        @click="setActive"
        @mouseenter="showAnchor"
@@ -68,7 +68,6 @@ export default {
         return;
       }
       context.emit("changeLineState", props.node.id, false);
-      context.emit("showNodeDetail", props.node, false);
       data.isActive = false;
     };
 
@@ -115,6 +114,7 @@ export default {
   }
 
   .nodeName {
+    font-size: 14px;
     flex-grow: 1;
     width: 0;
     overflow: hidden;
