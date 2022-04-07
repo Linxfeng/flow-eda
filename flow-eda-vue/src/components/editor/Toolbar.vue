@@ -1,56 +1,46 @@
 <template>
   <div class="toolbar">
     <el-tooltip content="撤销" placement="bottom">
-      <span class="command" data-command="undo">
-      <span class="iconfont icon-undo"/>
+      <span class="command" @click="undo">
+      <span class="icon-lx-undo"/>
       </span>
     </el-tooltip>
     <el-tooltip content="重做" placement="bottom">
-      <span class="command" data-command="redo">
-      <span class="iconfont icon-redo"/>
+      <span class="command" @click="redo">
+      <span class="icon-lx-redo"/>
       </span>
     </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="保存" placement="bottom">
-      <span class="command" data-command="save" @click="save">
-      <span class="iconfont icon-save-o"/>
+      <span class="command" @click="save">
+      <span class="icon-lx-save"/>
       </span>
     </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="复制" placement="bottom">
-      <span class="command" data-command="copy">
-      <span class="iconfont icon-copy-o"/>
+      <span class="command" @click="copy">
+      <span class="icon-lx-copy"/>
       </span>
     </el-tooltip>
     <el-tooltip content="粘贴" placement="bottom">
-      <span class="command" data-command="paste">
-      <span class="iconfont icon-paster-o"/>
+      <span class="command" @click="paste">
+      <span class="icon-lx-paste"/>
       </span>
     </el-tooltip>
     <el-tooltip content="删除" placement="bottom">
-      <span class="command" data-command="delete">
-      <span class="iconfont icon-delete-o"/>
+      <span class="command" @click="del">
+      <span class="icon-lx-delete"/>
       </span>
     </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="放大" placement="bottom">
-      <span class="command" data-command="zoomIn">
-      <span class="iconfont icon-zoom-in-o"/>
+      <span class="command" @click="zoomIn">
+      <span class="icon-lx-zoomIn"/>
       </span>
     </el-tooltip>
     <el-tooltip content="缩小" placement="bottom">
-      <span class="command" data-command="zoomOut">
-      <span class="iconfont icon-zoom-out-o"/>
-      </span>
-    </el-tooltip>
-    <el-tooltip content="实际大小" placement="bottom">
-      <span class="command" data-command="resetZoom">
-      <span class="iconfont icon-actual-size-o"/>
-      </span>
-    </el-tooltip>
-    <el-tooltip content="适应屏幕" placement="bottom">
-      <span class="command" data-command="autoFit">
-      <span class="iconfont icon-fit"/>
+      <span class="command" @click="zoomOut">
+      <span class="icon-lx-zoomOut"/>
       </span>
     </el-tooltip>
     <span class="separator"/>
@@ -121,53 +111,5 @@ export default {
       cursor: default;
     }
   }
-}
-
-.iconfont {
-  font-family: "fb-iconfont", serif !important;
-  font-size: 16px;
-  font-style: normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.icon-copy-o:before {
-  content: "\e8a2";
-}
-
-.icon-undo:before {
-  content: "\e8a5";
-}
-
-.icon-zoom-in-o:before {
-  content: "\e8a6";
-}
-
-.icon-actual-size-o:before {
-  content: "\e7cb";
-}
-
-.icon-redo:before {
-  content: "\e7cc";
-}
-
-.icon-fit:before {
-  content: "\e7cd";
-}
-
-.icon-delete-o:before {
-  content: "\e7ce";
-}
-
-.icon-paster-o:before {
-  content: "\e7d1";
-}
-
-.icon-zoom-out-o:before {
-  content: "\e7d2";
-}
-
-.icon-save-o:before {
-  content: "\e175";
 }
 </style>
