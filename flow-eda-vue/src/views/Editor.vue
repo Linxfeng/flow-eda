@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%">
-    <toolbar/>
+    <toolbar @saveData="saveData"/>
     <div class="flow_region">
       <div class="nodes-wrap">
         <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
@@ -54,7 +54,7 @@ export default {
     // 面板上的节点数据
     const data = reactive({
       nodeTypeList: null,
-      lineList: testData.lineList,
+      lineList: [],
       nodeList: [],
       selectedNode: null
     });
@@ -374,7 +374,6 @@ export default {
 
     // 更新节点属性信息
     const updateNode = (node, params) => {
-      console.log(data.nodeList);
       data.selectedNode = node;
       data.nodeList.map(v => {
         if (v.id === node.id) {
@@ -384,6 +383,13 @@ export default {
           return v;
         }
       });
+    };
+
+    // 保存流程图所有节点数据
+    const saveData = () => {
+      console.log("saveData");
+      console.log(data.nodeList);
+      console.log(data.lineList);
     };
 
     initNodeType();
@@ -405,7 +411,8 @@ export default {
       showNodeDetail,
       updateNode,
       moveDes,
-      hideDes
+      hideDes,
+      saveData
     };
   }
 };

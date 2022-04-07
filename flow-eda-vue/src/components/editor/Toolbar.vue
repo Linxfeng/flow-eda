@@ -11,6 +11,12 @@
       </span>
     </el-tooltip>
     <span class="separator"/>
+    <el-tooltip content="保存" placement="bottom">
+      <span class="command" data-command="save" @click="save">
+      <span class="iconfont icon-save-o"/>
+      </span>
+    </el-tooltip>
+    <span class="separator"/>
     <el-tooltip content="复制" placement="bottom">
       <span class="command" data-command="copy">
       <span class="iconfont icon-copy-o"/>
@@ -54,8 +60,15 @@
 <script>
 export default {
   name: "Toolbar",
-  setup() {
+  setup(props, context) {
 
+    const save = () => {
+      context.emit("saveData");
+    };
+
+    return {
+      save
+    }
   }
 };
 </script>
@@ -152,5 +165,9 @@ export default {
 
 .icon-zoom-out-o:before {
   content: "\e7d2";
+}
+
+.icon-save-o:before {
+  content: "\e175";
 }
 </style>
