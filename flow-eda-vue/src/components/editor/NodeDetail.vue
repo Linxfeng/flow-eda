@@ -5,14 +5,17 @@
       <el-button class="button el-button--small" style="float: right" type="primary" @click="updateNode">保存</el-button>
     </div>
     <div class="detail-body">
-      <div class="row">
-        <div class="title">名称：</div>
-        <el-input v-model="node.nodeName" class="input"/>
-      </div>
-      <div v-for="item in data.params" :id="item.key" :key="item.key" class="row">
-        <div class="title">{{ item.key }}：</div>
-        <el-input v-model="item.value" class="input"/>
-      </div>
+      <el-form :model="detailForm" :rules="rules" class="row" label-position="top">
+        <el-form-item class="item" label="名称：" prop="name">
+          <el-input v-model="detailForm.name" class="input"/>
+        </el-form-item>
+        <el-form-item v-for="p in data.params" :id="p" :key="p" :label="p+'：'" :prop="p" class="item">
+          <el-input v-model="detailForm[p]" class="input"/>
+        </el-form-item>
+        <el-form-item class="item" label="备注：" prop="remark">
+          <el-input v-model="detailForm.remark" autosize="" class="input" type="textarea"/>
+        </el-form-item>
+      </el-form>
     </div>
   </div>
 </template>
@@ -30,27 +33,44 @@ export default {
     clickOutside: vClickOutside.directive
   },
   setup(props, context) {
-    // 节点参数
+    // 节点参数，必填参数
     const data = reactive({
-      params: []
+      params: [],
+      required: []
     });
+    if (props.node.required) {
+      data.required = props.node.required.split(",");
+    }
+
+    // 表单内容
+    const form = {name: props.node.nodeName, remark: props.node.remark};
     if (props.node.parameter) {
-      const args = props.node.parameter.split(",");
-      args.map(p => {
-        data.params.push({key: p, value: ""});
+      data.params = props.node.parameter.split(",");
+      data.params.forEach(p => {
+        form[p] = ""
       });
     }
+    const detailForm = reactive(form);
+
+    // 表单校验规则
+    const ruleForm = {name: [{required: true, trigger: 'blur'}]};
+    data.required.forEach(r => {
+      ruleForm[r] = [{required: true, trigger: 'blur'}]
+    });
+    const rules = reactive(ruleForm);
 
     const hideDetail = () => {
       context.emit("showNodeDetail", props.node, false);
     };
 
     const updateNode = () => {
-      console.log(data.params);
+      console.log(detailForm);
     };
 
     return {
       data,
+      detailForm,
+      rules,
       hideDetail,
       updateNode
     };
@@ -89,13 +109,11 @@ export default {
 
   .detail-body {
     .row {
-      text-align: left;
-      font-size: 14px;
       padding: 8px 12px 8px 12px;
 
-      .title {
+      .item {
         width: 98%;
-        padding: 2px 2px 6px;
+        margin-bottom: 12px;
       }
 
       .input {
@@ -103,5 +121,14 @@ export default {
       }
     }
   }
+}
+
+.el-form--label-top .el-form-item__label {
+  width: 98%;
+  padding: 0 0 2px;
+}
+
+.el-input__inner {
+  padding: 0 10px;
 }
 </style>
