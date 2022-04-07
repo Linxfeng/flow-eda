@@ -2,10 +2,12 @@
   <div v-click-outside="hideDetail" class="node-detail">
     <div class="detail-header">
       <div class="title">{{ node.typeName }}</div>
-      <el-button class="button el-button--small" style="float: right" type="primary" @click="updateNode">保存</el-button>
+      <el-button class="button el-button--small" style="float: right" type="primary" @click="submitNode(detailFormRef)">
+        保存
+      </el-button>
     </div>
     <div class="detail-body">
-      <el-form :model="detailForm" :rules="rules" class="row" label-position="top">
+      <el-form ref="detailFormRef" :model="detailForm" :rules="rules" class="row" label-position="top">
         <el-form-item class="item" label="名称：" prop="name">
           <el-input v-model="detailForm.name" class="input"/>
         </el-form-item>
@@ -21,8 +23,9 @@
 </template>
 
 <script>
+import {reactive, ref} from "vue";
 import vClickOutside from 'click-outside-vue3'
-import {reactive} from "vue";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "NodeDetail",
@@ -47,10 +50,15 @@ export default {
     if (props.node.parameter) {
       data.params = props.node.parameter.split(",");
       data.params.forEach(p => {
-        form[p] = ""
+        if (props.node.params) {
+          form[p] = props.node.params[p];
+        } else {
+          form[p] = null;
+        }
       });
     }
     const detailForm = reactive(form);
+    const detailFormRef = ref(null);
 
     // 表单校验规则
     const ruleForm = {name: [{required: true, trigger: 'blur'}]};
@@ -63,16 +71,34 @@ export default {
       context.emit("showNodeDetail", props.node, false);
     };
 
-    const updateNode = () => {
-      console.log(detailForm);
+    // 提交表单节点信息
+    const submitNode = (formEl) => {
+      formEl.validate((valid) => {
+        if (valid) {
+          // 将节点信息和节点属性信息封装好传给编辑器
+          const params = {};
+          Object.keys(detailForm).map(k => {
+            if (k !== 'name' && k !== 'remark' && detailForm[k] && detailForm[k] !== null) {
+              params[k] = detailForm[k];
+            }
+          });
+          props.node.nodeName = detailForm.name;
+          if (detailForm.remark) {
+            props.node.remark = detailForm.remark;
+          }
+          context.emit("updateNode", props.node, params);
+          ElMessage.success("保存成功");
+        }
+      });
     };
 
     return {
       data,
       detailForm,
       rules,
+      detailFormRef,
       hideDetail,
-      updateNode
+      submitNode
     };
   }
 };
@@ -109,7 +135,7 @@ export default {
 
   .detail-body {
     .row {
-      padding: 8px 12px 8px 12px;
+      padding: 8px 8px 8px 16px;
 
       .item {
         width: 98%;

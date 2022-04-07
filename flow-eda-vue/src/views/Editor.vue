@@ -3,14 +3,14 @@
     <toolbar/>
     <div class="flow_region">
       <div class="nodes-wrap">
-        <div v-for="item in data.nodeTypeList" :key="item.type" class="node" :style="{background: item.background}"
+        <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
              draggable="true" @dragstart="drag(item)" @mousemove="moveDes($event,item)" @mouseout="hideDes(item)">
           <div class="log">
             <img :src="item.svg" alt="" style="padding: 4px">
           </div>
           <div class="name">{{ item.typeName }}</div>
-          <div v-show="showDescription.show" class="description"
-               :style="{left: showDescription.left,top: showDescription.top}">
+          <div v-show="showDescription.show" :style="{left: showDescription.left,top: showDescription.top}"
+               class="description">
             {{ showDescription.data }}
           </div>
         </div>
@@ -27,7 +27,8 @@
                     @changeLineState="changeLineState" @deleteNode="deleteNode" @showNodeDetail="showNodeDetail"/>
         </div>
       </div>
-      <nodeDetail v-if="data.selectedNode" :node="data.selectedNode" @showNodeDetail="showNodeDetail"/>
+      <nodeDetail v-if="data.selectedNode" :node="data.selectedNode" @showNodeDetail="showNodeDetail"
+                  @updateNode="updateNode"/>
     </div>
   </div>
 </template>
@@ -371,6 +372,20 @@ export default {
       }
     };
 
+    // 更新节点属性信息
+    const updateNode = (node, params) => {
+      console.log(data.nodeList);
+      data.selectedNode = node;
+      data.nodeList.map(v => {
+        if (v.id === node.id) {
+          v.nodeName = node.nodeName;
+          v.remark = node.remark;
+          v.params = params;
+          return v;
+        }
+      });
+    };
+
     initNodeType();
     initNode();
     nextTick(() => {
@@ -388,6 +403,7 @@ export default {
       deleteNode,
       changeLineState,
       showNodeDetail,
+      updateNode,
       moveDes,
       hideDes
     };
