@@ -3,7 +3,7 @@
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
-          <i class="el-icon-lx-home"></i> 工作流管理
+          <span class="icon-lx-flow"></span> 工作流管理
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>

@@ -3,7 +3,7 @@
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
-          <i class="el-icon-lx-apps"></i> 节点类型管理
+          <span class="icon-lx-picklist_type"></span> 节点类型管理
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>

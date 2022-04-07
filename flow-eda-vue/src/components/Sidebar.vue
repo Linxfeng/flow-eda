@@ -1,10 +1,10 @@
 <template>
   <div class="sidebar">
-    <el-menu class="sidebar-el-menu" :default-active="onRoutes" :collapse="collapse" background-color="#324157"
-             text-color="#bfcbd9" active-text-color="#20a0ff" unique-opened router>
+    <el-menu :collapse="collapse" :default-active="onRoutes" active-text-color="#20a0ff" background-color="#324157"
+             class="sidebar-el-menu" router text-color="#bfcbd9" unique-opened>
       <template v-for="item in items">
-        <el-menu-item :index="item.index">
-          <i :class="item.icon"></i>
+        <el-menu-item :index="item.index" style="font-size: 16px">
+          <span :class="item.icon" style="margin-right: 4px"></span>
           <template #title>{{ item.title }}</template>
         </el-menu-item>
       </template>
@@ -21,12 +21,12 @@ export default {
   setup() {
     const items = [
       {
-        icon: "el-icon-lx-home",
+        icon: "icon-lx-flow",
         index: "/flows",
         title: "工作流管理"
       },
       {
-        icon: "el-icon-lx-apps",
+        icon: "icon-lx-picklist_type",
         index: "/flows/nodeTypes",
         title: "节点类型管理"
       },
