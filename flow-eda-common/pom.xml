@@ -45,5 +45,10 @@
             <artifactId>pagehelper-spring-boot-starter</artifactId>
             <version>1.4.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>bson</artifactId>
+            <version>4.5.1</version>
+        </dependency>
     </dependencies>
 </project>
