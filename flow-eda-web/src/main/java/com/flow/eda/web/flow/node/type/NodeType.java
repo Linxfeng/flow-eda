@@ -1,4 +1,4 @@
-package com.flow.eda.web.flow.node;
+package com.flow.eda.web.flow.node.type;
 
 import lombok.Data;
 
