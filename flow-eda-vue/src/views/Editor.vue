@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import {nextTick, reactive} from 'vue';
+import {nextTick, reactive, onMounted} from 'vue';
 import {jsplumbSetting} from '../components/editor/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../components/editor/jsplumbConfig";
 import {generateUniqueID} from "../utils/util.js";
@@ -65,7 +65,7 @@ export default {
       lineList: [],
       selectedNode: null
     });
-    const jsPlumb = jsplumb.jsPlumb.getInstance();
+    let jsPlumb;
     // 对齐辅助线
     const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
     const auxiliaryLinePos = reactive({width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20});
@@ -73,33 +73,29 @@ export default {
     let showDescription = reactive({show: false, data: '', left: '0px', top: '0px'});
 
     // 初始化节点类型
-    const initNodeType = () => {
-      const params = {limit: 1000};
-      getNodeTypes(params).then(res => {
-        if (res.message !== undefined) {
-          ElMessage.error(res.message);
-        } else {
-          data.nodeTypeList = res.result;
-        }
-      });
+    const initNodeType = async () => {
+      const res = await getNodeTypes({limit: 1000});
+      if (res.message !== undefined) {
+        ElMessage.error(res.message);
+      } else {
+        data.nodeTypeList = res.result;
+      }
     };
 
     // 初始化节点数据
-    const initNode = () => {
-      const params = {flowId: props.flowId};
-      getNodeData(params).then(res => {
-        if (res.message !== undefined) {
-          ElMessage.error(res.message);
-        } else {
-          res.result.map(d => {
-            if (d.nodeName) {
-              data.nodeList.push(d);
-            } else {
-              data.lineList.push(d);
-            }
-          });
-        }
-      });
+    const initNode = async () => {
+      const res = await getNodeData({flowId: props.flowId});
+      if (res.message !== undefined) {
+        ElMessage.error(res.message);
+      } else {
+        res.result.map(d => {
+          if (d.nodeName) {
+            data.nodeList.push(d);
+          } else {
+            data.lineList.push(d);
+          }
+        });
+      }
     };
 
     // 初始化画板
@@ -124,7 +120,7 @@ export default {
         // 使整个jsPlumb立即重绘。
         jsPlumb.setSuspendDrawing(false, true);
       });
-      // 初始化绘制面板
+      // 面板缩放
       initPanZoom();
     };
 
@@ -132,11 +128,9 @@ export default {
       let from = line.source.id;
       let to = line.target.id;
       data.lineList.push({
-        from: from,
-        to: to,
-        label: "连线名称",
         id: generateUniqueID(8),
-        Remark: ""
+        from: from,
+        to: to
       });
     };
 
@@ -238,6 +232,7 @@ export default {
       auxiliaryLine.isShowXLine = showXLine;
     };
 
+    // 设置面板缩放
     const initPanZoom = () => {
       const mainContainer = jsPlumb.getContainer();
       const mainContainerWrap = mainContainer.parentNode;
@@ -423,7 +418,6 @@ export default {
         };
         body.push(line);
       });
-      console.log(body);
       setNodeData(body).then(res => {
         if (res.message !== undefined) {
           ElMessage.error(res.message);
@@ -433,10 +427,14 @@ export default {
       });
     };
 
-    initNodeType();
-    initNode();
-    nextTick(() => {
-      init();
+    // 初始化页面数据，渲染流程图
+    onMounted(async () => {
+      jsPlumb = jsplumb.jsPlumb.getInstance();
+      await initNodeType();
+      await initNode();
+      await nextTick(() => {
+        init();
+      });
     });
 
     return {
