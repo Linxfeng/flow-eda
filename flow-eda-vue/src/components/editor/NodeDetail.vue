@@ -1,7 +1,7 @@
 <template>
   <div v-click-outside="hideDetail" class="node-detail">
     <div class="detail-header">
-      <div class="title">{{ node.typeName }}</div>
+      <div class="title">{{ node.nodeType.typeName }}</div>
       <el-button class="button el-button--small" style="float: right" type="primary" @click="submitNode(detailFormRef)">
         保存
       </el-button>
@@ -41,14 +41,14 @@ export default {
       params: [],
       required: []
     });
-    if (props.node.required) {
-      data.required = props.node.required.split(",");
+    if (props.node.nodeType.required) {
+      data.required = props.node.nodeType.required.split(",");
     }
 
     // 表单内容
     const form = {name: props.node.nodeName, remark: props.node.remark};
-    if (props.node.parameter) {
-      data.params = props.node.parameter.split(",");
+    if (props.node.nodeType.parameter) {
+      data.params = props.node.nodeType.parameter.split(",");
       data.params.forEach(p => {
         if (props.node.params) {
           form[p] = props.node.params[p];
@@ -76,7 +76,7 @@ export default {
       formEl.validate((valid) => {
         if (valid) {
           // 将节点信息和节点属性信息封装好传给编辑器
-          const params = {};
+          let params = {};
           Object.keys(detailForm).map(k => {
             if (k !== 'name' && k !== 'remark' && detailForm[k] && detailForm[k] !== null) {
               params[k] = detailForm[k];
@@ -85,6 +85,9 @@ export default {
           props.node.nodeName = detailForm.name;
           if (detailForm.remark) {
             props.node.remark = detailForm.remark;
+          }
+          if (Object.keys(params).length === 0) {
+            params = undefined;
           }
           context.emit("updateNode", props.node, params);
           ElMessage.success("保存成功");
