@@ -37,29 +37,35 @@
 import {nextTick, reactive} from 'vue';
 import {jsplumbSetting} from '../components/editor/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../components/editor/jsplumbConfig";
-import {generateUniqueID} from "../utils/util";
-import {getNodeTypes} from "../api/nodeType";
+import {generateUniqueID} from "../utils/util.js";
+import {getNodeTypes} from "../api/nodeType.js";
+import {getNodeData, setNodeData} from "../api/nodeData.js";
 import {ElMessage, ElMessageBox} from "element-plus";
 import jsplumb from "jsplumb";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
-import testData from '../components/editor/testData.json';
 import flowNode from "../components/editor/FlowNode.vue";
 import nodeDetail from "../components/editor/NodeDetail.vue";
 
 export default {
   name: "Editor",
-  components: {flowNode, toolbar, nodeDetail},
-  setup() {
+  components: {
+    flowNode,
+    toolbar,
+    nodeDetail
+  },
+  props: {
+    flowId: String
+  },
+  setup(props) {
     // 面板上的节点数据
     const data = reactive({
-      nodeTypeList: null,
-      lineList: [],
+      nodeTypeList: [],
       nodeList: [],
+      lineList: [],
       selectedNode: null
     });
     const jsPlumb = jsplumb.jsPlumb.getInstance();
-    const nodeTypeObj = {};
     // 对齐辅助线
     const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
     const auxiliaryLinePos = reactive({width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20});
@@ -74,21 +80,26 @@ export default {
           ElMessage.error(res.message);
         } else {
           data.nodeTypeList = res.result;
-          data.nodeTypeList.map(v => {
-            v.nodeName = v.typeName;
-            nodeTypeObj[v.type] = v;
-          });
         }
       });
     };
 
     // 初始化节点数据
     const initNode = () => {
-      // testData.nodeList.map(v => {
-      //   v.svg = nodeTypeObj[v.type].svg;
-      //   v.background = nodeTypeObj[v.type].background;
-      //   data.nodeList.push(v);
-      // });
+      const params = {flowId: props.flowId};
+      getNodeData(params).then(res => {
+        if (res.message !== undefined) {
+          ElMessage.error(res.message);
+        } else {
+          res.result.map(d => {
+            if (d.nodeName) {
+              data.nodeList.push(d);
+            } else {
+              data.lineList.push(d);
+            }
+          });
+        }
+      });
     };
 
     // 初始化画板
@@ -173,14 +184,10 @@ export default {
       }
       //注册连接事件
       jsPlumb.bind("connection", evt => {
-        let from = evt.source.id;
-        let to = evt.target.id;
         data.lineList.push({
-          from: from,
-          to: to,
-          label: "连线名称",
           id: generateUniqueID(8),
-          remark: ""
+          from: evt.source.id,
+          to: evt.target.id
         });
       });
     };
@@ -290,10 +297,11 @@ export default {
       let left = (event.pageX - containerRect.left - 60) / scale;
       let top = (event.pageY - containerRect.top - 20) / scale;
       let temp = {
-        ...currentItem,
         id: generateUniqueID(8),
+        nodeName: currentItem.typeName,
         top: (Math.round(top / 20)) * 20 + "px",
-        left: (Math.round(left / 20)) * 20 + "px"
+        left: (Math.round(left / 20)) * 20 + "px",
+        nodeType: currentItem
       };
       addNode(temp);
     };
@@ -352,9 +360,9 @@ export default {
     };
 
     // 展示左侧节点类型的描述
-    const moveDes = (e, node) => {
+    const moveDes = (e, type) => {
       showDescription.show = true;
-      showDescription.data = node.description;
+      showDescription.data = type.description;
       showDescription.left = (e.pageX - 246) + 'px';
       showDescription.top = (e.pageY - 114) + 'px';
     };
@@ -387,9 +395,42 @@ export default {
 
     // 保存流程图所有节点数据
     const saveData = () => {
-      console.log("saveData");
-      console.log(data.nodeList);
-      console.log(data.lineList);
+      if (data.nodeList.length === 0) {
+        ElMessage.error("请先绘制流程图");
+        return;
+      }
+      // 封装节点数据参数
+      let body = [];
+      data.nodeList.forEach(d => {
+        const node = {
+          id: d.id,
+          nodeName: d.nodeName,
+          flowId: props.flowId,
+          typeId: d.nodeType.id,
+          top: d.top,
+          left: d.left,
+          remark: d.remark,
+          params: d.params
+        };
+        body.push(node);
+      });
+      data.lineList.forEach(l => {
+        const line = {
+          id: l.id,
+          flowId: props.flowId,
+          from: l.from,
+          to: l.to
+        };
+        body.push(line);
+      });
+      console.log(body);
+      setNodeData(body).then(res => {
+        if (res.message !== undefined) {
+          ElMessage.error(res.message);
+        } else {
+          ElMessage.success("保存成功");
+        }
+      });
     };
 
     initNodeType();

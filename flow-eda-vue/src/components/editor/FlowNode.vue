@@ -2,13 +2,13 @@
   <div id="node" ref="node"
        v-click-outside="setNotActive"
        :class="[(data.isActive || data.isSelected) ? 'active' : '']"
-       :style="{top: node.top, left: node.left, background: node.background}"
+       :style="{top: node.top, left: node.left, background: node.nodeType.background}"
        class="node-item"
        @click="setActive"
        @mouseenter="showAnchor"
        @mouseleave="hideAnchor">
     <div class="log-wrap">
-      <img :src="node.svg" alt="" style="padding: 4px">
+      <img :src="node.nodeType.svg" alt="" style="padding: 4px">
     </div>
     <div class="nodeName">{{ node.nodeName }}</div>
     <!--节点选中时四周边框样式-->
