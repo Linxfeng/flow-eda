@@ -19,12 +19,13 @@ const routes = [
                 component: () => import ("../views/Flows.vue")
             },
             {
-                path: "/flows/editor/:id",
+                path: "/flows/editor",
                 name: "Editor",
                 meta: {
                     title: '编辑工作流'
                 },
-                component: () => import ("../views/Editor.vue")
+                component: () => import ("../views/Editor.vue"),
+                props: route => ({flowId: route.query.flowId})
             },
             {
                 path: "/flows/nodeTypes",

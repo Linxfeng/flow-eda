@@ -154,7 +154,7 @@ export default {
     // 查看详情,打开流编辑器
     const router = useRouter();
     const handleShow = (row) => {
-      router.push('/flows/editor/' + row.id);
+      router.push({path: '/flows/editor', query: {flowId: row.id}});
     };
     // 编辑操作
     const handleEdit = (index, row) => {
