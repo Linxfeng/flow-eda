@@ -1,5 +1,8 @@
 import {createRouter, createWebHashHistory} from "vue-router";
 import Home from "../views/Home.vue";
+import Flows from "../views/Flows.vue";
+import Editor from "../views/Editor.vue";
+import NodeTypes from "../views/NodeTypes.vue";
 
 const routes = [
     {
@@ -16,7 +19,7 @@ const routes = [
                 meta: {
                     title: '工作流管理'
                 },
-                component: () => import ("../views/Flows.vue")
+                component: Flows
             },
             {
                 path: "/flows/editor",
@@ -24,7 +27,7 @@ const routes = [
                 meta: {
                     title: '编辑工作流'
                 },
-                component: () => import ("../views/Editor.vue"),
+                component: Editor,
                 props: route => ({flowId: route.query.flowId})
             },
             {
@@ -33,7 +36,7 @@ const routes = [
                 meta: {
                     title: '节点类型管理'
                 },
-                component: () => import ("../views/NodeTypes.vue")
+                component: NodeTypes
             }
         ]
     }
