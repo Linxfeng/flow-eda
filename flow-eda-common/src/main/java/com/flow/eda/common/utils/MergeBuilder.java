@@ -2,10 +2,8 @@ package com.flow.eda.common.utils;
 
 import lombok.AllArgsConstructor;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -35,14 +33,23 @@ public class MergeBuilder {
         private final List<T> source;
         private final Function<T, K> sourceKeyExtractor;
 
-        public <R> TargetSourceBuilder<T, K, R> target(Function<Collection<K>, List<R>> supplier) {
-            Set<K> keys = source.stream().map(sourceKeyExtractor).collect(Collectors.toSet());
+        public <R> TargetSourceBuilder<T, K, R> target(Function<List<K>, List<R>> supplier) {
+            List<K> keys =
+                    source.stream().map(sourceKeyExtractor).distinct().collect(Collectors.toList());
             List<R> target = supplier.apply(keys);
             return new TargetSourceBuilder<>(source, sourceKeyExtractor, target);
         }
 
         public <R> TargetSourceBuilder<T, K, R> target(List<R> target) {
             return new TargetSourceBuilder<>(source, sourceKeyExtractor, target);
+        }
+
+        public <R> Merger<T, R> target(
+                Function<List<K>, List<R>> supplier, Function<R, ?> extractor) {
+            List<K> keys =
+                    source.stream().map(sourceKeyExtractor).distinct().collect(Collectors.toList());
+            List<R> target = supplier.apply(keys);
+            return new Merger<T, R>(source, target, sourceKeyExtractor, extractor);
         }
 
         public <R> Merger<T, R> target(List<R> target, Function<R, ?> extractor) {
@@ -68,7 +75,7 @@ public class MergeBuilder {
         private final Function<T, ?> sourceKey;
         private final Function<R, ?> targetKey;
 
-        public List<R> merge(BiConsumer<T, R> action) {
+        public List<R> mergeT(BiConsumer<T, R> action) {
             if (source == null || target == null) {
                 return target;
             }
@@ -85,6 +92,13 @@ public class MergeBuilder {
                                                                     targetKey.apply(t)))
                                             .forEach(s -> action.accept(s, t)));
             return target;
+        }
+
+        public List<T> mergeS(BiConsumer<T, R> action) {
+            if (target != null) {
+                mergeT(action);
+            }
+            return source;
         }
     }
 }
