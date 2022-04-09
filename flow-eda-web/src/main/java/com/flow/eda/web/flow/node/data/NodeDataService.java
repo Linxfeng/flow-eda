@@ -4,6 +4,7 @@ import com.flow.eda.web.flow.node.type.NodeType;
 import com.flow.eda.web.flow.node.type.NodeTypeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +31,11 @@ public class NodeDataService {
         return list;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void updateNodeData(List<NodeData> data) {
-        if (isNotEmpty(data)) {
-            nodeDataMapper.insert(data);
-        }
+        Long flowId = data.get(0).getFlowId();
+        nodeDataMapper.deleteByFlowId(flowId);
+        nodeDataMapper.insert(data);
     }
 
     private void fillNodeType(List<NodeData> list, List<NodeType> types) {

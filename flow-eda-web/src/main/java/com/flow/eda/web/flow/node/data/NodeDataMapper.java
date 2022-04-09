@@ -1,5 +1,6 @@
 package com.flow.eda.web.flow.node.data;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -18,4 +19,7 @@ public interface NodeDataMapper {
 
     @Select("SELECT * FROM eda_flow_node_data WHERE flow_id=#{flowId}")
     List<NodeData> findByFlowId(Long flowId);
+
+    @Delete("DELETE FROM eda_flow_node_data WHERE flow_id=#{flowId}")
+    void deleteByFlowId(Long flowId);
 }
