@@ -1,6 +1,9 @@
 package com.flow.eda.web.flow.node.type;
 
+import com.flow.eda.web.flow.node.type.param.NodeTypeParam;
 import lombok.Data;
+
+import java.util.List;
 
 /** 节点类型 */
 @Data
@@ -16,8 +19,6 @@ public class NodeType {
     private String background;
     /** 节点类型描述 */
     private String description;
-    /** 节点必填参数，多个参数以逗号分隔 */
-    private String required;
-    /** 节点全部参数，多个参数以逗号分隔 */
-    private String parameter;
+    /** 节点参数 */
+    private List<NodeTypeParam> param;
 }
