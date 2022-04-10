@@ -2,7 +2,7 @@ package com.flow.eda.web.flow.node.data;
 
 import com.flow.eda.common.utils.MergeBuilder;
 import com.flow.eda.web.flow.node.type.NodeType;
-import com.flow.eda.web.flow.node.type.NodeTypeMapper;
+import com.flow.eda.web.flow.node.type.NodeTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +15,7 @@ import static com.flow.eda.common.utils.CollectionUtil.isEmpty;
 @Service
 public class NodeDataService {
     @Autowired private NodeDataMapper nodeDataMapper;
-    @Autowired private NodeTypeMapper nodeTypeMapper;
+    @Autowired private NodeTypeService nodeTypeService;
 
     public List<NodeData> getNodeData(Long flowId) {
         List<NodeData> list = nodeDataMapper.findByFlowId(flowId);
@@ -24,7 +24,7 @@ public class NodeDataService {
         }
         // 封装节点类型信息
         return MergeBuilder.source(list, NodeData::getTypeId)
-                .target(nodeTypeMapper::findByIds, NodeType::getId)
+                .target(nodeTypeService::findByIds, NodeType::getId)
                 .mergeS(NodeData::setNodeType);
     }
 

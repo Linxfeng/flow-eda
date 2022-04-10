@@ -24,14 +24,23 @@ public class NodeTypeService {
     public List<NodeType> listByPage(NodeRequest request) {
         PageHelper.startPage(request.getPage(), request.getLimit());
         List<NodeType> list = nodeTypeMapper.findByName(request.getName());
+        return mergeNodeTypeParam(list);
+    }
+
+    public List<NodeType> findByIds(List<Long> ids) {
+        List<NodeType> list = nodeTypeMapper.findByIds(ids);
+        return mergeNodeTypeParam(list);
+    }
+
+    /** 封装节点类型参数信息 */
+    private List<NodeType> mergeNodeTypeParam(List<NodeType> list) {
         if (isEmpty(list)) {
             return list;
         }
-        // 封装节点类型参数信息
         List<Long> ids = map(list, NodeType::getId);
         List<NodeTypeParam> params = nodeTypeParamMapper.findByTypeIds(ids);
         if (isNotEmpty(params)) {
-            list.forEach(t -> t.setParam(filter(params, p -> t.getId().equals(p.getTypeId()))));
+            list.forEach(t -> t.setParams(filter(params, p -> t.getId().equals(p.getTypeId()))));
         }
         return list;
     }

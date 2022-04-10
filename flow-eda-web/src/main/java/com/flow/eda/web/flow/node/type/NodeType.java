@@ -20,5 +20,5 @@ public class NodeType {
     /** 节点类型描述 */
     private String description;
     /** 节点参数 */
-    private List<NodeTypeParam> param;
+    private List<NodeTypeParam> params;
 }
