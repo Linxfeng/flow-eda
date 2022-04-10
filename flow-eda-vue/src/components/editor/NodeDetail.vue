@@ -11,8 +11,18 @@
         <el-form-item class="item" label="名称：" prop="name">
           <el-input v-model="detailForm.name" class="input"/>
         </el-form-item>
-        <el-form-item v-for="p in data.params" :id="p" :key="p" :label="p+'：'" :prop="p" class="item">
-          <el-input v-model="detailForm[p]" class="input"/>
+        <el-form-item v-for="p in node.nodeType.params" :id="p.key" :key="p.key" :label="p.name+'：'" :prop="p.key"
+                      class="item">
+          <el-input v-if="p.inType==='input'" v-model="detailForm[p.key]" :placeholder="p.placeholder" class="input"/>
+          <el-input v-if="p.inType==='select' && p.placeholder" v-model="detailForm[p.key]"
+                    :placeholder="p.placeholder.split(',')[0]"
+                    class="input-left"/>
+          <el-select v-if="p.inType==='select' && p.placeholder" v-model="detailForm[p.key+'-o']" class="input-right">
+            <el-option v-for="op in p.option.split(',')" :key="op" :label="op" :value="op"></el-option>
+          </el-select>
+          <el-select v-if="p.inType==='select' && !p.placeholder" v-model="detailForm[p.key]" class="input">
+            <el-option v-for="op in p.option.split(',')" :key="op" :label="op" :value="op"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item class="item" label="备注：" prop="remark">
           <el-input v-model="detailForm.remark" autosize="" class="input" type="textarea"/>
@@ -36,35 +46,37 @@ export default {
     clickOutside: vClickOutside.directive
   },
   setup(props, context) {
-    // 节点参数，必填参数
-    const data = reactive({
-      params: [],
-      required: []
-    });
-    if (props.node.nodeType.required) {
-      data.required = props.node.nodeType.required.split(",");
-    }
-
-    // 表单内容
+    // 节点参数定义
+    const ps = props.node.nodeType.params;
+    // 节点参数数据
+    const pv = props.node.params;
+    // 表单参数数据
     const form = {name: props.node.nodeName, remark: props.node.remark};
-    if (props.node.nodeType.parameter) {
-      data.params = props.node.nodeType.parameter.split(",");
-      data.params.forEach(p => {
-        if (props.node.params) {
-          form[p] = props.node.params[p];
-        } else {
-          form[p] = null;
-        }
-      });
+    if (pv) {
+      Object.keys(pv).forEach(k => form[k] = pv[k]);
     }
     const detailForm = reactive(form);
     const detailFormRef = ref(null);
 
     // 表单校验规则
     const ruleForm = {name: [{required: true, trigger: 'blur'}]};
-    data.required.forEach(r => {
-      ruleForm[r] = [{required: true, trigger: 'blur'}]
-    });
+    if (ps && ps.length > 0) {
+      ps.forEach(p => {
+        // 处理输入框+选择框=单个参数的情况，需要在form中拆成两个参数
+        if (p.inType === 'select' && p.placeholder) {
+          if (form[p.key]) {
+            form[p.key] = form[p.key].split(',')[0];
+            form[p.key + '-o'] = form[p.key].split(',')[1];
+          } else {
+            form[p.key + '-o'] = p.placeholder.split(',')[1];
+          }
+        }
+        // 参数必填规则
+        if (p.required === true) {
+          ruleForm[p.key] = [{required: true, trigger: 'blur'}]
+        }
+      });
+    }
     const rules = reactive(ruleForm);
 
     const hideDetail = () => {
@@ -77,9 +89,13 @@ export default {
         if (valid) {
           // 将节点信息和节点属性信息封装好传给编辑器
           let params = {};
-          Object.keys(detailForm).map(k => {
+          Object.keys(detailForm).forEach(k => {
             if (k !== 'name' && k !== 'remark' && detailForm[k] && detailForm[k] !== null) {
-              params[k] = detailForm[k];
+              if (detailForm[k + '-o']) {
+                params[k] = detailForm[k] + ',' + detailForm[k + '-o'];
+              } else if (!k.endsWith('-o')) {
+                params[k] = detailForm[k];
+              }
             }
           });
           props.node.nodeName = detailForm.name;
@@ -96,7 +112,6 @@ export default {
     };
 
     return {
-      data,
       detailForm,
       rules,
       detailFormRef,
@@ -147,6 +162,16 @@ export default {
 
       .input {
         width: 98%;
+      }
+
+      .input-left {
+        float: left;
+        width: 48%;
+      }
+
+      .input-right {
+        float: right;
+        width: 48%;
       }
     }
   }
