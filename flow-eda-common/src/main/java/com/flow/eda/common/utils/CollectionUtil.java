@@ -63,4 +63,11 @@ public class CollectionUtil {
         }
         return null;
     }
+
+    public static <T> boolean anyMatch(Collection<T> collection, Predicate<? super T> predicate) {
+        if (isNotEmpty(collection)) {
+            return collection.stream().anyMatch(predicate);
+        }
+        return false;
+    }
 }
