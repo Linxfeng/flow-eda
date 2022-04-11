@@ -35,14 +35,14 @@ public class FlowExecutor {
             Class<? extends Node> clazz = NodeTypeEnum.getClazzByNode(currentNode);
             Constructor<?> constructor = clazz.getConstructor(Document.class);
             Node nodeInstance = (Node) constructor.newInstance(currentNode.getParams());
-            nodeInstance.run(() -> this.runNext(currentNode));
+            nodeInstance.run((p) -> this.runNext(currentNode, p));
         } catch (Exception e) {
             throw new InternalException(e.getMessage());
         }
     }
 
     /** 节点数据执行后回调，继续执行下一节点 */
-    private void runNext(FlowData currentNode) {
+    private void runNext(FlowData currentNode, Object params) {
         List<FlowData> nextNodes = getNextNode(currentNode);
         // 多个下游节点，需要并行执行
         forEach(nextNodes, t -> threadPool.execute(() -> this.run(t)));
