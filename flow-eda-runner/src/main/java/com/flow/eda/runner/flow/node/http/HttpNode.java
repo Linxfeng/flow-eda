@@ -39,7 +39,7 @@ public class HttpNode implements Node {
         function.callback(res);
     }
 
-    public String executeHttpRequest() {
+    private String executeHttpRequest() {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpRequestExpand request = new HttpRequestExpand(url, method);
