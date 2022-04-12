@@ -17,3 +17,11 @@ export function setNodeData(body) {
         data: body
     });
 }
+
+// 运行本流程
+export function executeNodeData(flowId) {
+    return request({
+        url: '/api/v1/node/data/run?flowId=' + flowId,
+        method: 'post'
+    });
+}

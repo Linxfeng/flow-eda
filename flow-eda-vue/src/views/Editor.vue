@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%">
-    <toolbar @saveData="saveData"/>
+    <toolbar @executeFlow="executeFlow" @saveData="saveData"/>
     <div class="flow_region">
       <div class="nodes-wrap">
         <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
@@ -39,7 +39,7 @@ import {jsplumbSetting} from '../components/editor/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../components/editor/jsplumbConfig";
 import {generateUniqueID} from "../utils/util.js";
 import {getNodeTypes} from "../api/nodeType.js";
-import {getNodeData, setNodeData} from "../api/nodeData.js";
+import {getNodeData, setNodeData, executeNodeData} from "../api/nodeData.js";
 import {ElMessage, ElMessageBox} from "element-plus";
 import jsplumb from "jsplumb";
 import panzoom from "panzoom";
@@ -389,7 +389,7 @@ export default {
     };
 
     // 保存流程图所有节点数据
-    const saveData = () => {
+    const saveData = async () => {
       if (data.nodeList.length === 0) {
         ElMessage.error("请先绘制流程图");
         return;
@@ -418,13 +418,24 @@ export default {
         };
         body.push(line);
       });
-      setNodeData(body).then(res => {
-        if (res.message !== undefined) {
-          ElMessage.error(res.message);
-        } else {
-          ElMessage.success("保存成功");
-        }
-      });
+      // 保存流程数据
+      const res = await setNodeData(body);
+      if (res.message !== undefined) {
+        ElMessage.error(res.message);
+      } else {
+        ElMessage.success("保存成功");
+      }
+    };
+
+    // 运行本流程
+    const executeFlow = async () => {
+      await saveData();
+      const res = await executeNodeData(props.flowId);
+      if (res.message !== undefined) {
+        ElMessage.error(res.message);
+      } else {
+        ElMessage.success("运行成功");
+      }
     };
 
     // 初始化页面数据，渲染流程图
@@ -451,7 +462,8 @@ export default {
       updateNode,
       moveDes,
       hideDes,
-      saveData
+      saveData,
+      executeFlow
     };
   }
 };
