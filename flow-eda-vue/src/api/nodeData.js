@@ -21,7 +21,7 @@ export function setNodeData(body) {
 // 运行本流程
 export function executeNodeData(flowId) {
     return request({
-        url: '/api/v1/node/data/deploy?flowId=' + flowId,
+        url: '/api/v1/node/data/run?flowId=' + flowId,
         method: 'post'
     });
 }
