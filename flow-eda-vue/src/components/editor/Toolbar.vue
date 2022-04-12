@@ -16,6 +16,11 @@
       <span class="icon-lx-save"/>
       </span>
     </el-tooltip>
+    <el-tooltip content="运行" placement="bottom">
+      <span class="command" @click="run">
+      <span class="icon-lx-run"/>
+      </span>
+    </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="复制" placement="bottom">
       <span class="command" @click="copy">
@@ -48,6 +53,8 @@
 </template>
 
 <script>
+import {ElMessageBox} from "element-plus";
+
 export default {
   name: "Toolbar",
   setup(props, context) {
@@ -56,8 +63,18 @@ export default {
       context.emit("saveData");
     };
 
+    const run = () => {
+      ElMessageBox.confirm("确认运行本流程？这将会保存本流程并覆盖之前的数据", "提示", {
+        type: "warning",
+      }).then(() => {
+        context.emit("executeFlow");
+      }).catch(() => {
+      });
+    };
+
     return {
-      save
+      save,
+      run
     }
   }
 };
