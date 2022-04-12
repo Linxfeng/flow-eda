@@ -16,17 +16,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 public class FlowController {
-    @Autowired private FlowService flowService;
+    @Autowired private FlowServiceImpl flowServiceImpl;
 
     @GetMapping("/flow")
     public PageResult<Flow> listFlow(FlowRequest request) {
-        return PageResult.of(flowService.listFlowByPage(request));
+        return PageResult.of(flowServiceImpl.listFlowByPage(request));
     }
 
     @PostMapping("/flow")
     public Result<Flow> addFlow(@RequestBody Flow flow) {
         this.checkName(flow);
-        flowService.addFlow(flow);
+        flowServiceImpl.addFlow(flow);
         log.info("Create flow {}", flow.getName());
         return Result.of(flow);
     }
@@ -35,13 +35,13 @@ public class FlowController {
     public Result<Flow> updateFlow(@RequestBody Flow flow) {
         this.check(flow);
         log.info("Update flow {}", flow.getId());
-        return Result.of(flowService.updateFlow(flow));
+        return Result.of(flowServiceImpl.updateFlow(flow));
     }
 
     @DeleteMapping("/flow")
     public Result<String> deleteFlow(@RequestBody List<Long> ids) {
         if (CollectionUtil.isNotEmpty(ids)) {
-            flowService.deleteFlow(ids);
+            flowServiceImpl.deleteFlow(ids);
         }
         return Result.ok();
     }

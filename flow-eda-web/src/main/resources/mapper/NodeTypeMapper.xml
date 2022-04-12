@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flow.eda.web.flow.node.type.NodeTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.flow.eda.web.flow.node.type.NodeType">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="type_name" property="typeName"/>
+        <result column="svg" property="svg"/>
+        <result column="background" property="background"/>
+        <result column="description" property="description"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , type, type_name, svg, background, description
+    </sql>
+
+</mapper>

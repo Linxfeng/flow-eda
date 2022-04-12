@@ -13,17 +13,17 @@ import static com.flow.eda.common.utils.CollectionUtil.isEmpty;
 @RestController
 @RequestMapping("/api/v1")
 public class NodeDataController {
-    @Autowired private NodeDataService nodeDataService;
+    @Autowired private NodeDataServiceImpl nodeDataServiceImpl;
 
     @GetMapping("/node/data")
     public Result<List<NodeData>> getNodeData(@RequestParam("flowId") Long flowId) {
-        return Result.of(nodeDataService.getNodeData(flowId));
+        return Result.of(nodeDataServiceImpl.getNodeData(flowId));
     }
 
     @PostMapping("/node/data")
     public Result<String> setNodeData(@RequestBody List<NodeData> data) {
         this.check(data);
-        nodeDataService.updateNodeData(data);
+        nodeDataServiceImpl.updateNodeData(data);
         return Result.ok();
     }
 

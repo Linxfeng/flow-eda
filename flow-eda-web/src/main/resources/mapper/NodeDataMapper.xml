@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flow.eda.web.flow.node.data.NodeDataMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.flow.eda.web.flow.node.data.NodeData">
+        <id column="id" property="id"/>
+        <result column="node_name" property="nodeName"/>
+        <result column="flow_id" property="flowId"/>
+        <result column="type_id" property="typeId"/>
+        <result column="top" property="top"/>
+        <result column="left" property="left"/>
+        <result column="remark" property="remark"/>
+        <result column="params" property="params"/>
+        <result column="from" property="from"/>
+        <result column="to" property="to"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , node_name, flow_id, type_id, top, left, remark, params, from, to
+    </sql>
+
+</mapper>

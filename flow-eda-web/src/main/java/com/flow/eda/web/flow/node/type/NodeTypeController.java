@@ -9,15 +9,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 public class NodeTypeController {
-    @Autowired private NodeTypeService nodeTypeService;
+    @Autowired private NodeTypeServiceImpl nodeTypeServiceImpl;
 
     @GetMapping("/node/type")
     public PageResult<NodeType> getNodeTypes(NodeRequest request) {
-        return PageResult.of(nodeTypeService.listByPage(request));
+        return PageResult.of(nodeTypeServiceImpl.listByPage(request));
     }
 
     @PostMapping("/node/type")
     public Result<NodeType> addNodeType(@RequestBody NodeType nodeType) {
-        return Result.of(nodeTypeService.addNodeType(nodeType));
+        return Result.of(nodeTypeServiceImpl.addNodeType(nodeType));
     }
 }
