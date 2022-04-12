@@ -27,6 +27,12 @@ public class NodeDataController {
         return Result.ok();
     }
 
+    @PostMapping("/node/data/run")
+    public Result<String> runNodeData(@RequestParam("flowId") Long flowId) {
+        nodeDataService.runNodeData(flowId);
+        return Result.ok();
+    }
+
     /** 校验节点数据的正确性 */
     private void check(List<NodeData> data) {
         if (isEmpty(data)) {
