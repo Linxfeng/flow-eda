@@ -1,0 +1,15 @@
+server:
+  port: 8088
+spring:
+  application:
+    name: flow-eda-runner
+dubbo:
+  application:
+    name: flow-eda-runner
+  registry:
+    address: nacos://127.0.0.1:8848
+    username: nacos
+    password: nacos
+  protocol:
+    name: dubbo
+    port: 20880
