@@ -1,11 +1,13 @@
-package com.flow.eda.runner.flow.data;
+package com.flow.eda.common.dubbo.model;
 
 import lombok.Data;
 import org.bson.Document;
 
+import java.io.Serializable;
+
 /** 运行时节点数据 */
 @Data
-public class FlowData {
+public class FlowData implements Serializable {
     private String id;
     /** 流id */
     private Long flowId;
