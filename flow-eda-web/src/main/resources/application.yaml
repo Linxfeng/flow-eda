@@ -1,0 +1,30 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: flow-eda-web
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/flow-eda?useSSL=false&useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123456
+    hikari:
+      max-lifetime: 60000
+      connection-timeout: 10000
+      validation-timeout: 3000
+      maximum-pool-size: 10
+      minimum-idle: 5
+mybatis:
+  type-handlers-package: com.flow.eda.web.flow.mybatis
+  configuration:
+    map-underscore-to-camel-case: true
+dubbo:
+  application:
+    name: flow-eda-web
+  registry:
+    address: nacos://127.0.0.1:8848
+    username: nacos
+    password: nacos
+  protocol:
+    name: dubbo
+    port: 20880
