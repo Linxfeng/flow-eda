@@ -28,11 +28,21 @@ public class FlowDataRuntime {
     @PostConstruct
     public void loadingFlowData() {}
 
-    /** 存储流程的流节点数据 */
-    public void putData(List<FlowData> data) {
+    /** 运行流程 */
+    public void runFlowData(List<FlowData> data) {
         Long flowId = data.get(0).getFlowId();
-        this.flowData.put(flowId, data);
+        this.putData(data, flowId);
+        // 流数据存储完毕后需要触发定时器节点的执行(异步)
+        List<FlowData> timers = this.timerData.get(flowId);
+        forEach(timers, t -> threadPool.execute(() -> new FlowExecutor(data).start(t)));
+        // 同时需要立即执行开始节点(异步)
+        List<FlowData> starts = this.startData.get(flowId);
+        forEach(starts, t -> threadPool.execute(() -> new FlowExecutor(data).start(t)));
+    }
 
+    /** 存储流程的流节点数据 */
+    private void putData(List<FlowData> data, Long flowId) {
+        this.flowData.put(flowId, data);
         // 将流数据分为开始节点和定时器节点进行区分存放
         List<FlowData> startNodes = filter(data, this::isStartNode);
         if (isNotEmpty(startNodes)) {
@@ -43,23 +53,6 @@ public class FlowDataRuntime {
         if (isNotEmpty(timerNodes)) {
             this.timerData.put(flowId, timerNodes);
         }
-        // 存储完毕后需要触发定时器节点流程的执行(异步)
-        threadPool.execute(() -> this.runTimerFlowData(flowId));
-    }
-
-    /** 执行指定流程的开始节点，仅执行一次 */
-    public void runStartFlowData(List<FlowData> data) {
-        this.putData(data);
-        Long flowId = data.get(0).getFlowId();
-        List<FlowData> starts = this.startData.get(flowId);
-        forEach(starts, t -> threadPool.execute(() -> new FlowExecutor(data).start(t)));
-    }
-
-    /** 执行指定流程的定时器节点 */
-    private void runTimerFlowData(Long flowId) {
-        List<FlowData> timers = this.timerData.get(flowId);
-        List<FlowData> data = this.flowData.get(flowId);
-        forEach(timers, t -> threadPool.execute(() -> new FlowExecutor(data).start(t)));
     }
 
     private boolean isStartNode(FlowData d) {

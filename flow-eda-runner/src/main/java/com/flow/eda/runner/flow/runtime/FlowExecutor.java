@@ -31,14 +31,8 @@ public class FlowExecutor {
 
     /** 执行当前节点 */
     private void run(FlowData currentNode) {
-        try {
-            Class<? extends Node> clazz = NodeTypeEnum.getClazzByNode(currentNode);
-            Constructor<?> constructor = clazz.getConstructor(Document.class);
-            Node nodeInstance = (Node) constructor.newInstance(currentNode.getParams());
-            nodeInstance.run((p) -> this.runNext(currentNode, p));
-        } catch (Exception e) {
-            throw new InternalException(e.getMessage());
-        }
+        Node nodeInstance = getInstance(currentNode);
+        nodeInstance.run((p) -> this.runNext(currentNode, p));
     }
 
     /** 节点数据执行后回调，继续执行下一节点 */
@@ -55,5 +49,23 @@ public class FlowExecutor {
             return filter(flowData, n -> ids.contains(n.getId()));
         }
         return null;
+    }
+
+    /** 获取当前节点的实例 */
+    private Node getInstance(FlowData currentNode) {
+        try {
+            Class<? extends Node> clazz = NodeTypeEnum.getClazzByNode(currentNode);
+            Constructor<?> constructor;
+            // 获取节点的构造函数，默认获取含参构造，获取不到时返回无参构造
+            try {
+                constructor = clazz.getConstructor(Document.class);
+                return (Node) constructor.newInstance(currentNode.getParams());
+            } catch (Exception ignore) {
+                constructor = clazz.getConstructor();
+                return (Node) constructor.newInstance();
+            }
+        } catch (Exception e) {
+            throw new InternalException(e.getMessage());
+        }
     }
 }

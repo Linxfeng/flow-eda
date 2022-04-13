@@ -16,6 +16,6 @@ public class FlowDataServiceImpl implements FlowDataService {
 
     @Override
     public void runFlowData(List<FlowData> data) {
-        flowDataRuntime.runStartFlowData(data);
+        flowDataRuntime.runFlowData(data);
     }
 }
