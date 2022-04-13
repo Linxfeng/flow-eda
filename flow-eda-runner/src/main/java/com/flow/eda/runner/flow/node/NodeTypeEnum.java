@@ -1,7 +1,7 @@
 package com.flow.eda.runner.flow.node;
 
+import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InternalException;
-import com.flow.eda.runner.flow.data.FlowData;
 import com.flow.eda.runner.flow.node.end.EndNode;
 import com.flow.eda.runner.flow.node.http.HttpNode;
 import com.flow.eda.runner.flow.node.start.StartNode;

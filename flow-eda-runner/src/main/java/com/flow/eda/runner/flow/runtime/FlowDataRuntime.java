@@ -1,9 +1,10 @@
 package com.flow.eda.runner.flow.runtime;
 
-import com.flow.eda.runner.flow.data.FlowData;
+import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,10 @@ public class FlowDataRuntime {
     private final Map<Long, List<FlowData>> startData = new ConcurrentHashMap<>();
     /** 存储流程中的所有定时节点(作为起始节点) */
     private final Map<Long, List<FlowData>> timerData = new ConcurrentHashMap<>();
+
+    /** 应用启动时，需要加载出正在运行中的流数据，继续运行 */
+    @PostConstruct
+    public void loadingFlowData() {}
 
     /** 存储流程的流节点数据 */
     public void putData(List<FlowData> data) {
@@ -43,9 +48,10 @@ public class FlowDataRuntime {
     }
 
     /** 执行指定流程的开始节点，仅执行一次 */
-    public void runStartFlowData(Long flowId) {
+    public void runStartFlowData(List<FlowData> data) {
+        this.putData(data);
+        Long flowId = data.get(0).getFlowId();
         List<FlowData> starts = this.startData.get(flowId);
-        List<FlowData> data = this.flowData.get(flowId);
         forEach(starts, t -> threadPool.execute(() -> new FlowExecutor(data).start(t)));
     }
 

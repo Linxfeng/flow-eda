@@ -1,7 +1,7 @@
 package com.flow.eda.runner.flow.runtime;
 
+import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InternalException;
-import com.flow.eda.runner.flow.data.FlowData;
 import com.flow.eda.runner.flow.node.Node;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
 import org.bson.Document;
