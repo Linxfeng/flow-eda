@@ -2,6 +2,8 @@ package com.flow.eda.runner.flow.node;
 
 import org.bson.Document;
 
+import java.util.Optional;
+
 /** 节点抽象类 */
 public abstract class AbstractNode implements Node {
     /** 节点自定义参数，可传递至下个节点 */
@@ -27,7 +29,7 @@ public abstract class AbstractNode implements Node {
     }
 
     public Document getInput() {
-        return input;
+        return Optional.ofNullable(input).orElseGet(Document::new);
     }
 
     /** 节点输出：当前节点的payload作为下一个节点的input */

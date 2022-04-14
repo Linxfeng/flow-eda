@@ -64,9 +64,11 @@ public class FlowExecutor {
 
     /** 设置input，上游节点的输出参数需要传递至下一节点 */
     private FlowData setInput(FlowData currentNode, Document input) {
-        Document params = Optional.ofNullable(currentNode.getParams()).orElseGet(Document::new);
-        params.putAll(input);
-        currentNode.setParams(params);
+        if (input != null) {
+            Document params = Optional.ofNullable(currentNode.getParams()).orElseGet(Document::new);
+            params.putAll(input);
+            currentNode.setParams(params);
+        }
         return currentNode;
     }
 }
