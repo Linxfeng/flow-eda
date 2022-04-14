@@ -2,7 +2,6 @@ package com.flow.eda.runner.flow.node;
 
 import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InternalException;
-import com.flow.eda.runner.flow.node.end.EndNode;
 import com.flow.eda.runner.flow.node.http.HttpNode;
 import com.flow.eda.runner.flow.node.start.StartNode;
 import com.flow.eda.runner.flow.node.timer.TimerNode;
@@ -12,8 +11,6 @@ import lombok.Getter;
 public enum NodeTypeEnum {
     /** 开始节点 */
     START("start", StartNode.class),
-    /** 结束节点 */
-    END("end", EndNode.class),
     /** 定时器 */
     TIMER("timer", TimerNode.class),
     HTTP("http", HttpNode.class),
