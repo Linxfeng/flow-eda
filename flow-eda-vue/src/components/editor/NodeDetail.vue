@@ -61,11 +61,10 @@ export default {
     // 节点参数数据
     const pv = props.node.params;
     // 表单参数数据
-    const form = {
-      name: props.node.nodeName,
-      payload: JSON.stringify(props.node.payload),
-      remark: props.node.remark
-    };
+    const form = {name: props.node.nodeName, remark: props.node.remark};
+    if (props.node.payload) {
+      form.payload = JSON.stringify(props.node.payload);
+    }
     if (pv) {
       Object.keys(pv).forEach(k => form[k] = pv[k]);
     }
