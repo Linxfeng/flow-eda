@@ -30,7 +30,8 @@ public abstract class AbstractNode implements Node {
         return input;
     }
 
-    public Document getPayload() {
-        return new Document("payload", payload);
+    /** 节点输出：当前节点的payload作为下一个节点的input */
+    public Document output() {
+        return new Document("input", payload);
     }
 }

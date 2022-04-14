@@ -36,10 +36,10 @@ public class FlowExecutor {
     }
 
     /** 节点数据执行后回调，继续执行下一节点 */
-    private void runNext(FlowData currentNode, Document input) {
+    private void runNext(FlowData currentNode, Document p) {
         List<FlowData> nextNodes = getNextNode(currentNode);
         // 多个下游节点，需要并行执行
-        forEach(nextNodes, n -> threadPool.execute(() -> this.run(setInput(n, input))));
+        forEach(nextNodes, n -> threadPool.execute(() -> this.run(setInput(n, p))));
     }
 
     private List<FlowData> getNextNode(FlowData currentNode) {
@@ -65,8 +65,6 @@ public class FlowExecutor {
     /** 设置input，上游节点的输出参数需要传递至下一节点 */
     private FlowData setInput(FlowData currentNode, Document input) {
         Document params = Optional.ofNullable(currentNode.getParams()).orElseGet(Document::new);
-        input.put("input", input.get("payload"));
-        input.remove("payload");
         params.putAll(input);
         currentNode.setParams(params);
         return currentNode;

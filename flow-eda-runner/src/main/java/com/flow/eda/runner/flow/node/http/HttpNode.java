@@ -41,7 +41,7 @@ public class HttpNode extends AbstractNode {
     public void run(NodeFunction function) {
         System.out.println("执行HTTP节点！");
         Document res = this.executeHttpRequest();
-        function.callback(getPayload().append("res", res));
+        function.callback(output().append("res", res));
     }
 
     private Document executeHttpRequest() {

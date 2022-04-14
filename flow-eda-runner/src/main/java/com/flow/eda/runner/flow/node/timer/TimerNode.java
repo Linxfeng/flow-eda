@@ -38,7 +38,7 @@ public class TimerNode extends AbstractNode {
                     () -> {
                         if (n.getAndIncrement() < times) {
                             System.out.println("执行定时器节点！");
-                            function.callback(super.getPayload());
+                            function.callback(output());
                         } else {
                             // 停止当前定时线程
                             executor.shutdown();
