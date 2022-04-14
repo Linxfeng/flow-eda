@@ -2,8 +2,10 @@ package com.flow.eda.runner.flow.runtime;
 
 import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InternalException;
+import com.flow.eda.runner.flow.data.FlowWebSocket;
 import com.flow.eda.runner.flow.node.Node;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
+import com.flow.eda.runner.flow.node.output.OutputNode;
 import org.bson.Document;
 
 import java.util.List;
@@ -19,9 +21,12 @@ public class FlowExecutor {
     private final ExecutorService threadPool = Executors.newCachedThreadPool();
     /** 存储当前流程的完整流节点数据 */
     private final List<FlowData> flowData;
+    /** 用于推送消息的ws服务 */
+    private final FlowWebSocket flowWebSocket;
 
-    public FlowExecutor(List<FlowData> flowData) {
+    public FlowExecutor(List<FlowData> flowData, FlowWebSocket ws) {
         this.flowData = flowData;
+        this.flowWebSocket = ws;
     }
 
     /** 开始执行流程 */
@@ -33,6 +38,11 @@ public class FlowExecutor {
     private void run(FlowData currentNode) {
         Node nodeInstance = getInstance(currentNode);
         nodeInstance.run((p) -> runNext(currentNode, p));
+        // 输出节点推送消息
+        if (nodeInstance instanceof OutputNode) {
+            OutputNode out = (OutputNode) nodeInstance;
+            flowWebSocket.sendMessage(currentNode.getId(), out.getInput().toJson());
+        }
     }
 
     /** 节点数据执行后回调，继续执行下一节点 */

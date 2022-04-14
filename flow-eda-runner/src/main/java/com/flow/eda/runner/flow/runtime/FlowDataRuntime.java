@@ -1,7 +1,9 @@
 package com.flow.eda.runner.flow.runtime;
 
 import com.flow.eda.common.dubbo.model.FlowData;
+import com.flow.eda.runner.flow.data.FlowWebSocket;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +26,8 @@ public class FlowDataRuntime {
     /** 存储流程中的所有定时节点(作为起始节点) */
     private final Map<Long, List<FlowData>> timerData = new ConcurrentHashMap<>();
 
+    @Autowired private FlowWebSocket ws;
+
     /** 应用启动时，需要加载出正在运行中的流数据，继续运行 */
     @PostConstruct
     public void loadingFlowData() {}
@@ -34,10 +38,10 @@ public class FlowDataRuntime {
         this.putData(data, flowId);
         // 流数据存储完毕后需要触发定时器节点的执行(异步)
         List<FlowData> timers = this.timerData.get(flowId);
-        forEach(timers, d -> threadPool.execute(() -> new FlowExecutor(data).start(d)));
+        forEach(timers, d -> threadPool.execute(() -> new FlowExecutor(data, ws).start(d)));
         // 同时需要立即执行开始节点(异步)
         List<FlowData> starts = this.startData.get(flowId);
-        forEach(starts, d -> threadPool.execute(() -> new FlowExecutor(data).start(d)));
+        forEach(starts, d -> threadPool.execute(() -> new FlowExecutor(data, ws).start(d)));
     }
 
     /** 存储流程的流节点数据 */
