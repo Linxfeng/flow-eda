@@ -7,6 +7,7 @@ import com.flow.eda.common.utils.MergeBuilder;
 import com.flow.eda.web.flow.node.type.NodeType;
 import com.flow.eda.web.flow.node.type.NodeTypeService;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +59,17 @@ public class NodeDataService {
         if (nodeData.getNodeType() != null) {
             flowData.setType(nodeData.getNodeType().getType());
         }
-        flowData.setParams(nodeData.getParams());
+        Document params = null;
+        // 将节点payload内容添加到params参数中
+        if (nodeData.getParams() != null) {
+            params = nodeData.getParams();
+            if (nodeData.getPayload() != null) {
+                params.append("payload", nodeData.getPayload());
+            }
+        } else if (nodeData.getPayload() != null) {
+            params = new Document("payload", nodeData.getPayload());
+        }
+        flowData.setParams(params);
         flowData.setFrom(nodeData.getFrom());
         flowData.setTo(nodeData.getTo());
         return flowData;
