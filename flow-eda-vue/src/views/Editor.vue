@@ -405,7 +405,8 @@ export default {
           top: d.top,
           left: d.left,
           remark: d.remark,
-          params: d.params
+          params: d.params,
+          payload: d.payload
         };
         body.push(node);
       });

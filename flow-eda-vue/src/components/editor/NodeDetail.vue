@@ -24,6 +24,16 @@
             <el-option v-for="op in p.option.split(',')" :key="op" :label="op" :value="op"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item class="item" prop="payload">
+          <span class="span-box">
+              <el-tooltip content="自定义参数为json格式，可传递参数至下一节点，使用${xx}接收" placement="top">
+                <i class="el-icon-question" style="color: #c0c4cc;"></i>
+              </el-tooltip>
+              <span style="color: #606266;"> 自定义参数：</span>
+            </span>
+          <el-input v-model="detailForm.payload" autosize="" class="input" placeholder="{'a':'xx','b':'123'}"
+                    type="textarea"/>
+        </el-form-item>
         <el-form-item class="item" label="备注：" prop="remark">
           <el-input v-model="detailForm.remark" autosize="" class="input" type="textarea"/>
         </el-form-item>
@@ -51,15 +61,34 @@ export default {
     // 节点参数数据
     const pv = props.node.params;
     // 表单参数数据
-    const form = {name: props.node.nodeName, remark: props.node.remark};
+    const form = {
+      name: props.node.nodeName,
+      payload: JSON.stringify(props.node.payload),
+      remark: props.node.remark
+    };
     if (pv) {
       Object.keys(pv).forEach(k => form[k] = pv[k]);
     }
     const detailForm = reactive(form);
     const detailFormRef = ref(null);
 
+    // 校验输入的字符串是否是json格式
+    const checkJson = (rule, value, callback) => {
+      if (value.startsWith("{") && value.endsWith("}")) {
+        try {
+          JSON.parse(value);
+          callback();
+        } catch (ignore) {
+        }
+      }
+      callback(new Error("Please input json format!"))
+    };
+
     // 表单校验规则
-    const ruleForm = {name: [{required: true, trigger: 'blur'}]};
+    const ruleForm = {
+      name: [{required: true, trigger: 'blur'}],
+      payload: [{validator: checkJson, trigger: 'blur'}]
+    };
     if (ps && ps.length > 0) {
       ps.forEach(p => {
         // 处理输入框+选择框=单个参数的情况，需要在form中拆成两个参数
@@ -90,7 +119,8 @@ export default {
           // 将节点信息和节点属性信息封装好传给编辑器
           let params = {};
           Object.keys(detailForm).forEach(k => {
-            if (k !== 'name' && k !== 'remark' && detailForm[k] && detailForm[k] !== null) {
+            if (k !== 'name' && k !== 'remark' && k !== 'payload'
+                && detailForm[k] && detailForm[k] !== null) {
               if (detailForm[k + '-o']) {
                 params[k] = detailForm[k] + ',' + detailForm[k + '-o'];
               } else if (!k.endsWith('-o')) {
@@ -101,6 +131,9 @@ export default {
           props.node.nodeName = detailForm.name;
           if (detailForm.remark) {
             props.node.remark = detailForm.remark;
+          }
+          if (detailForm.payload) {
+            props.node.payload = JSON.parse(detailForm.payload);
           }
           if (Object.keys(params).length === 0) {
             params = undefined;
