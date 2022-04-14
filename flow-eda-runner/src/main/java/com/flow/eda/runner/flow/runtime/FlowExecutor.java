@@ -6,8 +6,8 @@ import com.flow.eda.runner.flow.node.Node;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
 import org.bson.Document;
 
-import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,14 +32,14 @@ public class FlowExecutor {
     /** 执行当前节点 */
     private void run(FlowData currentNode) {
         Node nodeInstance = getInstance(currentNode);
-        nodeInstance.run((p) -> this.runNext(currentNode, p));
+        nodeInstance.run((p) -> runNext(currentNode, p));
     }
 
     /** 节点数据执行后回调，继续执行下一节点 */
-    private void runNext(FlowData currentNode, Object params) {
+    private void runNext(FlowData currentNode, Document input) {
         List<FlowData> nextNodes = getNextNode(currentNode);
         // 多个下游节点，需要并行执行
-        forEach(nextNodes, t -> threadPool.execute(() -> this.run(t)));
+        forEach(nextNodes, n -> threadPool.execute(() -> this.run(setInput(n, input))));
     }
 
     private List<FlowData> getNextNode(FlowData currentNode) {
@@ -54,18 +54,21 @@ public class FlowExecutor {
     /** 获取当前节点的实例 */
     private Node getInstance(FlowData currentNode) {
         try {
+            // 获取节点的构造函数，默认每个节点都有含参构造，获取不到时抛出异常
             Class<? extends Node> clazz = NodeTypeEnum.getClazzByNode(currentNode);
-            Constructor<?> constructor;
-            // 获取节点的构造函数，默认获取含参构造，获取不到时返回无参构造
-            try {
-                constructor = clazz.getConstructor(Document.class);
-                return (Node) constructor.newInstance(currentNode.getParams());
-            } catch (Exception ignore) {
-                constructor = clazz.getConstructor();
-                return (Node) constructor.newInstance();
-            }
+            return clazz.getConstructor(Document.class).newInstance(currentNode.getParams());
         } catch (Exception e) {
             throw new InternalException(e.getMessage());
         }
+    }
+
+    /** 设置input，上游节点的输出参数需要传递至下一节点 */
+    private FlowData setInput(FlowData currentNode, Document input) {
+        Document params = Optional.ofNullable(currentNode.getParams()).orElseGet(Document::new);
+        input.put("input", input.get("payload"));
+        input.remove("payload");
+        params.putAll(input);
+        currentNode.setParams(params);
+        return currentNode;
     }
 }
