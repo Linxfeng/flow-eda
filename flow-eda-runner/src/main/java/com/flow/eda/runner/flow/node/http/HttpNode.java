@@ -1,7 +1,8 @@
 package com.flow.eda.runner.flow.node.http;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flow.eda.common.exception.InternalException;
-import com.flow.eda.runner.flow.node.Node;
+import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 
 @Getter
 @Setter
-public class HttpNode implements Node {
+public class HttpNode extends AbstractNode {
     private String url;
     private String method;
     private String body;
@@ -25,21 +26,25 @@ public class HttpNode implements Node {
     private String header;
 
     public HttpNode(Document params) {
+        super(params);
         this.url = params.getString("url");
         this.method = params.getString("method");
         this.body = params.getString("body");
         this.params = params.getString("params");
         this.header = params.getString("header");
-        this.spliceParamsToUrl();
+        if (this.params != null) {
+            this.url = this.url + "?" + this.params;
+        }
     }
 
     @Override
     public void run(NodeFunction function) {
-        String res = this.executeHttpRequest();
-        function.callback(res);
+        System.out.println("执行HTTP节点！");
+        Document res = this.executeHttpRequest();
+        function.callback(getPayload().append("res", res));
     }
 
-    private String executeHttpRequest() {
+    private Document executeHttpRequest() {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpRequestExpand request = new HttpRequestExpand(url, method);
@@ -57,18 +62,12 @@ public class HttpNode implements Node {
             CloseableHttpResponse response = httpClient.execute(request);
             // 获取结果并返回
             if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                return EntityUtils.toString(response.getEntity());
+                String res = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+                return new ObjectMapper().readValue(res, Document.class);
             }
         } catch (Exception e) {
             throw new InternalException(e.getMessage());
         }
         return null;
-    }
-
-    /** 将请求参数拼接到url上 */
-    private void spliceParamsToUrl() {
-        if (params != null) {
-            this.url = url + "?" + params;
-        }
     }
 }

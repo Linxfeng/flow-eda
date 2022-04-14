@@ -1,5 +1,7 @@
 package com.flow.eda.runner.flow.node;
 
+import org.bson.Document;
+
 @FunctionalInterface
 public interface NodeFunction {
 
@@ -8,5 +10,5 @@ public interface NodeFunction {
      *
      * @param params 当前节点的输出参数作为下一个节点的输入参数
      */
-    void callback(Object params);
+    void callback(Document params);
 }
