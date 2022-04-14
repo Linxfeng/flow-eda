@@ -21,6 +21,8 @@ public class NodeData {
     private String remark;
     /** 节点属性参数 */
     private Document params;
+    /** 自定义参数 */
+    private Document payload;
     /** 节点类型 */
     private NodeType nodeType;
     /** 连线起始点id */

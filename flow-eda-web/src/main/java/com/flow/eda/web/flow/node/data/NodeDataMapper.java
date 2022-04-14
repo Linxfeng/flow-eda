@@ -11,9 +11,9 @@ import java.util.List;
 public interface NodeDataMapper {
 
     @Insert(
-            "<script>INSERT INTO eda_flow_node_data (id,node_name,flow_id,type_id,`top`,`left`,remark,params,`from`,`to`) VALUES "
+            "<script>INSERT INTO eda_flow_node_data (id,node_name,flow_id,type_id,`top`,`left`,remark,params,payload,`from`,`to`) VALUES "
                     + "<foreach collection='list' item='n' separator=','>("
-                    + "#{n.id},#{n.nodeName},#{n.flowId},#{n.typeId},#{n.top},#{n.left},#{n.remark},#{n.params},#{n.from},#{n.to}"
+                    + "#{n.id},#{n.nodeName},#{n.flowId},#{n.typeId},#{n.top},#{n.left},#{n.remark},#{n.params},#{n.payload},#{n.from},#{n.to}"
                     + ")</foreach></script>")
     void insert(List<NodeData> list);
 
