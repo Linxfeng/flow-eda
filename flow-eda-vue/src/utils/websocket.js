@@ -2,7 +2,7 @@ let ws = {};
 
 // 建立连接，监听消息并进行回调
 function onOpen(id, callback) {
-    if (Object.keys(ws) === 0 || !ws[id]) {
+    if (!ws || Object.keys(ws) === 0 || !ws[id]) {
         const url = 'ws://localhost:8088/ws/flow/node/' + id;
         const socket = new WebSocket(url);
         socket.onmessage = function (msg) {
