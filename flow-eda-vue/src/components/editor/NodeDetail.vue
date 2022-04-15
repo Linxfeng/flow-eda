@@ -7,6 +7,10 @@
       </el-button>
     </div>
     <div class="detail-body">
+      <div v-if="node.output" class="item">
+        <json-viewer :expand-depth=3 :value="node.output" boxed copyable/>
+        <hr/>
+      </div>
       <el-form ref="detailFormRef" :model="detailForm" :rules="rules" class="row" label-position="top">
         <el-form-item class="item" label="名称：" prop="name">
           <el-input v-model="detailForm.name" class="input"/>
@@ -46,11 +50,15 @@
 import {reactive, ref} from "vue";
 import vClickOutside from 'click-outside-vue3'
 import {ElMessage} from "element-plus";
+import JsonViewer from 'vue-json-viewer';
 
 export default {
   name: "NodeDetail",
   props: {
     node: Object
+  },
+  components: {
+    JsonViewer
   },
   directives: {
     clickOutside: vClickOutside.directive
@@ -161,7 +169,7 @@ export default {
   background: #ffffff;
   flex: 0 0 auto;
   float: left;
-  width: 20%;
+  width: 28%;
   border-right: 1px solid #E9E9E9;
   border-bottom: 1px solid #E9E9E9;
 
@@ -185,36 +193,26 @@ export default {
 
   .detail-body {
     .row {
-      padding: 8px 8px 8px 16px;
+      padding: 8px 8px 8px 14px;
 
       .item {
-        width: 98%;
         margin-bottom: 12px;
       }
 
       .input {
-        width: 98%;
+        width: 100%;
       }
 
       .input-left {
         float: left;
-        width: 48%;
+        width: 50%;
       }
 
       .input-right {
         float: right;
-        width: 48%;
+        width: 50%;
       }
     }
   }
-}
-
-.el-form--label-top .el-form-item__label {
-  width: 98%;
-  padding: 0 0 2px;
-}
-
-.el-input__inner {
-  padding: 0 10px;
 }
 </style>
