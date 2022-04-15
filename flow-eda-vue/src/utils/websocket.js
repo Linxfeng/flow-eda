@@ -17,7 +17,12 @@ function onOpen(id, callback) {
 
 // 关闭连接
 function onClose() {
-    Object.keys(ws).forEach(k => ws[k].close());
+    if (ws) {
+        try {
+            Object.keys(ws).forEach(k => ws[k].close());
+        } catch (ignore) {
+        }
+    }
     ws = null;
 }
 
