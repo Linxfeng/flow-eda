@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import {nextTick, reactive, onMounted} from 'vue';
+import {nextTick, reactive, onMounted, onBeforeUnmount} from 'vue';
 import {jsplumbSetting} from '../components/editor/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../components/editor/jsplumbConfig";
 import {generateUniqueID} from "../utils/util.js";
@@ -46,6 +46,7 @@ import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
 import nodeDetail from "../components/editor/NodeDetail.vue";
+import {onOpen, onClose} from "../utils/websocket.js";
 
 export default {
   name: "Editor",
@@ -431,6 +432,12 @@ export default {
     // 运行本流程
     const executeFlow = async () => {
       await saveData();
+      // 流程中如果有输出节点，则需建立websocket连接
+      const outs = data.nodeList.filter(d => "output" === d.nodeType.type);
+      outs.forEach(d => {
+        onOpen(d.id, (s) => d.output = s);
+      });
+      // 运行流
       const res = await executeNodeData(props.flowId);
       if (res.message !== undefined) {
         ElMessage.error(res.message);
@@ -448,6 +455,9 @@ export default {
         init();
       });
     });
+
+    // 组件被销毁之前，关闭socket连接
+    onBeforeUnmount(() => onClose());
 
     return {
       data,
