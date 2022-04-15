@@ -435,7 +435,7 @@ export default {
       // 流程中如果有输出节点，则需建立websocket连接
       const outs = data.nodeList.filter(d => "output" === d.nodeType.type);
       outs.forEach(d => {
-        onOpen(d.id, (s) => d.output = s);
+        onOpen(d.id, (s) => d.output = JSON.parse(s));
       });
       // 运行流
       const res = await executeNodeData(props.flowId);
