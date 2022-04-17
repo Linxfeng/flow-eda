@@ -8,7 +8,7 @@
     </div>
     <div class="detail-body">
       <div v-if="node.output" class="item">
-        <json-viewer :expand-depth=3 :value="node.output" boxed copyable/>
+        <json-viewer :expand-depth=3 :value="node.output" copyable/>
         <hr/>
       </div>
       <el-form ref="detailFormRef" :model="detailForm" :rules="rules" class="row" label-position="top">
