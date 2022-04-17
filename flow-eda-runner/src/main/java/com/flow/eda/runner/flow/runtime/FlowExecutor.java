@@ -49,6 +49,7 @@ public class FlowExecutor {
             Document msg = new Document();
             msg.putAll(p);
             msg.remove("input");
+            msg.remove("payload");
             flowWebSocket.sendMessage(currentNode.getId(), msg.toJson());
         }
     }

@@ -20,8 +20,6 @@ public abstract class AbstractNode implements Node {
         if (params != null) {
             this.payload = params.get("payload", Document.class);
             this.input = params.get("input", Document.class);
-            params.remove("payload");
-            params.remove("input");
         } else {
             this.payload = null;
             this.input = null;
