@@ -81,6 +81,9 @@ export default {
 
     // 校验输入的字符串是否是json格式
     const checkJson = (rule, value, callback) => {
+      if (!value) {
+        callback();
+      }
       if (value.startsWith("{") && value.endsWith("}")) {
         try {
           JSON.parse(value);
