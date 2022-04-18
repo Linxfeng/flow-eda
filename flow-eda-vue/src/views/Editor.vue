@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%">
-    <toolbar @executeFlow="executeFlow" @saveData="saveData"/>
+    <toolbar @deleteNode="deleteNode(data.selectedNode)" @executeFlow="executeFlow" @saveData="saveData"/>
     <div class="flow_region">
       <div class="nodes-wrap">
         <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
@@ -329,14 +329,20 @@ export default {
       });
     };
 
-    const deleteNode = () => {
-      if (data.selectedNode) {
-        data.nodeList.map((v, index) => {
-          if (v.id === data.selectedNode.id) {
-            data.nodeList.splice(index, 1);
-            jsPlumb.remove(v.id);
-            return v;
-          }
+    // 删除当前节点
+    const deleteNode = (node) => {
+      if (node) {
+        ElMessageBox.confirm("确认删除当前节点？", "提示", {
+          type: "warning",
+        }).then(() => {
+          data.nodeList.map((v, index) => {
+            if (v.id === node.id) {
+              data.nodeList.splice(index, 1);
+              jsPlumb.remove(v.id);
+              return v;
+            }
+          });
+        }).catch(() => {
         });
       }
     };

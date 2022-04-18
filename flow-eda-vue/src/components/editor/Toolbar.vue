@@ -72,9 +72,14 @@ export default {
       });
     };
 
+    const del = () => {
+      context.emit("deleteNode");
+    }
+
     return {
       save,
-      run
+      run,
+      del
     }
   }
 };
