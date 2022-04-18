@@ -4,6 +4,7 @@ import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.runner.flow.node.http.HttpNode;
 import com.flow.eda.runner.flow.node.output.OutputNode;
+import com.flow.eda.runner.flow.node.parser.ParserNode;
 import com.flow.eda.runner.flow.node.start.StartNode;
 import com.flow.eda.runner.flow.node.timer.TimerNode;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public enum NodeTypeEnum {
     TIMER("timer", TimerNode.class),
     HTTP("http", HttpNode.class),
     OUTPUT("output", OutputNode.class),
+    PARSER("parser", ParserNode.class),
     ;
     private final String type;
     private final Class<? extends Node> clazz;
