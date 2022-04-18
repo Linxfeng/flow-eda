@@ -1,15 +1,5 @@
 <template>
   <div class="toolbar">
-    <el-tooltip content="撤销" placement="bottom">
-      <span class="command" @click="undo">
-      <span class="icon-lx-undo"/>
-      </span>
-    </el-tooltip>
-    <el-tooltip content="重做" placement="bottom">
-      <span class="command" @click="redo">
-      <span class="icon-lx-redo"/>
-      </span>
-    </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="保存" placement="bottom">
       <span class="command" @click="save">
@@ -49,6 +39,17 @@
       </span>
     </el-tooltip>
     <span class="separator"/>
+    <el-tooltip content="全屏" placement="bottom">
+      <span class="command" @click="zoomFull">
+      <span class="icon-lx-zoomFull"/>
+      </span>
+    </el-tooltip>
+    <el-tooltip content="重置" placement="bottom">
+      <span class="command" @click="zoomReset">
+      <span class="icon-lx-zoomReset"/>
+      </span>
+    </el-tooltip>
+    <span class="separator"/>
   </div>
 </template>
 
@@ -84,12 +85,32 @@ export default {
       context.emit("deleteNode");
     };
 
+    const zoomIn = () => {
+      context.emit("zoomNode", "in");
+    };
+
+    const zoomOut = () => {
+      context.emit("zoomNode", "out");
+    };
+
+    const zoomFull = () => {
+      context.emit("zoomNode", "full");
+    };
+
+    const zoomReset = () => {
+      context.emit("zoomNode", "reset");
+    };
+
     return {
       save,
       run,
       copy,
       paste,
-      del
+      del,
+      zoomIn,
+      zoomOut,
+      zoomFull,
+      zoomReset
     }
   }
 };

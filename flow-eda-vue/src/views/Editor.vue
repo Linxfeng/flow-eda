@@ -2,7 +2,8 @@
   <div style="height: 100%">
     <toolbar @copyNode="copyNode(data.selectedNode)" @deleteNode="deleteNode(data.selectedNode)"
              @executeFlow="executeFlow"
-             @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"/>
+             @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"
+             @zoomNode="zoomNode"/>
     <div class="flow_region">
       <div class="nodes-wrap">
         <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
@@ -377,13 +378,40 @@ export default {
     const keyupNode = (e, node) => {
       if (e.ctrlKey === false && e.key === 'Delete') {
         deleteNode(node);
-      }
-      if (e.ctrlKey && e.key === 'c') {
+      } else if (e.ctrlKey && e.key === 'c') {
         copyNode(node);
-      }
-      if (e.ctrlKey && e.key === 'v') {
+      } else if (e.ctrlKey && e.key === 'v') {
         pasteNode(node);
       }
+    };
+
+    // 界面缩放，以绘制面板原点为基准，每次缩放25%
+    const zoomNode = (e) => {
+      const scale = jsPlumb.getZoom();
+      const max = jsPlumb.pan.getMaxZoom();
+      const min = jsPlumb.pan.getMinZoom();
+      let temp = scale;
+      if (e === 'in') {
+        if (scale < max) {
+          temp = scale + (scale * 0.25);
+        }
+      } else if (e === 'out') {
+        if (scale > min) {
+          temp = scale - (scale * 0.25);
+        }
+      } else if (e === 'full') {
+
+      } else if (e === 'reset') {
+        temp = 1;
+      }
+      // 限制缩放范围
+      if (temp > max) {
+        temp = max;
+      } else if (temp < min) {
+        temp = min;
+      }
+      jsPlumb.setZoom(temp);
+      document.getElementById("flow").style.transform = `matrix(${temp}, 0, 0, ${temp}, 0, 0)`;
     };
 
     //更改连线状态
@@ -515,6 +543,7 @@ export default {
       copyNode,
       pasteNode,
       deleteNode,
+      zoomNode,
       keyupNode,
       changeLineState,
       showNodeDetail,
