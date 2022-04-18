@@ -1,6 +1,8 @@
 <template>
   <div style="height: 100%">
-    <toolbar @deleteNode="deleteNode(data.selectedNode)" @executeFlow="executeFlow" @saveData="saveData"/>
+    <toolbar @copyNode="copyNode(data.selectedNode)" @deleteNode="deleteNode(data.selectedNode)"
+             @executeFlow="executeFlow"
+             @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"/>
     <div class="flow_region">
       <div class="nodes-wrap">
         <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
@@ -16,7 +18,7 @@
         </div>
       </div>
       <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop" @drop="drop"
-           @keyup.delete="deleteNode(data.selectedNode)">
+           @keyup="keyupNode($event,data.selectedNode)">
         <div id="flow">
           <div v-show="auxiliaryLine.isShowXLine"
                :style="{width: auxiliaryLinePos.width, top:auxiliaryLinePos.y + 'px', left: auxiliaryLinePos.offsetX + 'px'}"
@@ -330,6 +332,28 @@ export default {
       });
     };
 
+    // 剪切板
+    let clipboard;
+
+    // 复制节点
+    const copyNode = (node) => {
+      clipboard = node;
+    };
+
+    // 粘贴节点
+    const pasteNode = () => {
+      if (clipboard) {
+        // 从剪切板复制一份临时节点对象
+        const temp = JSON.parse(JSON.stringify(clipboard));
+        temp.id = generateUniqueID(8);
+        // 粘贴的节点向右下方向各移动15px,30px
+        temp.left = parseFloat(temp.left.slice(0, temp.left.length - 2)) + 30 + 'px';
+        temp.top = parseFloat(temp.top.slice(0, temp.top.length - 2)) + 15 + 'px';
+        addNode(temp);
+        clipboard = temp;
+      }
+    };
+
     // 删除当前节点
     const deleteNode = (node) => {
       if (node) {
@@ -343,8 +367,22 @@ export default {
               return v;
             }
           });
+          data.selectedNode = undefined;
         }).catch(() => {
         });
+      }
+    };
+
+    // 键盘事件操作节点
+    const keyupNode = (e, node) => {
+      if (e.ctrlKey === false && e.key === 'Delete') {
+        deleteNode(node);
+      }
+      if (e.ctrlKey && e.key === 'c') {
+        copyNode(node);
+      }
+      if (e.ctrlKey && e.key === 'v') {
+        pasteNode(node);
       }
     };
 
@@ -474,7 +512,10 @@ export default {
       drag,
       drop,
       allowDrop,
+      copyNode,
+      pasteNode,
       deleteNode,
+      keyupNode,
       changeLineState,
       showNodeDetail,
       updateNode,

@@ -72,13 +72,23 @@ export default {
       });
     };
 
+    const copy = () => {
+      context.emit("copyNode");
+    };
+
+    const paste = () => {
+      context.emit("pasteNode");
+    };
+
     const del = () => {
       context.emit("deleteNode");
-    }
+    };
 
     return {
       save,
       run,
+      copy,
+      paste,
       del
     }
   }
