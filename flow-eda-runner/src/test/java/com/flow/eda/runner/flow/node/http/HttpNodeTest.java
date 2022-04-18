@@ -7,13 +7,12 @@ import org.junit.jupiter.api.Test;
 class HttpNodeTest {
 
     @Test
-    void executeHttpRequest() {
+    void run() {
         Document args = new Document();
         args.append("url", "http://localhost:8081/api/v1/node/type");
         args.append("method", "get");
-        args.append("params", new Document("limit", "3"));
-        args.append("header", new Document("Accept", "application/json"));
+        args.append("header", "Accept:application/json");
         HttpNode httpNode = new HttpNode(args);
-        httpNode.run(Assertions::assertNotNull);
+        httpNode.run(p -> Assertions.assertTrue(p.containsKey("httpResult")));
     }
 }

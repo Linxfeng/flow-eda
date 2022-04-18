@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class TimerNodeTest {
 
     @Test
-    void executeScheduledTask() {
+    void run() {
         Document params = new Document("period", "1,SECONDS").append("times", "3");
         TimerNode timerNode = new TimerNode(params);
         final int[] n = {0};
