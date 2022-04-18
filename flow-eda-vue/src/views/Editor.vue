@@ -15,7 +15,8 @@
           </div>
         </div>
       </div>
-      <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop" @drop="drop" @keyup.delete="deleteNode">
+      <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop" @drop="drop"
+           @keyup.delete="deleteNode(data.selectedNode)">
         <div id="flow">
           <div v-show="auxiliaryLine.isShowXLine"
                :style="{width: auxiliaryLinePos.width, top:auxiliaryLinePos.y + 'px', left: auxiliaryLinePos.offsetX + 'px'}"
@@ -24,7 +25,7 @@
                :style="{height: auxiliaryLinePos.height, left:auxiliaryLinePos.x + 'px', top: auxiliaryLinePos.offsetY + 'px'}"
                class="auxiliary-line-y"></div>
           <flowNode v-for="item in data.nodeList" :id="item.id" :key="item.id" :node="item"
-                    @changeLineState="changeLineState" @deleteNode="deleteNode" @showNodeDetail="showNodeDetail"/>
+                    @changeLineState="changeLineState" @showNodeDetail="showNodeDetail"/>
         </div>
       </div>
       <nodeDetail v-if="data.selectedNode" :node="data.selectedNode" @showNodeDetail="showNodeDetail"
