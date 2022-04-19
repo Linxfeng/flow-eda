@@ -1,51 +1,51 @@
 <template>
-  <div class="toolbar" @command="handleTags">
+  <div class="toolbar">
     <span class="separator"/>
     <el-tooltip content="保存" placement="bottom">
-      <span class="command" @click="save">
+      <span class="command" @click="handle('save')">
       <span class="icon-lx-save"/>
       </span>
     </el-tooltip>
     <el-tooltip content="运行" placement="bottom">
-      <span class="command" @click="run">
+      <span class="command" @click="handle('run')">
       <span class="icon-lx-run"/>
       </span>
     </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="复制" placement="bottom">
-      <span class="command" @click="copy">
+      <span class="command" @click="handle('copy')">
       <span class="icon-lx-copy"/>
       </span>
     </el-tooltip>
     <el-tooltip content="粘贴" placement="bottom">
-      <span class="command" @click="paste">
+      <span class="command" @click="handle('paste')">
       <span class="icon-lx-paste"/>
       </span>
     </el-tooltip>
     <el-tooltip content="删除" placement="bottom">
-      <span class="command" @click="del">
+      <span class="command" @click="handle('del')">
       <span class="icon-lx-delete"/>
       </span>
     </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="放大" placement="bottom">
-      <span class="command" @click="zoomIn">
+      <span class="command" @click="handle('zoom-in')">
       <span class="icon-lx-zoomIn"/>
       </span>
     </el-tooltip>
     <el-tooltip content="缩小" placement="bottom">
-      <span class="command" @click="zoomOut">
+      <span class="command" @click="handle('zoom-out')">
       <span class="icon-lx-zoomOut"/>
       </span>
     </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="全屏" placement="bottom">
-      <span class="command" @click="zoomFull">
+      <span class="command" @click="handle('zoom-full')">
       <span class="icon-lx-zoomFull"/>
       </span>
     </el-tooltip>
     <el-tooltip content="重置" placement="bottom">
-      <span class="command" @click="zoomReset">
+      <span class="command" @click="handle('zoom-reset')">
       <span class="icon-lx-zoomReset"/>
       </span>
     </el-tooltip>
@@ -60,10 +60,6 @@ export default {
   name: "Toolbar",
   setup(props, context) {
 
-    const save = () => {
-      context.emit("saveData");
-    };
-
     const run = () => {
       ElMessageBox.confirm("确认运行本流程？这将会保存本流程并覆盖之前的数据", "提示", {
         type: "warning",
@@ -73,44 +69,24 @@ export default {
       });
     };
 
-    const copy = () => {
-      context.emit("copyNode");
-    };
-
-    const paste = () => {
-      context.emit("pasteNode");
-    };
-
-    const del = () => {
-      context.emit("deleteNode");
-    };
-
-    const zoomIn = () => {
-      context.emit("zoomNode", "in");
-    };
-
-    const zoomOut = () => {
-      context.emit("zoomNode", "out");
-    };
-
-    const zoomFull = () => {
-      context.emit("zoomNode", "full");
-    };
-
-    const zoomReset = () => {
-      context.emit("zoomNode", "reset");
+    const handle = (command) => {
+      if (command.startsWith("zoom")) {
+        context.emit("zoomNode", command.split('-')[1]);
+      } else if (command === "save") {
+        context.emit("saveData");
+      } else if (command === "run") {
+        run();
+      } else if (command === "copy") {
+        context.emit("copyNode");
+      } else if (command === "paste") {
+        context.emit("pasteNode");
+      } else if (command === "del") {
+        context.emit("deleteNode");
+      }
     };
 
     return {
-      save,
-      run,
-      copy,
-      paste,
-      del,
-      zoomIn,
-      zoomOut,
-      zoomFull,
-      zoomReset
+      handle
     }
   }
 };
