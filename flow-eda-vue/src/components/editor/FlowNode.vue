@@ -47,7 +47,10 @@ export default {
       data.mouseEnter = false
     };
 
+    // 选中节点
     const setActive = (e) => {
+      // 默认聚焦一下编辑器面板，使键盘事件生效
+      document.getElementById("flowWrap").focus();
       if (e.ctrlKey) {
         data.isSelected = !data.isSelected;
         return false;
