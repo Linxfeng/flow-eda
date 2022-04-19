@@ -151,18 +151,5 @@ export default {
     margin: 4px;
     border-left: 2px solid #e4e4e4;
   }
-
-  .icon-select.disable {
-    background: #EEE;
-  }
-
-  .disable {
-    color: rgba(0, 0, 0, 0.25);
-
-    &:hover {
-      border: 1px solid rgba(2, 2, 2, 0);
-      cursor: default;
-    }
-  }
 }
 </style>

@@ -1,17 +1,15 @@
 <template>
-  <div id="node" ref="node"
-       v-click-outside="setNotActive"
+  <div id="node" v-click-outside="setNotActive"
        :class="[(data.isActive || data.isSelected) ? 'active' : '']"
        :style="{top: node.top, left: node.left, background: node.nodeType.background}"
        class="node-item"
        @click="setActive"
        @mouseenter="showAnchor"
        @mouseleave="hideAnchor">
-    <div class="log-wrap">
+    <div class="node-svg">
       <img :src="node.nodeType.svg" alt="" style="padding: 4px">
     </div>
-    <div class="nodeName">{{ node.nodeName }}</div>
-    <!--节点选中时四周边框样式-->
+    <div class="node-name">{{ node.nodeName }}</div>
     <div v-show="data.mouseEnter" class="node-anchor anchor-top"></div>
     <div v-show="data.mouseEnter" class="node-anchor anchor-right"></div>
     <div v-show="data.mouseEnter" class="node-anchor anchor-bottom"></div>
@@ -86,9 +84,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@labelColor: #409eff;
 @nodeSize: 20px;
-@viewSize: 10px;
 .node-item {
   position: absolute;
   display: flex;
@@ -110,13 +106,13 @@ export default {
     }
   }
 
-  .log-wrap {
+  .node-svg {
     width: 40px;
     height: 40px;
     border-right: 1px solid #b7b6b6;
   }
 
-  .nodeName {
+  .node-name {
     font-size: 14px;
     flex-grow: 1;
     width: 0;
@@ -165,7 +161,7 @@ export default {
 }
 
 .active {
-  border: 1px dashed @labelColor;
+  border: 1px dashed #409eff;
   box-shadow: 0 5px 9px 0 rgba(0, 0, 0, 0.5);
 }
 </style>
