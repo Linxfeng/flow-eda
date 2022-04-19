@@ -4,11 +4,11 @@
              @executeFlow="executeFlow"
              @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"
              @zoomNode="zoomNode"/>
-    <div id="flow-content" class="flow_region">
+    <div id="flow-content" class="flow-content">
       <div class="nodes-wrap">
         <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
              draggable="true" @dragstart="drag(item)" @mousemove="moveDes($event,item)" @mouseout="hideDes(item)">
-          <div class="log">
+          <div class="svg">
             <img :src="item.svg" alt="" style="padding: 4px">
           </div>
           <div class="name">{{ item.typeName }}</div>
@@ -39,18 +39,18 @@
 
 <script>
 import {nextTick, reactive, onMounted, onBeforeUnmount} from 'vue';
-import {jsplumbSetting} from '../components/editor/jsplumbConfig.js';
-import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../components/editor/jsplumbConfig";
+import {jsplumbSetting} from '../utils/jsplumbConfig.js';
+import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../utils/jsplumbConfig";
+import {ElMessage, ElMessageBox} from "element-plus";
 import {generateUniqueID} from "../utils/util.js";
 import {getNodeTypes} from "../api/nodeType.js";
 import {getNodeData, setNodeData, executeNodeData} from "../api/nodeData.js";
-import {ElMessage, ElMessageBox} from "element-plus";
+import {onOpen, onClose} from "../utils/websocket.js";
 import jsplumb from "jsplumb";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
 import nodeDetail from "../components/editor/NodeDetail.vue";
-import {onOpen, onClose} from "../utils/websocket.js";
 import screenfull from "screenfull";
 
 export default {
@@ -547,7 +547,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.flow_region {
+.flow-content {
   display: flex;
   width: 100%;
   height: 94%;
@@ -574,7 +574,7 @@ export default {
         cursor: grabbing;
       }
 
-      .log {
+      .svg {
         width: 40px;
         height: 40px;
       }

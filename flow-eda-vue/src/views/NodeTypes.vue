@@ -60,7 +60,6 @@
 </template>
 
 <script>
-
 import {reactive, ref} from "vue";
 import {addNodeType, deleteNodeType, getNodeTypes, updateNodeType} from "../api/nodeType.js";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -68,7 +67,6 @@ import {ElMessage, ElMessageBox} from "element-plus";
 export default {
   name: "NodeTypes",
   setup() {
-
     const params = reactive({
       name: undefined,
       page: 1
@@ -214,27 +212,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.handle-box {
-  margin-bottom: 20px;
-}
-
-.handle-input {
-  width: 300px;
-  display: inline-block;
-}
-
-.table {
-  width: 100%;
-  font-size: 14px;
-}
-
-.red {
-  color: #ff0000;
-}
-
-.mr10 {
-  margin-right: 10px;
-}
-</style>
