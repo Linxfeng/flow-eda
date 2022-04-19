@@ -50,7 +50,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .sidebar {
   display: block;
   position: absolute;
@@ -58,17 +58,17 @@ export default {
   top: 70px;
   bottom: 0;
   overflow-y: scroll;
-}
 
-.sidebar::-webkit-scrollbar {
-  width: 0;
+  ::-webkit-scrollbar {
+    width: 0;
+  }
+
+  > ul {
+    height: 100%;
+  }
 }
 
 .sidebar-el-menu:not(.el-menu--collapse) {
   width: 200px;
-}
-
-.sidebar > ul {
-  height: 100%;
 }
 </style>

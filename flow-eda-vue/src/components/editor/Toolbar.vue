@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar">
+  <div class="toolbar" @command="handleTags">
     <span class="separator"/>
     <el-tooltip content="保存" placement="bottom">
       <span class="command" @click="save">

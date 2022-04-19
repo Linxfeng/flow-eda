@@ -1,7 +1,7 @@
 <template>
-  <div class="tags" v-if="showTags">
+  <div v-if="showTags" class="tags">
     <ul>
-      <li class="tags-li" v-for="(item,index) in tagsList" :class="{'active': isActive(item.path)}" :key="index">
+      <li v-for="(item,index) in tagsList" :key="index" :class="{'active': isActive(item.path)}" class="tags-li">
         <router-link :to="item.path" class="tags-li-title">{{ item.title }}</router-link>
         <span class="tags-li-icon" @click="closeTags(index)"><i class="el-icon-close"></i></span>
       </li>
@@ -15,7 +15,7 @@
         <template #dropdown>
           <el-dropdown-menu size="small">
             <el-dropdown-item command="other">关闭其他</el-dropdown-item>
-            <el-dropdown-item command="all">关闭所有</el-dropdown-item>
+            <el-dropdown-item command="me">关闭当前</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -32,6 +32,7 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
+
     const isActive = (path) => {
       return path === route.fullPath;
     };
@@ -50,7 +51,10 @@ export default {
       if (item) {
         delItem.path === route.fullPath && router.push(item.path);
       } else {
-        router.push("/");
+        if (tagsList.value.length === 0) {
+          tagsList.value[0] = delItem;
+          router.push(delItem.path);
+        }
       }
     };
 
@@ -71,15 +75,17 @@ export default {
       }
     };
     setTags(route);
+
     onBeforeRouteUpdate((to) => {
       setTags(to);
     });
 
-    // 关闭全部标签
-    const closeAll = () => {
-      store.commit("clearTags");
-      router.push("/");
+    // 关闭当前标签
+    const closeMe = () => {
+      const index = tagsList.value.findIndex(i => i.path === route.fullPath);
+      closeTags(index);
     };
+
     // 关闭其他标签
     const closeOther = () => {
       const curItem = tagsList.value.filter((item) => {
@@ -87,14 +93,15 @@ export default {
       });
       store.commit("closeTagsOther", curItem);
     };
+
     const handleTags = (command) => {
-      command === "other" ? closeOther() : closeAll();
+      command === "other" ? closeOther() : closeMe();
     };
 
     return {
-      isActive,
       tagsList,
       showTags,
+      isActive,
       closeTags,
       handleTags,
     };
@@ -103,7 +110,7 @@ export default {
 </script>
 
 
-<style>
+<style lang="less">
 .tags {
   position: relative;
   height: 30px;
@@ -111,12 +118,12 @@ export default {
   background: #fff;
   padding-right: 120px;
   box-shadow: 0 5px 10px #ddd;
-}
 
-.tags ul {
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
+  ul {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .tags-li {
@@ -133,17 +140,7 @@ export default {
   padding: 0 5px 0 12px;
   vertical-align: middle;
   color: #666;
-  -webkit-transition: all 0.3s ease-in;
-  -moz-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in;
-}
-
-.tags-li:not(.active):hover {
-  background: #f8f8f8;
-}
-
-.tags-li.active {
-  color: #fff;
 }
 
 .tags-li-title {
