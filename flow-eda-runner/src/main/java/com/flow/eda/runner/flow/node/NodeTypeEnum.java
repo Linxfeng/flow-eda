@@ -2,6 +2,7 @@ package com.flow.eda.runner.flow.node;
 
 import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InternalException;
+import com.flow.eda.runner.flow.node.delay.DelayNode;
 import com.flow.eda.runner.flow.node.http.HttpNode;
 import com.flow.eda.runner.flow.node.output.OutputNode;
 import com.flow.eda.runner.flow.node.parser.ParserNode;
@@ -18,6 +19,7 @@ public enum NodeTypeEnum {
     HTTP("http", HttpNode.class),
     OUTPUT("output", OutputNode.class),
     PARSER("parser", ParserNode.class),
+    DELAY("delay", DelayNode.class),
     ;
     private final String type;
     private final Class<? extends Node> clazz;
