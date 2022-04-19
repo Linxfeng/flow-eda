@@ -4,7 +4,7 @@
              @executeFlow="executeFlow"
              @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"
              @zoomNode="zoomNode"/>
-    <div class="flow_region">
+    <div id="flow-content" class="flow_region">
       <div class="nodes-wrap">
         <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
              draggable="true" @dragstart="drag(item)" @mousemove="moveDes($event,item)" @mouseout="hideDes(item)">
@@ -51,6 +51,7 @@ import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
 import nodeDetail from "../components/editor/NodeDetail.vue";
 import {onOpen, onClose} from "../utils/websocket.js";
+import screenfull from "screenfull";
 
 export default {
   name: "Editor",
@@ -241,22 +242,16 @@ export default {
     const initPanZoom = () => {
       const mainContainer = jsPlumb.getContainer();
       const mainContainerWrap = mainContainer.parentNode;
+      // 缩放时设置jsPlumb的缩放比率
       const pan = panzoom(mainContainer, {
         smoothScroll: false,
         bounds: true,
         zoomDoubleClickSpeed: 1,
         minZoom: 0.5,
-        maxZoom: 2,
-        //设置滚动缩放的组合键，默认不需要组合键
-        beforeWheel: () => {
-        },
-        beforeMouseDown: function (e) {
-          return e.ctrlKey;
-        }
+        maxZoom: 2
       });
       jsPlumb.mainContainerWrap = mainContainerWrap;
       jsPlumb.pan = pan;
-      // 缩放时设置jsPlumb的缩放比率
       pan.on("zoom", e => {
         const {x, y, scale} = e.getTransform();
         jsPlumb.setZoom(scale);
@@ -293,7 +288,7 @@ export default {
 
     const drop = (event) => {
       const containerRect = jsPlumb.getContainer().getBoundingClientRect();
-      const scale = getScale();
+      const scale = jsPlumb.getZoom();
       let left = (event.pageX - containerRect.left - 60) / scale;
       let top = (event.pageY - containerRect.top - 20) / scale;
       let temp = {
@@ -309,19 +304,6 @@ export default {
     // dragover取消默认事件后，才会触发drag事件
     const allowDrop = (event) => {
       event.preventDefault();
-    };
-
-    const getScale = () => {
-      let scale1;
-      if (jsPlumb.pan) {
-        const {scale} = jsPlumb.pan.getTransform();
-        scale1 = scale;
-      } else {
-        const matrix = window.getComputedStyle(jsPlumb.getContainer()).transform;
-        scale1 = matrix.split(", ")[3] * 1;
-      }
-      jsPlumb.setZoom(scale1);
-      return scale1;
     };
 
     const addNode = (temp) => {
@@ -390,7 +372,7 @@ export default {
       const scale = jsPlumb.getZoom();
       const max = jsPlumb.pan.getMaxZoom();
       const min = jsPlumb.pan.getMinZoom();
-      let temp = scale;
+      let temp;
       if (e === 'in') {
         if (scale < max) {
           temp = scale + (scale * 0.25);
@@ -400,9 +382,16 @@ export default {
           temp = scale - (scale * 0.25);
         }
       } else if (e === 'full') {
-
+        if (!screenfull.isEnabled) {
+          ElMessage.warning("您的浏览器不支持全屏");
+          return false;
+        }
+        screenfull.request(document.getElementById("flow-content"));
       } else if (e === 'reset') {
         temp = 1;
+      }
+      if (!temp) {
+        return;
       }
       // 限制缩放范围
       if (temp > max) {
@@ -411,7 +400,7 @@ export default {
         temp = min;
       }
       jsPlumb.setZoom(temp);
-      document.getElementById("flow").style.transform = `matrix(${temp}, 0, 0, ${temp}, 0, 0)`;
+      document.getElementById("flow").style.transform = "scale(" + temp + ")";
     };
 
     //更改连线状态
@@ -664,5 +653,9 @@ export default {
   to {
     stroke-dashoffset: 0;
   }
+}
+
+:not(:root):fullscreen::backdrop {
+  background: white;
 }
 </style>
