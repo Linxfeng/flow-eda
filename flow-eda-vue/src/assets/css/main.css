@@ -65,105 +65,10 @@ a {
     text-align: right;
 }
 
-.plugins-tips {
-    padding: 20px 10px;
-    margin-bottom: 20px;
-}
-
 .el-button + .el-tooltip {
     margin-left: 10px;
 }
 
 .el-table tr:hover {
     background: #f6faff;
-}
-
-.mgb20 {
-    margin-bottom: 20px;
-}
-
-.move-enter-active,
-.move-leave-active {
-    transition: opacity .1s ease;
-}
-
-.move-enter-from,
-.move-leave-to {
-    opacity: 0;
-}
-
-.form-box {
-    width: 600px;
-}
-
-.form-box .line {
-    text-align: center;
-}
-
-.el-time-panel__content::after,
-.el-time-panel__content::before {
-    margin-top: -7px;
-}
-
-.el-time-spinner__wrapper .el-scrollbar__wrap:not(.el-scrollbar__wrap--hidden-default) {
-    padding-bottom: 0;
-}
-
-.pure-button {
-    width: 150px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    color: #fff;
-    border-radius: 3px;
-}
-
-.g-core-image-corp-container .info-aside {
-    height: 45px;
-}
-
-.el-upload--text {
-    background-color: #fff;
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    box-sizing: border-box;
-    width: 360px;
-    height: 180px;
-    text-align: center;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.el-upload--text .el-icon-upload {
-    font-size: 67px;
-    color: #97a8be;
-    margin: 40px 0 16px;
-    line-height: 50px;
-}
-
-.el-upload--text {
-    color: #97a8be;
-    font-size: 14px;
-    text-align: center;
-}
-
-.el-upload--text em {
-    font-style: normal;
-}
-
-.ql-container {
-    min-height: 400px;
-}
-
-.ql-snow .ql-tooltip {
-    transform: translateX(118px) translateY(10px) !important;
-}
-
-.editor-btn {
-    margin-top: 20px;
-}
-
-.v-note-wrapper .v-note-panel {
-    min-height: 500px;
 }
