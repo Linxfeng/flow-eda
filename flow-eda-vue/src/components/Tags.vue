@@ -157,6 +157,11 @@ export default {
   color: #fff;
 }
 
+.tags-li.active {
+  border: 1px solid #409EFF;
+  background-color: #409EFF;
+}
+
 .tags-close-box {
   position: absolute;
   right: 0;
