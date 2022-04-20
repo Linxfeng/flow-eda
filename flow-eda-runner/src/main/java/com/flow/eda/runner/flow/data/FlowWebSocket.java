@@ -24,11 +24,8 @@ public class FlowWebSocket {
     /** 每个流程id对应一个session */
     private static final Map<String, Session> SESSION_POOL = new ConcurrentHashMap<>();
 
-    private String flowId;
-
     @OnOpen
     public void onOpen(Session session, @PathParam("id") String id) {
-        this.flowId = id;
         WEBSOCKETS.add(this);
         SESSION_POOL.put(id, session);
         log.info("New client id:{} connected, the current total clients:{}", id, WEBSOCKETS.size());
@@ -37,10 +34,7 @@ public class FlowWebSocket {
     @OnClose
     public void onClose() {
         WEBSOCKETS.remove(this);
-        log.info(
-                "Client id:{} disconnected, the current total clients:{}",
-                this.flowId,
-                WEBSOCKETS.size());
+        log.info("Client disconnected, the current total clients:{}", WEBSOCKETS.size());
     }
 
     @OnMessage
@@ -49,13 +43,15 @@ public class FlowWebSocket {
     }
 
     public void sendMessage(String flowId, String message) {
-        Session session = SESSION_POOL.get(flowId);
-        if (session != null) {
-            try {
-                session.getAsyncRemote().sendText(message);
-            } catch (Exception e) {
-                log.error("Send websocket message failed:{}", e.getMessage());
+        if (SESSION_POOL.get(flowId) == null) {
+            return;
+        }
+        try {
+            synchronized (SESSION_POOL.get(flowId)) {
+                SESSION_POOL.get(flowId).getBasicRemote().sendText(message);
             }
+        } catch (Exception e) {
+            log.error("Send websocket message failed:{}", e.getMessage());
         }
     }
 }
