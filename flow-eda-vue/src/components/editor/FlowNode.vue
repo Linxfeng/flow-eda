@@ -10,6 +10,15 @@
       <img :src="node.nodeType.svg" alt="" style="padding: 4px">
     </div>
     <div class="node-name">{{ node.nodeName }}</div>
+    <div v-if="node.status === 'RUNNING'" class="node-status">
+      <img alt="运行中" src="src/assets/svg/status/running.svg" title="运行中...">
+    </div>
+    <div v-if="node.status === 'FINISHED'" class="node-status">
+      <img alt="运行完成" src="src/assets/svg/status/finished.svg" title="运行完成">
+    </div>
+    <div v-if="node.status === 'FAILED'" class="node-status">
+      <img :title="node.error" alt="运行失败" src="src/assets/svg/status/failed.svg">
+    </div>
     <div v-show="data.mouseEnter" class="node-anchor anchor-top"></div>
     <div v-show="data.mouseEnter" class="node-anchor anchor-right"></div>
     <div v-show="data.mouseEnter" class="node-anchor anchor-bottom"></div>
@@ -34,7 +43,7 @@ export default {
     const data = reactive({
       mouseEnter: false,
       isActive: false,
-      isSelected: false,
+      isSelected: false
     });
 
     const showAnchor = () => {
@@ -120,6 +129,12 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align: center;
+  }
+
+  .node-status {
+    position: absolute;
+    top: -6px;
+    left: 110px;
   }
 
   .node-anchor {
