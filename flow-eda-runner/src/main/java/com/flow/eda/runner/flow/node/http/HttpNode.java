@@ -39,35 +39,41 @@ public class HttpNode extends AbstractNode {
 
     @Override
     public void run(NodeFunction function) {
-        System.out.println("执行HTTP节点！");
-        Document res = this.executeHttpRequest();
-        function.callback(output().append("httpResult", res));
-    }
-
-    private Document executeHttpRequest() {
         try {
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpRequestExpand request = new HttpRequestExpand(url, method);
-            // 添加请求header
-            if (header != null) {
-                for (String h : header.split(",")) {
-                    request.addHeader(h.split(":")[0].trim(), h.split(":")[1].trim());
-                }
-            }
-            // 添加请求内容
-            if (body != null) {
-                request.setEntity(new StringEntity(body, StandardCharsets.UTF_8));
-            }
-            // 发起请求
-            CloseableHttpResponse response = httpClient.execute(request);
-            // 获取结果并返回
-            if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                String res = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-                return new ObjectMapper().readValue(res, Document.class);
-            }
+            System.out.println("执行HTTP节点！");
+            Document res = this.executeHttpRequest();
+            setStatus(Status.FINISHED);
+            function.callback(output().append("httpResult", res));
         } catch (Exception e) {
             throw new InternalException(e.getMessage());
         }
-        return null;
+    }
+
+    private Document executeHttpRequest() throws Exception {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpRequestExpand request = new HttpRequestExpand(url, method);
+        // 添加请求header
+        if (header != null) {
+            for (String h : header.split(",")) {
+                request.addHeader(h.split(":")[0].trim(), h.split(":")[1].trim());
+            }
+        }
+        // 添加请求内容
+        if (body != null) {
+            request.setEntity(new StringEntity(body, StandardCharsets.UTF_8));
+        }
+        // 发起请求
+        CloseableHttpResponse response = httpClient.execute(request);
+        // 获取结果并返回
+        if (response != null) {
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                String res = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+                return new ObjectMapper().readValue(res, Document.class);
+            }
+            throw new Exception(
+                    "The http request failed.status code "
+                            + response.getStatusLine().getStatusCode());
+        }
+        throw new Exception("The http request has no response.");
     }
 }

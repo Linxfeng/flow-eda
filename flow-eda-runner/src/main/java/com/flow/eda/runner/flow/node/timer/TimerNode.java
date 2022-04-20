@@ -42,6 +42,7 @@ public class TimerNode extends AbstractNode {
                         } else {
                             // 停止当前定时线程
                             executor.shutdown();
+                            setStatus(Status.FINISHED);
                         }
                     },
                     0,

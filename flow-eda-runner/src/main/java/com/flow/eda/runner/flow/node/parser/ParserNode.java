@@ -33,6 +33,7 @@ public class ParserNode extends AbstractNode {
         }
         result.append("params", getInput());
         result.putAll(output());
+        setStatus(Status.FINISHED);
         callback.callback(result);
     }
 

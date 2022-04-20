@@ -11,6 +11,8 @@ public abstract class AbstractNode implements Node {
     /** 输入参数，由上个节点传递至此 */
     private final Document input;
 
+    private Status status = Status.RUNNING;
+
     /**
      * 抽象类含参构造，用于约束子类必须有一个含参构造
      *
@@ -24,6 +26,15 @@ public abstract class AbstractNode implements Node {
             this.payload = null;
             this.input = null;
         }
+    }
+
+    @Override
+    public Status status() {
+        return this.status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Document getInput() {

@@ -1,5 +1,6 @@
 package com.flow.eda.runner.flow.node.delay;
 
+import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
 import org.bson.Document;
@@ -23,8 +24,10 @@ public class DelayNode extends AbstractNode {
         try {
             System.out.println("执行延时器节点！");
             unit.sleep(delay);
+            setStatus(Status.FINISHED);
             callback.callback(output());
-        } catch (InterruptedException ignored) {
+        } catch (Exception e) {
+            throw new InternalException(e.getMessage());
         }
     }
 }
