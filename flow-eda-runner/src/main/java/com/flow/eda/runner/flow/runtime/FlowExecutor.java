@@ -43,35 +43,27 @@ public class FlowExecutor {
         Node nodeInstance = getInstance(currentNode);
         sendNodeStatus(currentNode.getId(), new Document("status", nodeInstance.status().name()));
         try {
-            nodeInstance.run((p) -> runNext(currentNode, p));
+            nodeInstance.run((p) -> runNext(currentNode, nodeInstance, p));
         } catch (Exception e) {
             Document msg =
                     new Document("status", Node.Status.FAILED.name())
                             .append("error", e.getMessage());
             sendNodeStatus(currentNode.getId(), msg);
         }
-        if (!NodeTypeEnum.OUTPUT.getType().equals(currentNode.getType())
-                && Node.Status.FINISHED.equals(nodeInstance.status())) {
-            sendNodeStatus(
-                    currentNode.getId(), new Document("status", nodeInstance.status().name()));
-        }
     }
 
     /** 节点数据执行后回调，继续执行下一节点 */
-    private void runNext(FlowData currentNode, Document p) {
-        List<FlowData> nextNodes = getNextNode(currentNode);
-        // 多个下游节点，需要并行执行
-        forEach(nextNodes, n -> threadPool.execute(() -> this.run(setInput(n, p))));
-        // 输出节点推送消息
+    private void runNext(FlowData currentNode, Node nodeInstance, Document p) {
+        // 推送节点消息
         if (NodeTypeEnum.OUTPUT.getType().equals(currentNode.getType())) {
-            Document output = new Document();
-            output.putAll(p);
-            output.remove("input");
-            output.remove("payload");
-            Document msg =
-                    new Document("status", Node.Status.FINISHED.name()).append("output", output);
-            sendNodeStatus(currentNode.getId(), msg);
+            sendOutput(currentNode, p);
+        } else if (Node.Status.FINISHED.equals(nodeInstance.status())) {
+            sendNodeStatus(
+                    currentNode.getId(), new Document("status", Node.Status.FINISHED.name()));
         }
+        // 多个下游节点，需要并行执行
+        List<FlowData> nextNodes = getNextNode(currentNode);
+        forEach(nextNodes, n -> threadPool.execute(() -> this.run(setInput(n, p))));
     }
 
     private List<FlowData> getNextNode(FlowData currentNode) {
@@ -102,6 +94,16 @@ public class FlowExecutor {
             currentNode.setParams(params);
         }
         return currentNode;
+    }
+
+    /** 输出节点发送节点状态和输出信息 */
+    private void sendOutput(FlowData currentNode, Document p) {
+        Document output = new Document();
+        output.putAll(p);
+        output.remove("input");
+        output.remove("payload");
+        Document msg = new Document("status", Node.Status.FINISHED.name()).append("output", output);
+        sendNodeStatus(currentNode.getId(), msg);
     }
 
     private void sendNodeStatus(String nodeId, Document msg) {

@@ -10,7 +10,7 @@ public abstract class AbstractNode implements Node {
     private final Document payload;
     /** 输入参数，由上个节点传递至此 */
     private final Document input;
-
+    /** 节点当前的运行状态 */
     private Status status = Status.RUNNING;
 
     /**
