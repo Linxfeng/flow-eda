@@ -8,6 +8,7 @@ import com.flow.eda.runner.flow.node.NodeTypeEnum;
 import org.bson.Document;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,10 +23,14 @@ public class FlowExecutor {
     private final List<FlowData> flowData;
     /** 用于推送消息的ws服务 */
     private final FlowWebSocket flowWebSocket;
+    /** 当前流程的id */
+    private final Long flowId;
 
     public FlowExecutor(List<FlowData> flowData, FlowWebSocket ws) {
         this.flowData = flowData;
         this.flowWebSocket = ws;
+        this.flowId =
+                Objects.requireNonNull(findFirst(flowData, n -> n.getFlowId() != null)).getFlowId();
     }
 
     /** 开始执行流程 */
@@ -36,7 +41,20 @@ public class FlowExecutor {
     /** 执行当前节点 */
     private void run(FlowData currentNode) {
         Node nodeInstance = getInstance(currentNode);
-        nodeInstance.run((p) -> runNext(currentNode, p));
+        sendNodeStatus(currentNode.getId(), new Document("status", nodeInstance.status().name()));
+        try {
+            nodeInstance.run((p) -> runNext(currentNode, p));
+        } catch (Exception e) {
+            Document msg =
+                    new Document("status", Node.Status.FAILED.name())
+                            .append("error", e.getMessage());
+            sendNodeStatus(currentNode.getId(), msg);
+        }
+        if (!NodeTypeEnum.OUTPUT.getType().equals(currentNode.getType())
+                && Node.Status.FINISHED.equals(nodeInstance.status())) {
+            sendNodeStatus(
+                    currentNode.getId(), new Document("status", nodeInstance.status().name()));
+        }
     }
 
     /** 节点数据执行后回调，继续执行下一节点 */
@@ -46,11 +64,13 @@ public class FlowExecutor {
         forEach(nextNodes, n -> threadPool.execute(() -> this.run(setInput(n, p))));
         // 输出节点推送消息
         if (NodeTypeEnum.OUTPUT.getType().equals(currentNode.getType())) {
-            Document msg = new Document();
-            msg.putAll(p);
-            msg.remove("input");
-            msg.remove("payload");
-            flowWebSocket.sendMessage(currentNode.getId(), msg.toJson());
+            Document output = new Document();
+            output.putAll(p);
+            output.remove("input");
+            output.remove("payload");
+            Document msg =
+                    new Document("status", Node.Status.FINISHED.name()).append("output", output);
+            sendNodeStatus(currentNode.getId(), msg);
         }
     }
 
@@ -82,5 +102,10 @@ public class FlowExecutor {
             currentNode.setParams(params);
         }
         return currentNode;
+    }
+
+    private void sendNodeStatus(String nodeId, Document msg) {
+        msg.append("nodeId", nodeId);
+        flowWebSocket.sendMessage(String.valueOf(flowId), msg.toJson());
     }
 }
