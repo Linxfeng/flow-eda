@@ -17,16 +17,18 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Slf4j
 @Service
 @EqualsAndHashCode
-@ServerEndpoint("/ws/flow/node/{id}")
+@ServerEndpoint("/ws/flow/{id}/nodes")
 public class FlowWebSocket {
     private static final CopyOnWriteArraySet<FlowWebSocket> WEBSOCKETS =
             new CopyOnWriteArraySet<>();
+    /** 每个流程id对应一个session */
     private static final Map<String, Session> SESSION_POOL = new ConcurrentHashMap<>();
-    private String nodeId;
+
+    private String flowId;
 
     @OnOpen
     public void onOpen(Session session, @PathParam("id") String id) {
-        this.nodeId = id;
+        this.flowId = id;
         WEBSOCKETS.add(this);
         SESSION_POOL.put(id, session);
         log.info("New client id:{} connected, the current total clients:{}", id, WEBSOCKETS.size());
@@ -37,7 +39,7 @@ public class FlowWebSocket {
         WEBSOCKETS.remove(this);
         log.info(
                 "Client id:{} disconnected, the current total clients:{}",
-                this.nodeId,
+                this.flowId,
                 WEBSOCKETS.size());
     }
 
@@ -46,8 +48,8 @@ public class FlowWebSocket {
         log.info("Received client message:{}", message);
     }
 
-    public void sendMessage(String nodeId, String message) {
-        Session session = SESSION_POOL.get(nodeId);
+    public void sendMessage(String flowId, String message) {
+        Session session = SESSION_POOL.get(flowId);
         if (session != null) {
             try {
                 session.getAsyncRemote().sendText(message);
