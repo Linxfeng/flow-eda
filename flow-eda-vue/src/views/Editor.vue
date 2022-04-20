@@ -493,11 +493,23 @@ export default {
 
     // 运行本流程
     const executeFlow = async () => {
+      data.nodeList.forEach(v => v.status = undefined);
       await saveData();
-      // 流程中如果有输出节点，则需建立websocket连接
-      const outs = data.nodeList.filter(d => "output" === d.nodeType.type);
-      outs.forEach(d => {
-        onOpen(d.id, (s) => d.output = JSON.parse(s));
+      // 建立websocket连接
+      await onOpen(props.flowId, (s) => {
+        const res = JSON.parse(s);
+        data.nodeList.map(node => {
+          if (node.id === res.nodeId) {
+            node.status = res.status;
+            if (res.output) {
+              node.output = res.output;
+            }
+            if (res.error) {
+              node.error = res.error;
+            }
+            return node;
+          }
+        });
       });
       // 运行流
       const res = await executeNodeData(props.flowId);
@@ -519,7 +531,7 @@ export default {
     });
 
     // 组件被销毁之前，关闭socket连接
-    onBeforeUnmount(() => onClose());
+    onBeforeUnmount(() => onClose(props.flowId));
 
     return {
       data,
