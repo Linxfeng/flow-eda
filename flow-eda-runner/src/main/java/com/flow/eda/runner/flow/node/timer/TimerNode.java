@@ -30,24 +30,25 @@ public class TimerNode extends AbstractNode {
 
     /** 执行单个定时器节点，每个节点使用单独的定时线程池 */
     private void executeScheduledTask(NodeFunction function) {
-        AtomicInteger n = new AtomicInteger();
         // 执行times次数后，停止
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        AtomicInteger n = new AtomicInteger();
         if (this.times > 0) {
-            executor.scheduleAtFixedRate(
+            Runnable command =
                     () -> {
                         if (n.getAndIncrement() < times) {
                             System.out.println("执行定时器节点！");
+                            // 最后一次回调时，需要设置运行状态
+                            if (n.get() == times) {
+                                setStatus(Status.FINISHED);
+                            }
                             function.callback(output());
                         } else {
                             // 停止当前定时线程
                             executor.shutdown();
-                            setStatus(Status.FINISHED);
                         }
-                    },
-                    0,
-                    period,
-                    unit);
+                    };
+            executor.scheduleAtFixedRate(command, 0, period, unit);
         } else {
             // 永久循环，不限制次数
             executor.scheduleAtFixedRate(() -> function.callback(null), 0, period, unit);
