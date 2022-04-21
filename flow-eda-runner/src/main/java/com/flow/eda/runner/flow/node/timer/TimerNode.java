@@ -1,6 +1,6 @@
 package com.flow.eda.runner.flow.node.timer;
 
-import com.flow.eda.common.exception.InvalidParameterException;
+import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
 import org.bson.Document;
@@ -44,10 +44,8 @@ public class TimerNode extends AbstractNode {
 
             this.unit = TimeUnit.valueOf(pd.split(",")[1]);
             notNull(unit, "period");
-        } catch (InvalidParameterException e) {
-            throw e;
-        } catch (Exception ignore) {
-            throw new InvalidParameterException("The timer node parameters is invalid");
+        } catch (Exception e) {
+            throw FlowException.wrap(e, "The timer node parameters is invalid");
         }
     }
 

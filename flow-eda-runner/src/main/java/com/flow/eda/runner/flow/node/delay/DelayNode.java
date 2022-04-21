@@ -1,6 +1,6 @@
 package com.flow.eda.runner.flow.node.delay;
 
-import com.flow.eda.common.exception.InternalException;
+import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
@@ -28,7 +28,10 @@ public class DelayNode extends AbstractNode {
             setStatus(Status.FINISHED);
             callback.callback(output());
         } catch (Exception e) {
-            throw new InternalException(e.getMessage());
+            if (e.getMessage() != null) {
+                throw FlowException.wrap(e, e.getMessage());
+            }
+            throw FlowException.wrap(e);
         }
     }
 

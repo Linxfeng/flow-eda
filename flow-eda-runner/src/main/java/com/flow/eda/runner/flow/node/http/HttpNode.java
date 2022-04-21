@@ -1,8 +1,8 @@
 package com.flow.eda.runner.flow.node.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.common.exception.InternalException;
-import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
 import org.apache.http.HttpStatus;
@@ -39,7 +39,7 @@ public class HttpNode extends AbstractNode {
             setStatus(Status.FINISHED);
             function.callback(output().append("httpResult", res));
         } catch (Exception e) {
-            throw new InternalException(e.getMessage());
+            throw FlowException.wrap(e);
         }
     }
 
@@ -82,10 +82,8 @@ public class HttpNode extends AbstractNode {
                     this.headers.add(str);
                 }
             }
-        } catch (InvalidParameterException e) {
-            throw e;
-        } catch (Exception ignore) {
-            throw new InvalidParameterException("The http node parameters is invalid");
+        } catch (Exception e) {
+            throw FlowException.wrap(e, "The http node parameters is invalid");
         }
     }
 
@@ -110,10 +108,10 @@ public class HttpNode extends AbstractNode {
                 String res = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
                 return new ObjectMapper().readValue(res, Document.class);
             }
-            throw new Exception(
+            throw new InternalException(
                     "The http request failed.status code "
                             + response.getStatusLine().getStatusCode());
         }
-        throw new Exception("The http request has no response.");
+        throw new InternalException("The http request has no response.");
     }
 }
