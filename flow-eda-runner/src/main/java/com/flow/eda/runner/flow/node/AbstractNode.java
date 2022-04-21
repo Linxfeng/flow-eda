@@ -26,7 +26,11 @@ public abstract class AbstractNode implements Node {
             this.payload = null;
             this.input = null;
         }
+        this.verify(params);
     }
+
+    /** 节点参数校验 */
+    protected abstract void verify(Document params);
 
     @Override
     public Status status() {
@@ -43,6 +47,7 @@ public abstract class AbstractNode implements Node {
 
     /** 节点输出：当前节点的payload作为下一个节点的input */
     public Document output() {
-        return new Document("input", payload);
+        Optional<Document> optional = Optional.ofNullable(this.payload);
+        return optional.map(p -> new Document("input", p)).orElseGet(Document::new);
     }
 }
