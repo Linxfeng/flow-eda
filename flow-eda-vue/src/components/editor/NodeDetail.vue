@@ -30,7 +30,8 @@
         </el-form-item>
         <el-form-item class="item" prop="payload">
           <span class="span-box">
-              <el-tooltip content="自定义参数为json格式，可传递参数至下一节点，使用${xx}接收" placement="top">
+              <el-tooltip content="参数为json格式，可传递至下一节点，使用${xx}接收，例如${a,httpResult.$0.name}"
+                          placement="top">
                 <i class="el-icon-question" style="color: #c0c4cc;"></i>
               </el-tooltip>
               <span style="color: #606266;"> 自定义参数：</span>
