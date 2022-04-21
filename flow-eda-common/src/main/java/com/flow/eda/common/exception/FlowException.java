@@ -18,8 +18,8 @@ public class FlowException extends RuntimeException {
     private List<ApiError.SubError> errors;
     private String description;
 
-    public FlowException(String error) {
-        this.error = error;
+    public FlowException(String message) {
+        this.message = message;
     }
 
     public FlowException(String error, String message) {
