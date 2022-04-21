@@ -46,10 +46,14 @@ public class FlowExecutor {
                     currentNode.getId(), new Document("status", nodeInstance.status().name()));
             nodeInstance.run((p) -> runNext(currentNode, nodeInstance, p));
         } catch (Exception e) {
-            Document msg =
-                    new Document("status", Node.Status.FAILED.name())
-                            .append("error", e.getMessage());
-            sendNodeStatus(currentNode.getId(), msg);
+            String message;
+            if (e.getMessage() != null) {
+                message = FlowException.wrap(e, e.getMessage()).getMessage();
+            } else {
+                message = FlowException.wrap(e).getMessage();
+            }
+            Document status = new Document("status", Node.Status.FAILED.name());
+            sendNodeStatus(currentNode.getId(), status.append("error", message));
         }
     }
 
@@ -84,7 +88,7 @@ public class FlowExecutor {
             // 初始化实例时会进行参数校验，校验不通过则会抛出异常
             return clazz.getConstructor(Document.class).newInstance(currentNode.getParams());
         } catch (Exception e) {
-            throw new FlowException(e.getMessage());
+            throw FlowException.wrap(e);
         }
     }
 
