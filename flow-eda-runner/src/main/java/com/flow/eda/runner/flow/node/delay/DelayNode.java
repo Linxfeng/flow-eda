@@ -1,9 +1,9 @@
 package com.flow.eda.runner.flow.node.delay;
 
 import com.flow.eda.common.exception.FlowException;
-import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
+import com.flow.eda.runner.flow.node.NodeVerify;
 import org.bson.Document;
 
 import java.util.concurrent.TimeUnit;
@@ -48,7 +48,7 @@ public class DelayNode extends AbstractNode {
             notNull(unit);
             isTrue(delay > 0);
         } catch (Exception ignore) {
-            throw new InvalidParameterException("The parameter 'delay' is invalid");
+            NodeVerify.throwWithName("delay");
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.flow.eda.runner.flow.node.parser;
 
-import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
+import com.flow.eda.runner.flow.node.NodeVerify;
 import org.bson.Document;
 
 import java.util.*;
@@ -47,7 +47,7 @@ public class ParserNode extends AbstractNode {
             Arrays.stream(parseKeys).map(key -> key.trim().split("\\.")).forEach(keys::add);
             this.payload = new Document(params).append("params", getInput());
         } catch (Exception ignore) {
-            throw new InvalidParameterException("The parameter 'parseKey' is invalid");
+            NodeVerify.throwWithName("parseKey");
         }
     }
 
