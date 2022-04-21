@@ -17,8 +17,12 @@ class ParserNodeTest {
         result.add(res);
         params.append("httpResult", new Document("result", result));
         params.append("input", new Document("a", "xxx"));
-        params.append("parseKey", "httpResult.result.$0.type,params.a");
+        params.append("parseKey", "httpResult.result.$0.type, params.a");
         ParserNode parserNode = new ParserNode(params);
-        parserNode.run((p) -> Assertions.assertTrue(p.containsKey("type") & p.containsKey("a")));
+        parserNode.run(
+                (p) ->
+                        Assertions.assertTrue(
+                                p.containsKey("httpResult.result.$0.type")
+                                        & p.containsKey("params.a")));
     }
 }
