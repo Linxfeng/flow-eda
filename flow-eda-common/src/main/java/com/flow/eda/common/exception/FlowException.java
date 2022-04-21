@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -43,11 +42,14 @@ public class FlowException extends RuntimeException {
     }
 
     public static FlowException wrap(Exception e) {
+        return wrap(e, ApiError.INTERNAL_ERROR);
+    }
+
+    public static FlowException wrap(Exception e, String message) {
         if (e instanceof FlowException) {
             return (FlowException) e;
         }
-        return new FlowException(
-                Optional.ofNullable(e.getMessage()).orElse(ApiError.INTERNAL_ERROR));
+        return new FlowException(message);
     }
 
     public ApiError getApiError() {
