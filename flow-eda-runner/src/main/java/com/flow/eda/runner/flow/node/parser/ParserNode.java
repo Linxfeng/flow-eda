@@ -1,23 +1,21 @@
 package com.flow.eda.runner.flow.node.parser;
 
+import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
 import org.bson.Document;
 
 import java.util.*;
 
+import static com.flow.eda.runner.flow.node.NodeVerify.notNull;
+
 /** 解析器节点，用于解析上一个节点的输出参数 */
 public class ParserNode extends AbstractNode {
-    private final List<String[]> keys;
-    private final Document payload;
+    private List<String[]> keys;
+    private Document payload;
 
     public ParserNode(Document params) {
         super(params);
-        // eg: httpResult.result.$0.type,params.a
-        String[] parseKeys = params.getString("parseKey").split(",");
-        this.keys = new ArrayList<>();
-        Arrays.stream(parseKeys).map(key -> key.split("\\.")).forEach(keys::add);
-        this.payload = new Document(params).append("params", getInput());
     }
 
     @Override
@@ -35,6 +33,22 @@ public class ParserNode extends AbstractNode {
         result.putAll(output());
         setStatus(Status.FINISHED);
         callback.callback(result);
+    }
+
+    @Override
+    protected void verify(Document params) {
+        try {
+            notNull(params);
+            // eg: httpResult.result.$0.type, params.a
+            String parseKey = params.getString("parseKey");
+            notNull(parseKey);
+            String[] parseKeys = parseKey.split(",");
+            this.keys = new ArrayList<>();
+            Arrays.stream(parseKeys).map(key -> key.trim().split("\\.")).forEach(keys::add);
+            this.payload = new Document(params).append("params", getInput());
+        } catch (Exception ignore) {
+            throw new InvalidParameterException("The parameter 'parseKey' is invalid");
+        }
     }
 
     @SuppressWarnings("rawtypes")

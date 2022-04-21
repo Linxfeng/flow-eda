@@ -22,4 +22,7 @@ public class OutputNode extends AbstractNode {
         setStatus(Status.FINISHED);
         callback.callback(payload);
     }
+
+    @Override
+    protected void verify(Document params) {}
 }

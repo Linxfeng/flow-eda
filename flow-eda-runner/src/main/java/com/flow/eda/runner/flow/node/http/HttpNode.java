@@ -2,10 +2,9 @@ package com.flow.eda.runner.flow.node.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flow.eda.common.exception.InternalException;
+import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.StringEntity;
@@ -13,28 +12,23 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.bson.Document;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-@Getter
-@Setter
+import static com.flow.eda.runner.flow.node.NodeVerify.*;
+
 public class HttpNode extends AbstractNode {
     private String url;
     private String method;
     private String body;
-    private String params;
-    private String header;
+    private List<String[]> headers;
 
     public HttpNode(Document params) {
         super(params);
-        this.url = params.getString("url");
-        this.method = params.getString("method");
-        this.body = params.getString("body");
-        this.params = params.getString("params");
-        this.header = params.getString("header");
-        if (this.params != null) {
-            this.url = this.url + "?" + this.params;
-        }
     }
 
     @Override
@@ -49,13 +43,59 @@ public class HttpNode extends AbstractNode {
         }
     }
 
+    @Override
+    protected void verify(Document params) {
+        try {
+            notNull(params, "url");
+            this.url = params.getString("url");
+            notBlank(url, "url");
+
+            this.method = params.getString("method");
+            notBlank(method, "method");
+            List<String> list =
+                    Arrays.asList(
+                            "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH");
+            isTrue(list.contains(method), "method");
+
+            String param = params.getString("params");
+            if (StringUtils.hasLength(param)) {
+                isTrue(param.contains("=") && !param.startsWith("?"), "params");
+                isTrue(!param.startsWith("=") && !param.endsWith("="), "params");
+                this.url = url + "?" + param;
+            }
+
+            this.body = params.getString("body");
+            if (StringUtils.hasLength(body)) {
+                isTrue(body.startsWith("{") && body.endsWith("}"), "body");
+            }
+
+            String header = params.getString("header");
+            if (StringUtils.hasLength(header)) {
+                this.headers = new ArrayList<>();
+                for (String h : header.split(",")) {
+                    isTrue(h.contains(":"), "header");
+                    String[] str = new String[2];
+                    str[0] = h.split(":")[0].trim();
+                    notNull(str[0], "header");
+                    str[1] = h.split(":")[1].trim();
+                    notNull(str[1], "header");
+                    this.headers.add(str);
+                }
+            }
+        } catch (InvalidParameterException e) {
+            throw e;
+        } catch (Exception ignore) {
+            throw new InvalidParameterException("The http node parameters is invalid");
+        }
+    }
+
     private Document executeHttpRequest() throws Exception {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpRequestExpand request = new HttpRequestExpand(url, method);
         // 添加请求header
-        if (header != null) {
-            for (String h : header.split(",")) {
-                request.addHeader(h.split(":")[0].trim(), h.split(":")[1].trim());
+        if (headers != null) {
+            for (String[] header : headers) {
+                request.addHeader(header[0], header[1]);
             }
         }
         // 添加请求内容

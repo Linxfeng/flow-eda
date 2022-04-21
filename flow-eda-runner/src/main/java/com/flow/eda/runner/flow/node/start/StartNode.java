@@ -17,4 +17,7 @@ public class StartNode extends AbstractNode {
         setStatus(Status.FINISHED);
         function.callback(output());
     }
+
+    @Override
+    protected void verify(Document params) {}
 }
