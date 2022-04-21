@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @Getter
@@ -41,11 +42,14 @@ public class FlowException extends RuntimeException {
         this.description = error.getDescription();
     }
 
-    public static FlowException wrap(Exception e) {
+    public static FlowException wrap(Throwable e) {
         return wrap(e, ApiError.INTERNAL_ERROR);
     }
 
-    public static FlowException wrap(Exception e, String message) {
+    public static FlowException wrap(Throwable e, String message) {
+        if (e instanceof InvocationTargetException) {
+            e = ((InvocationTargetException) e).getTargetException();
+        }
         if (e instanceof FlowException) {
             return (FlowException) e;
         }
