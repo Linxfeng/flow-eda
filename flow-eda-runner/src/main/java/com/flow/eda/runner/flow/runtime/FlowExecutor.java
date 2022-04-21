@@ -1,7 +1,7 @@
 package com.flow.eda.runner.flow.runtime;
 
 import com.flow.eda.common.dubbo.model.FlowData;
-import com.flow.eda.common.exception.InternalException;
+import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.flow.data.FlowWebSocket;
 import com.flow.eda.runner.flow.node.Node;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
@@ -40,9 +40,10 @@ public class FlowExecutor {
 
     /** 执行当前节点 */
     private void run(FlowData currentNode) {
-        Node nodeInstance = getInstance(currentNode);
-        sendNodeStatus(currentNode.getId(), new Document("status", nodeInstance.status().name()));
         try {
+            Node nodeInstance = getInstance(currentNode);
+            sendNodeStatus(
+                    currentNode.getId(), new Document("status", nodeInstance.status().name()));
             nodeInstance.run((p) -> runNext(currentNode, nodeInstance, p));
         } catch (Exception e) {
             Document msg =
@@ -80,9 +81,10 @@ public class FlowExecutor {
         try {
             // 获取节点的构造函数，默认每个节点都有含参构造，获取不到时抛出异常
             Class<? extends Node> clazz = NodeTypeEnum.getClazzByNode(currentNode);
+            // 初始化实例时会进行参数校验，校验不通过则会抛出异常
             return clazz.getConstructor(Document.class).newInstance(currentNode.getParams());
         } catch (Exception e) {
-            throw new InternalException(e.getMessage());
+            throw new FlowException(e.getMessage());
         }
     }
 
