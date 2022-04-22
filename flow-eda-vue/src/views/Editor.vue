@@ -493,7 +493,11 @@ export default {
 
     // 运行本流程
     const executeFlow = async () => {
-      data.nodeList.forEach(v => v.status = undefined);
+      data.nodeList.forEach(v => {
+        v.status = undefined;
+        v.error = undefined;
+        v.output = undefined;
+      });
       await saveData();
       // 建立websocket连接
       await onOpen(props.flowId, (s) => {
