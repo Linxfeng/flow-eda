@@ -13,10 +13,7 @@
     <artifactId>flow-eda-web</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>flow-eda-web</name>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
@@ -53,14 +50,4 @@
             <version>2.2.2</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
