@@ -506,6 +506,7 @@ export default {
             }
             if (res.error) {
               node.error = res.error;
+              ElMessage.error(res.error);
             }
             return node;
           }
