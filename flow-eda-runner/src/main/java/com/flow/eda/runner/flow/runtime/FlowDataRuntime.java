@@ -1,8 +1,8 @@
 package com.flow.eda.runner.flow.runtime;
 
 import com.flow.eda.common.dubbo.model.FlowData;
-import com.flow.eda.runner.flow.data.FlowWebSocket;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
+import com.flow.eda.runner.flow.status.FlowWebSocket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

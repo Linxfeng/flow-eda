@@ -2,9 +2,9 @@ package com.flow.eda.runner.flow.runtime;
 
 import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.FlowException;
-import com.flow.eda.runner.flow.data.FlowWebSocket;
 import com.flow.eda.runner.flow.node.Node;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
+import com.flow.eda.runner.flow.status.FlowWebSocket;
 import org.bson.Document;
 
 import java.util.List;
@@ -114,6 +114,6 @@ public class FlowExecutor {
 
     private void sendNodeStatus(String nodeId, Document msg) {
         msg.append("nodeId", nodeId);
-        flowWebSocket.sendMessage(String.valueOf(flowId), msg.toJson());
+        flowWebSocket.sendMessage(String.valueOf(flowId), msg);
     }
 }
