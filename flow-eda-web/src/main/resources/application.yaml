@@ -14,6 +14,11 @@ spring:
       validation-timeout: 3000
       maximum-pool-size: 10
       minimum-idle: 5
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: 123456
 mybatis:
   type-handlers-package: com.flow.eda.web.flow.mybatis
   configuration:
@@ -30,3 +35,6 @@ dubbo:
     port: 20880
   consumer:
     check: false
+logging:
+  level:
+    com.alibaba.nacos.common.remote.client: warn
