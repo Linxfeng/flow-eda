@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name: flow-eda-runner
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: 123456
 dubbo:
   application:
     name: flow-eda-runner
