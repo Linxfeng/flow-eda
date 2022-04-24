@@ -9,9 +9,16 @@ import java.util.List;
  */
 public interface FlowDataService {
     /**
-     * 运行一次当前流程
+     * 运行当前流程
      *
      * @param data 流数据
      */
     void runFlowData(List<FlowData> data);
+
+    /**
+     * 停止当前流程
+     *
+     * @param flowId 流程id
+     */
+    void stopFlowData(Long flowId);
 }
