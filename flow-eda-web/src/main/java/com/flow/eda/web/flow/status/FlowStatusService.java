@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -44,5 +45,13 @@ public class FlowStatusService {
                 flowMapper.updateStatus(id, status.name());
             }
         }
+    }
+
+    /** 获取运行中的节点id */
+    public List<String> getRunningNodes(String flowId) {
+        if (statusMap.containsKey(flowId)) {
+            return statusMap.get(flowId).getRunningNodes();
+        }
+        return null;
     }
 }

@@ -49,4 +49,13 @@ public class FlowStatus {
         }
         return Flow.Status.FINISHED;
     }
+
+    /** 返回当前正在运行中的节点id */
+    public List<String> getRunningNodes() {
+        return nodeMap.values().stream()
+                .filter(s -> Flow.Status.RUNNING.name().equals(s.getString("status")))
+                .map(p -> p.getString("nodeId"))
+                .distinct()
+                .collect(Collectors.toList());
+    }
 }
