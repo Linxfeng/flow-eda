@@ -8,13 +8,15 @@ import org.springframework.scheduling.support.PeriodicTrigger;
 import java.time.ZoneId;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.flow.eda.runner.flow.runtime.FlowThreadPool.getSchedulerPool;
+
 /** 定时任务，用于执行定时器节点的任务 */
 public class TimerTask {
 
     /** 定时执行任务，不限次数 */
     public static void run(TimerNode task) {
         Trigger trigger = getTrigger(task);
-        getThreadPool().schedule(task.getRunnable(), trigger);
+        getSchedulerPool(task.getFlowId()).schedule(task.getRunnable(), trigger);
     }
 
     /** 定时执行指定次数后停止，并进行回调（通知节点已经执行完毕） */
@@ -22,10 +24,11 @@ public class TimerTask {
         // 需要执行的次数
         int times = task.getTimes();
         AtomicInteger n = new AtomicInteger();
-        ThreadPoolTaskScheduler executor = getThreadPool();
+        ThreadPoolTaskScheduler executor = getSchedulerPool(task.getFlowId());
         Runnable command =
                 () -> {
                     if (n.getAndIncrement() < times) {
+                        System.out.println("执行定时器节点");
                         // 最后一次执行前需要回调
                         if (n.get() == times) {
                             callback.run();
@@ -42,15 +45,6 @@ public class TimerTask {
             executor.getScheduledExecutor()
                     .scheduleAtFixedRate(command, 0, task.getPeriod(), task.getUnit());
         }
-    }
-
-    /** 为每个节点实例单独创建定时线程池 */
-    private static ThreadPoolTaskScheduler getThreadPool() {
-        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(1);
-        threadPoolTaskScheduler.setThreadNamePrefix("scheduledTask-");
-        threadPoolTaskScheduler.initialize();
-        return threadPoolTaskScheduler;
     }
 
     private static Trigger getTrigger(TimerNode task) {
