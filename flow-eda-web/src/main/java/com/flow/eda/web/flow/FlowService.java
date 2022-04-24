@@ -18,7 +18,7 @@ public class FlowService {
     }
 
     public void addFlow(Flow flow) {
-        flow.setStatus(true);
+        flow.setStatus(Flow.Status.INIT);
         flow.setCreateDate(new Date());
         flow.setUpdateDate(new Date());
         flowMapper.insert(flow);

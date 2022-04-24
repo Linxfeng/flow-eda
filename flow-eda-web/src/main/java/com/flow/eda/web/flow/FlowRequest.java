@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 public class FlowRequest extends PageRequest {
     private String name;
-    private Boolean status;
+    private Flow.Status status;
 }
