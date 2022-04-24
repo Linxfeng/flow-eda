@@ -11,8 +11,10 @@
       <div class="handle-box">
         <el-input v-model="params.name" class="handle-input mr10" placeholder="名称"></el-input>
         <el-select v-model="params.status" class="handle-select mr10" placeholder="状态">
-          <el-option key="1" label="启用" value="true"></el-option>
-          <el-option key="0" label="禁用" value="false"></el-option>
+          <el-option key="INIT" label="未运行" value="INIT"></el-option>
+          <el-option key="RUNNING" label="运行中" value="RUNNING"></el-option>
+          <el-option key="FINISHED" label="运行完成" value="FINISHED"></el-option>
+          <el-option key="FAILED" label="运行失败" value="FAILED"></el-option>
         </el-select>
         <el-button icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
         <el-button icon="el-icon-refresh" type="primary" @click="cleanSearch">重置</el-button>
@@ -30,17 +32,21 @@
                 @selection-change="handleSelectionChange">
         <el-table-column align="center" type="selection" width="55"></el-table-column>
         <el-table-column label="名称" prop="name" show-overflow-tooltip width="250"></el-table-column>
-        <el-table-column :formatter="statusFormat" label="状态" prop="status" width="90"></el-table-column>
+        <el-table-column :formatter="statusFormat" label="状态" prop="status" width="100"></el-table-column>
         <el-table-column label="描述" prop="description" show-overflow-tooltip></el-table-column>
-        <el-table-column :formatter="dateFormat" label="创建日期" prop="createDate" width="180"></el-table-column>
-        <el-table-column :formatter="dateFormat" label="更新日期" prop="updateDate" width="180"></el-table-column>
+        <el-table-column :formatter="dateFormat" label="创建时间" prop="createDate" width="180"></el-table-column>
+        <el-table-column :formatter="dateFormat" label="更新时间" prop="updateDate" width="180"></el-table-column>
         <el-table-column align="center" label="操作" width="280">
           <template #default="scope">
-            <el-switch active-color="#13ce66" class="mr10" inactive-color="#dcdfe6"
-                       v-bind:value="scope.row.status" @click="handleEnable(scope.row)"></el-switch>
-            <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row)">查看</el-button>
+            <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row.id)">查看</el-button>
             <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button class="red" icon="el-icon-delete" type="text" @click="handleDelete(scope.row)">删除</el-button>
+            <el-button v-if="scope.row.status!=='RUNNING'" icon="el-icon-caret-right" type="text"
+                       @click="runFlow(scope.row.id)">运行
+            </el-button>
+            <el-button v-if="scope.row.status==='RUNNING'" class="red" icon="el-icon-switch-button" type="text"
+                       @click="stopFlow(scope.row.id)">停止
+            </el-button>
+            <el-button class="red" icon="el-icon-delete" type="text" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -74,6 +80,7 @@ import {reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {addFlow, deleteFlow, listFlow, updateFlow} from "../api/flow";
+import {executeNodeData, stopNodeData} from "../api/nodeData";
 import Moment from "moment";
 
 export default {
@@ -124,40 +131,44 @@ export default {
       params.page = val;
       getData();
     };
-    // 启用/禁用操作
-    const handleEnable = (row) => {
-      // 二次确认弹框
-      let msg;
-      if (row.status) {
-        msg = "是否确定禁用？禁用后该工作流会立即停止运行！";
-      } else {
-        msg = "是否确定启用？启用后该工作流会立即开始运行！";
-      }
-      ElMessageBox.confirm(msg, "提示", {
+    // 查看详情,打开流编辑器
+    const router = useRouter();
+    const handleShow = (id) => {
+      router.push({path: '/flows/editor', query: {flowId: id}});
+    };
+    // 运行流程
+    const runFlow = (id) => {
+      ElMessageBox.confirm("是否确定运行？确认后本流程会立即开始运行！", "提示", {
         type: "warning",
       }).then(() => {
-        let body = {
-          id: row.id,
-          status: !row.status
-        }
-        updateFlow(body).then(res => {
+        executeNodeData(id).then(res => {
           if (res.message !== undefined) {
             ElMessage.error(res.message);
           } else {
-            row.status = body.status;
             ElMessage.success("操作成功");
           }
         });
       }).catch(err => {
       });
     };
-    // 查看详情,打开流编辑器
-    const router = useRouter();
-    const handleShow = (row) => {
-      router.push({path: '/flows/editor', query: {flowId: row.id}});
+    // 停止流程
+    const stopFlow = (id) => {
+      ElMessageBox.confirm("是否确定停止？确认后本流程会立即停止运行！", "提示", {
+        type: "warning",
+      }).then(() => {
+        stopNodeData(id).then(res => {
+          if (res.message !== undefined) {
+            ElMessage.error(res.message);
+          } else {
+            ElMessage.success("操作成功");
+          }
+        });
+      }).catch(err => {
+      });
     };
     // 编辑操作
     const handleEdit = (index, row) => {
+      form.value.id = row.id;
       form.value.name = row.name;
       form.value.description = row.description;
       form.value.title = "编辑工作流";
@@ -200,9 +211,9 @@ export default {
       hasSelection.value = multipleSelection.length > 0;
     };
     // 删除操作
-    const handleDelete = (row) => {
+    const handleDelete = (id) => {
       let msg = "确定要删除吗？删除后将无法恢复！";
-      let ids = [row.id];
+      let ids = [id];
       deleteBatch(msg, ids);
     };
     // 批量删除操作
@@ -229,10 +240,14 @@ export default {
     }
     // 状态字段转换
     const statusFormat = (row) => {
-      if (row.status === true) {
-        return "启用";
-      } else {
-        return "禁用";
+      if (row.status === 'INIT') {
+        return "未运行";
+      } else if (row.status === 'RUNNING') {
+        return "运行中";
+      } else if (row.status === 'FINISHED') {
+        return "运行完成";
+      } else if (row.status === 'FAILED') {
+        return "运行失败";
       }
     };
     // 日期格式化
@@ -250,7 +265,8 @@ export default {
       cleanSearch,
       handleAdd,
       handlePageChange,
-      handleEnable,
+      runFlow,
+      stopFlow,
       handleShow,
       handleEdit,
       handleDelete,
