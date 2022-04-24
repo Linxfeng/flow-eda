@@ -55,9 +55,13 @@ public class NodeDataService {
         flowDataService.runFlowData(data);
     }
 
+    /** 停止运行当前流程 (仅运行中状态的流程可被停止) */
     public void stopNodeData(Long flowId) {
         Flow flow = flowService.findById(flowId);
-        //
+        if (Flow.Status.RUNNING.equals(flow.getStatus())) {
+            // 调用远程接口，停止运行当前流程
+            flowDataService.stopFlowData(flowId);
+        }
     }
 
     private FlowData convert(NodeData nodeData) {
