@@ -39,7 +39,7 @@ public class FlowDataRuntime {
                 d -> getThreadPool(flowId).execute(() -> new FlowExecutor(data, ws).start(d)));
     }
 
-    /** 停止流程 */
+    /** 停止流程，并清理流程运行数据 */
     public void stopFlowData(Long flowId) {
         FlowThreadPool.shutdownThreadPool(flowId);
         FlowThreadPool.shutdownSchedulerPool(flowId);
