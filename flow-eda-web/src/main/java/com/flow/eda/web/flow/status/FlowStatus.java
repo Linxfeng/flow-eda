@@ -41,11 +41,11 @@ public class FlowStatus {
                 nodeMap.values().stream()
                         .map(p -> p.getString("status"))
                         .collect(Collectors.toList());
-        if (status.contains(Flow.Status.FAILED.name())) {
-            return Flow.Status.FAILED;
-        }
         if (status.contains(Flow.Status.RUNNING.name())) {
             return Flow.Status.RUNNING;
+        }
+        if (status.contains(Flow.Status.FAILED.name())) {
+            return Flow.Status.FAILED;
         }
         return Flow.Status.FINISHED;
     }
