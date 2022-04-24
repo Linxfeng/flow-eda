@@ -11,6 +11,11 @@
       <span class="icon-lx-run"/>
       </span>
     </el-tooltip>
+    <el-tooltip content="停止" placement="bottom">
+      <span class="command" @click="handle('stop')">
+      <span class="icon-lx-run"/>
+      </span>
+    </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="复制" placement="bottom">
       <span class="command" @click="handle('copy')">
@@ -54,7 +59,7 @@
 </template>
 
 <script>
-import {ElMessageBox} from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 export default {
   name: "Toolbar",
@@ -69,13 +74,25 @@ export default {
       });
     };
 
+    const stop = () => {
+      ElMessageBox.confirm("确认停止运行？这将会立即停止本流程的运行", "提示", {
+        type: "warning",
+      }).then(() => {
+        context.emit("stopFlow");
+      }).catch(() => {
+      });
+    };
+
     const handle = (command) => {
       if (command.startsWith("zoom")) {
         context.emit("zoomNode", command.split('-')[1]);
       } else if (command === "save") {
         context.emit("saveData");
+        ElMessage.success("保存成功");
       } else if (command === "run") {
         run();
+      } else if (command === "stop") {
+        stop();
       } else if (command === "copy") {
         context.emit("copyNode");
       } else if (command === "paste") {

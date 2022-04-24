@@ -1,8 +1,8 @@
 <template>
   <div style="height: 100%">
     <toolbar @copyNode="copyNode(data.selectedNode)" @deleteNode="deleteNode(data.selectedNode)"
-             @executeFlow="executeFlow"
-             @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"
+             @executeFlow="executeFlow" @keyup="keyupNode($event,data.selectedNode)"
+             @pasteNode="pasteNode" @saveData="saveData" @stopFlow="stopFlow"
              @zoomNode="zoomNode"/>
     <div id="flow-content" class="flow-content">
       <div class="nodes-wrap">
@@ -38,14 +38,14 @@
 </template>
 
 <script>
-import {nextTick, reactive, onMounted, onBeforeUnmount} from 'vue';
+import {nextTick, onBeforeUnmount, onMounted, reactive} from 'vue';
 import {jsplumbSetting} from '../utils/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../utils/jsplumbConfig";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {generateUniqueID} from "../utils/util.js";
 import {getNodeTypes} from "../api/nodeType.js";
-import {getNodeData, setNodeData, executeNodeData} from "../api/nodeData.js";
-import {onOpen, onClose} from "../utils/websocket.js";
+import {executeNodeData, getNodeData, setNodeData, stopNodeData} from "../api/nodeData.js";
+import {onClose, onOpen} from "../utils/websocket.js";
 import jsplumb from "jsplumb";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
@@ -486,8 +486,6 @@ export default {
       const res = await setNodeData(body);
       if (res.message !== undefined) {
         ElMessage.error(res.message);
-      } else {
-        ElMessage.success("保存成功");
       }
     };
 
@@ -516,13 +514,23 @@ export default {
           }
         });
       });
-      // 运行流
       const res = await executeNodeData(props.flowId);
       if (res.message !== undefined) {
         ElMessage.error(res.message);
       } else {
         ElMessage.success("运行成功");
       }
+    };
+
+    // 停止本流程
+    const stopFlow = () => {
+      stopNodeData(props.flowId).then(res => {
+        if (res.message !== undefined) {
+          ElMessage.error(res.message);
+        } else {
+          ElMessage.success("操作成功");
+        }
+      });
     };
 
     // 初始化页面数据，渲染流程图
@@ -557,7 +565,8 @@ export default {
       moveDes,
       hideDes,
       saveData,
-      executeFlow
+      executeFlow,
+      stopFlow
     };
   }
 };
