@@ -1,6 +1,5 @@
 package com.flow.eda.web.flow.status;
 
-import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Slf4j
 @Component
 public class FlowStatusListener {
     @Autowired private FlowStatusService flowStatusService;
@@ -26,7 +24,6 @@ public class FlowStatusListener {
                             key = "flow.status.updated"))
     public void onRabbitMessage(@Payload Document payload, @Headers Map<String, Object> headers) {
         payload.append("timestamp", headers.get("timestamp"));
-        log.info("received rabbit message {}", payload.toJson());
         flowStatusService.updateStatus(payload);
     }
 }

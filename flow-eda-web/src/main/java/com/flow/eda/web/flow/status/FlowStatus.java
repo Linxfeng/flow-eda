@@ -27,7 +27,7 @@ public class FlowStatus {
         if (nodeMap.containsKey(nodeId)) {
             // 对比消息的时间戳，兼容消息乱序问题，忽略过时消息
             Long timestamp = nodeMap.get(nodeId).getLong("timestamp");
-            if (payload.getLong("timestamp") > timestamp) {
+            if (payload.getLong("timestamp") >= timestamp) {
                 nodeMap.put(nodeId, payload);
             }
         } else {

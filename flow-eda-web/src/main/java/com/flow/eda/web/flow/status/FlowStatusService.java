@@ -30,10 +30,17 @@ public class FlowStatusService {
     /** 将当前流程的状态更新到数据库 */
     private void updateStatus(String flowId) {
         Long id = Long.parseLong(flowId);
+        if (!statusMap.containsKey(flowId)) {
+            return;
+        }
         Flow flow = flowMapper.findById(id);
         if (flow != null) {
             Flow.Status status = statusMap.get(flowId).getStatus();
             if (!flow.getStatus().equals(status)) {
+                // 最终状态时需要从map中移除当前流程
+                if (!Flow.Status.RUNNING.equals(status)) {
+                    statusMap.remove(flowId);
+                }
                 flowMapper.updateStatus(id, status.name());
             }
         }
