@@ -33,6 +33,12 @@ public class NodeDataController {
         return Result.ok();
     }
 
+    @PostMapping("/node/data/stop")
+    public Result<String> stopNodeData(@RequestParam("flowId") Long flowId) {
+        nodeDataService.stopNodeData(flowId);
+        return Result.ok();
+    }
+
     /** 校验节点数据的正确性 */
     private void check(List<NodeData> data) {
         if (isEmpty(data)) {

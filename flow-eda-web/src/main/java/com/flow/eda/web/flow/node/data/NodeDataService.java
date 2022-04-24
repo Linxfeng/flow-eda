@@ -4,6 +4,8 @@ import com.flow.eda.common.dubbo.api.FlowDataService;
 import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InvalidStateException;
 import com.flow.eda.common.utils.MergeBuilder;
+import com.flow.eda.web.flow.Flow;
+import com.flow.eda.web.flow.FlowService;
 import com.flow.eda.web.flow.node.type.NodeType;
 import com.flow.eda.web.flow.node.type.NodeTypeService;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -22,6 +24,7 @@ public class NodeDataService {
     @DubboReference private FlowDataService flowDataService;
     @Autowired private NodeDataMapper nodeDataMapper;
     @Autowired private NodeTypeService nodeTypeService;
+    @Autowired private FlowService flowService;
 
     public List<NodeData> getNodeData(Long flowId) {
         List<NodeData> list = nodeDataMapper.findByFlowId(flowId);
@@ -50,6 +53,11 @@ public class NodeDataService {
         List<FlowData> data = new ArrayList<>();
         list.forEach(n -> data.add(convert(n)));
         flowDataService.runFlowData(data);
+    }
+
+    public void stopNodeData(Long flowId) {
+        Flow flow = flowService.findById(flowId);
+        //
     }
 
     private FlowData convert(NodeData nodeData) {
