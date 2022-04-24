@@ -1,10 +1,13 @@
 package com.flow.eda.web.flow.status;
 
+import com.flow.eda.web.flow.Flow;
 import lombok.Getter;
 import org.bson.Document;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /** 流程状态缓存对象 */
 @Getter
@@ -32,9 +35,18 @@ public class FlowStatus {
         }
     }
 
-    /** 判断当前流程是否已完成 */
-    public boolean isFinished() {
-        //
-        return false;
+    /** 返回流程当前的状态 */
+    public Flow.Status getStatus() {
+        List<String> status =
+                nodeMap.values().stream()
+                        .map(p -> p.getString("status"))
+                        .collect(Collectors.toList());
+        if (status.contains(Flow.Status.FAILED.name())) {
+            return Flow.Status.FAILED;
+        }
+        if (status.contains(Flow.Status.RUNNING.name())) {
+            return Flow.Status.RUNNING;
+        }
+        return Flow.Status.FINISHED;
     }
 }

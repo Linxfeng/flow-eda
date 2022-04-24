@@ -1,6 +1,9 @@
 package com.flow.eda.web.flow.status;
 
+import com.flow.eda.web.flow.Flow;
+import com.flow.eda.web.flow.FlowMapper;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -11,6 +14,8 @@ public class FlowStatusService {
     /** 存储流程id对应的状态缓存对象 */
     private final Map<String, FlowStatus> statusMap = new HashMap<>();
 
+    @Autowired private FlowMapper flowMapper;
+
     public void updateStatus(Document payload) {
         String flowId = payload.getString("flowId");
         if (statusMap.containsKey(flowId)) {
@@ -19,14 +24,18 @@ public class FlowStatusService {
             statusMap.put(flowId, new FlowStatus(payload));
         }
         // 刷新看门狗
-        FlowStatusWatchDog.refresh(flowId, this::calculateStatus);
+        FlowStatusWatchDog.refresh(flowId, this::updateStatus);
     }
 
-    /** 立即计算一次当前流程的状态 */
-    private void calculateStatus(String flowId) {
-        FlowStatus flowStatus = statusMap.get(flowId);
-        if (flowStatus.isFinished()) {
-            // 更新流程状态
+    /** 将当前流程的状态更新到数据库 */
+    private void updateStatus(String flowId) {
+        Long id = Long.parseLong(flowId);
+        Flow flow = flowMapper.findById(id);
+        if (flow != null) {
+            Flow.Status status = statusMap.get(flowId).getStatus();
+            if (!flow.getStatus().equals(status)) {
+                flowMapper.updateStatus(id, status.name());
+            }
         }
     }
 }

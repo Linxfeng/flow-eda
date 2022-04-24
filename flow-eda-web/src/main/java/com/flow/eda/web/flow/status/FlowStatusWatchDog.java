@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 /** 看门狗，用于监听流程状态变化 */
 @Slf4j
 public class FlowStatusWatchDog {
-    /** 看门狗刷新时间 */
+    /** 刷新周期 */
     private static final long SLEEP = 3000;
     /** key为流程id，节点状态更新时会更新对应的value值为true */
     private static final Map<String, Boolean> MAP = new ConcurrentHashMap<>();
@@ -50,6 +50,7 @@ public class FlowStatusWatchDog {
                                         });
                     }
                 };
+        // 显式创建单独线程去执行监视，若没有任务，此线程将被销毁
         new Thread(runnable).start();
     }
 }
