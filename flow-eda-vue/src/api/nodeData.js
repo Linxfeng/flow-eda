@@ -25,3 +25,11 @@ export function executeNodeData(flowId) {
         method: 'post'
     });
 }
+
+// 停止本流程
+export function stopNodeData(flowId) {
+    return request({
+        url: '/api/v1/node/data/stop?flowId=' + flowId,
+        method: 'post'
+    });
+}
