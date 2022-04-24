@@ -21,4 +21,12 @@ public interface FlowDataService {
      * @param flowId 流程id
      */
     void stopFlowData(Long flowId);
+
+    /**
+     * 用于通知运行服务正在运行中的节点id
+     *
+     * @param flowId 流程id
+     * @param nodeIds 运行中的节点id
+     */
+    void noticeRunningNodes(Long flowId, List<String> nodeIds);
 }

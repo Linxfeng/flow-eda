@@ -18,4 +18,14 @@ public class FlowDataServiceImpl implements FlowDataService {
     public void runFlowData(List<FlowData> data) {
         flowDataRuntime.runFlowData(data);
     }
+
+    @Override
+    public void stopFlowData(Long flowId) {
+        flowDataRuntime.stopFlowData(flowId);
+    }
+
+    @Override
+    public void noticeRunningNodes(Long flowId, List<String> nodeIds) {
+        flowDataRuntime.sendNodeInterruptStatus(flowId, nodeIds);
+    }
 }
