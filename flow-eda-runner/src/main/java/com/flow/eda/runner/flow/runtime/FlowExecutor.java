@@ -10,15 +10,12 @@ import org.bson.Document;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.flow.eda.common.utils.CollectionUtil.*;
+import static com.flow.eda.runner.flow.runtime.FlowThreadPool.getThreadPool;
 
 /** 单条流程的执行者 */
 public class FlowExecutor {
-    /** 用于并发执行流程中的多个节点的线程池 */
-    private final ExecutorService threadPool = Executors.newCachedThreadPool();
     /** 存储当前流程的完整流节点数据 */
     private final List<FlowData> flowData;
     /** 用于推送消息的ws服务 */
@@ -40,6 +37,7 @@ public class FlowExecutor {
 
     /** 执行当前节点 */
     private void run(FlowData currentNode) {
+        Thread.currentThread().setName("flowId:" + flowId);
         try {
             Node nodeInstance = getInstance(currentNode);
             sendNodeStatus(
@@ -68,7 +66,7 @@ public class FlowExecutor {
         }
         // 多个下游节点，需要并行执行
         List<FlowData> nextNodes = getNextNode(currentNode);
-        forEach(nextNodes, n -> threadPool.execute(() -> this.run(setInput(n, p))));
+        forEach(nextNodes, n -> getThreadPool(flowId).execute(() -> this.run(setInput(n, p))));
     }
 
     private List<FlowData> getNextNode(FlowData currentNode) {
