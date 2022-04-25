@@ -52,6 +52,7 @@ import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
 import nodeDetail from "../components/editor/NodeDetail.vue";
 import screenfull from "screenfull";
+import {useStore} from "vuex";
 
 export default {
   name: "Editor",
@@ -61,9 +62,10 @@ export default {
     nodeDetail
   },
   props: {
-    flowId: String
+    flowId: String | Number
   },
   setup(props) {
+
     // 面板上的节点数据
     const data = reactive({
       nodeTypeList: [],
@@ -72,6 +74,7 @@ export default {
       selectedNode: null
     });
     let jsPlumb;
+    const store = useStore();
     // 对齐辅助线
     const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
     const auxiliaryLinePos = reactive({width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20});
@@ -94,13 +97,17 @@ export default {
       if (res.message !== undefined) {
         ElMessage.error(res.message);
       } else {
+        const node = [];
+        const line = [];
         res.result.map(d => {
           if (d.nodeName) {
-            data.nodeList.push(d);
+            node.push(d);
           } else {
-            data.lineList.push(d);
+            line.push(d);
           }
         });
+        data.nodeList = node;
+        data.lineList = line;
       }
     };
 
@@ -533,18 +540,29 @@ export default {
       });
     };
 
-    // 初始化页面数据，渲染流程图
-    onMounted(async () => {
+    // 路由切换 重新加载数据
+    const reloadData = async () => {
+      console.log("重新加载数据:" + props.flowId);
       jsPlumb = jsplumb.jsPlumb.getInstance();
+      jsPlumb.clear();
       await initNodeType();
       await initNode();
       await nextTick(() => {
         init();
       });
+    };
+
+    // 初始化页面数据，渲染流程图
+    onMounted(async () => {
+      await reloadData();
     });
 
     // 组件被销毁之前，关闭socket连接
-    onBeforeUnmount(() => onClose(props.flowId));
+    onBeforeUnmount(() => {
+      console.log("销毁:" + props.flowId)
+      onClose(props.flowId);
+      store.commit("closeEditorItem", props.flowId);
+    });
 
     return {
       data,

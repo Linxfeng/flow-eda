@@ -76,12 +76,13 @@
 </template>
 
 <script>
-import {reactive, ref} from "vue";
+import {reactive, ref, computed} from "vue";
 import {useRouter} from "vue-router";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {addFlow, deleteFlow, listFlow, updateFlow} from "../api/flow";
 import {executeNodeData, stopNodeData} from "../api/nodeData";
 import Moment from "moment";
+import {useStore} from "vuex";
 
 export default {
   name: "Flows",
@@ -131,10 +132,17 @@ export default {
       params.page = val;
       getData();
     };
+
     // 查看详情,打开流编辑器
     const router = useRouter();
+    const store = useStore();
+    const tagsList = computed(() => store.state.tagsList.map((item) => item.path));
     const handleShow = (id) => {
-      router.push({path: '/flows/editor', query: {flowId: id}});
+      const path = '/flows/editor?flowId=' + id;
+      if (!tagsList.value.includes(id)) {
+        store.commit("addEditorItem", id);
+      }
+      router.push({path: path, query: {flowId: id}});
     };
     // 运行流程
     const runFlow = (id) => {
