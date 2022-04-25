@@ -3,6 +3,7 @@ import {createStore} from 'vuex'
 export default createStore({
     state: {
         tagsList: [],
+        editorList: [],
         collapse: false
     },
     mutations: {
@@ -49,6 +50,16 @@ export default createStore({
         // 侧边栏折叠
         handleCollapse(state, data) {
             state.collapse = data;
+        },
+        addEditorItem(state, data) {
+            state.editorList.push(data);
+        },
+        closeEditorItem(state, data) {
+            state.editorList.forEach((item, index) => {
+                if (item === data) {
+                    state.editorList.splice(index, 1);
+                }
+            });
         }
     },
     actions: {},
