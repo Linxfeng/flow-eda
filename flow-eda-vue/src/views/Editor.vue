@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import {onBeforeUnmount, onMounted, nextTick, ref, reactive} from 'vue';
+import {nextTick, onBeforeUnmount, onMounted, reactive, ref} from 'vue';
 import {jsplumbSetting} from '../utils/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../utils/jsplumbConfig";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -46,7 +46,7 @@ import {jsPlumb} from "jsplumb";
 import {generateUniqueID} from "../utils/util.js";
 import {getNodeTypes} from "../api/nodeType.js";
 import {executeNodeData, getNodeData, setNodeData, stopNodeData} from "../api/nodeData.js";
-import {onOpenFlow, onOpenNode, onClose} from "../utils/websocket.js";
+import {onClose, onOpenFlow, onOpenNode} from "../utils/websocket.js";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
@@ -61,7 +61,7 @@ export default {
     nodeDetail
   },
   props: {
-    flowId: String | Number
+    flowId: String
   },
   setup(props) {
     // jsPlumb实例

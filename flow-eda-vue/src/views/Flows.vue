@@ -70,10 +70,11 @@
 </template>
 
 <script>
-import {reactive, ref, computed} from "vue";
+import {computed, reactive, ref} from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
 import Moment from "moment";
 import {addFlow, deleteFlow, listFlow, updateFlow} from "../api/flow";
+import {generateUniqueID} from "../utils/util.js";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
@@ -156,10 +157,12 @@ export default {
     //新增/编辑弹框提交表单
     const submitForm = () => {
       let body = {
+        id: form.value.id,
         name: form.value.name,
         description: form.value.description
       }
       if (form.value.title === "新增工作流") {
+        body.id = generateUniqueID(8);
         addFlow(body).then(res => {
           if (res.message !== undefined) {
             ElMessage.error(res.message);
@@ -170,7 +173,6 @@ export default {
           }
         });
       } else {
-        body.id = form.value.id;
         updateFlow(body).then(res => {
           if (res.message !== undefined) {
             ElMessage.error(res.message);
