@@ -21,7 +21,7 @@ public class FlowStatusListener {
                     @QueueBinding(
                             value = @Queue(value = "flow_node_status_updated"),
                             exchange = @Exchange("flow.node.status"),
-                            key = "flow.status.updated"))
+                            key = "flow.node.status.updated"))
     public void onRabbitMessage(@Payload Document payload, @Headers Map<String, Object> headers) {
         payload.append("timestamp", headers.get("timestamp"));
         flowStatusService.updateStatus(payload);
