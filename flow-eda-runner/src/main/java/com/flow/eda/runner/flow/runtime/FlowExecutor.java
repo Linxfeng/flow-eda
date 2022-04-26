@@ -21,7 +21,7 @@ public class FlowExecutor {
     /** 用于推送消息的ws服务 */
     private final FlowNodeWebSocket flowNodeWebSocket;
     /** 当前流程的id */
-    private final Long flowId;
+    private final String flowId;
 
     public FlowExecutor(List<FlowData> flowData, FlowNodeWebSocket ws) {
         this.flowData = flowData;

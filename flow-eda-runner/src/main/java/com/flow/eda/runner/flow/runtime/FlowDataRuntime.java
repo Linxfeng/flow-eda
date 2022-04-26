@@ -25,7 +25,7 @@ public class FlowDataRuntime {
 
     /** 运行流程 */
     public void runFlowData(List<FlowData> data) {
-        Long flowId =
+        String flowId =
                 Objects.requireNonNull(findFirst(data, n -> n.getFlowId() != null)).getFlowId();
         // 将流数据分为开始节点和定时器节点进行分别执行
         List<FlowData> starts = filter(data, this::isStartNode);
@@ -40,19 +40,17 @@ public class FlowDataRuntime {
     }
 
     /** 停止流程，并清理流程运行数据 */
-    public void stopFlowData(Long flowId) {
+    public void stopFlowData(String flowId) {
         FlowThreadPool.shutdownThreadPool(flowId);
         FlowThreadPool.shutdownSchedulerPool(flowId);
     }
 
     /** 被中断的节点需要推送中断状态信息 */
-    public void sendNodeInterruptStatus(Long flowId, List<String> nodeIds) {
+    public void sendNodeInterruptStatus(String flowId, List<String> nodeIds) {
         Document status =
                 new Document("status", Node.Status.FAILED.name())
                         .append("error", "node interrupted");
-        forEach(
-                nodeIds,
-                nodeId -> ws.sendMessage(flowId.toString(), status.append("nodeId", nodeId)));
+        forEach(nodeIds, nodeId -> ws.sendMessage(flowId, status.append("nodeId", nodeId)));
     }
 
     private boolean isStartNode(FlowData d) {

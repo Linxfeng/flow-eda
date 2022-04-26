@@ -16,7 +16,7 @@ public class NodeDataController {
     @Autowired private NodeDataService nodeDataService;
 
     @GetMapping("/node/data")
-    public Result<List<NodeData>> getNodeData(@RequestParam("flowId") Long flowId) {
+    public Result<List<NodeData>> getNodeData(@RequestParam("flowId") String flowId) {
         return Result.of(nodeDataService.getNodeData(flowId));
     }
 
@@ -28,13 +28,13 @@ public class NodeDataController {
     }
 
     @PostMapping("/node/data/run")
-    public Result<String> runNodeData(@RequestParam("flowId") Long flowId) {
+    public Result<String> runNodeData(@RequestParam("flowId") String flowId) {
         nodeDataService.runNodeData(flowId);
         return Result.ok();
     }
 
     @PostMapping("/node/data/stop")
-    public Result<String> stopNodeData(@RequestParam("flowId") Long flowId) {
+    public Result<String> stopNodeData(@RequestParam("flowId") String flowId) {
         nodeDataService.stopNodeData(flowId);
         return Result.ok();
     }

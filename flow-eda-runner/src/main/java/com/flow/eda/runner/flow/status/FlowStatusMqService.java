@@ -48,8 +48,8 @@ public class FlowStatusMqService {
         flowStatusWebSocket.sendMessage(flowId, payload);
         // 流程运行结束，需要清理缓存数据
         if (!Node.Status.RUNNING.name().equals(status)) {
-            FlowThreadPool.shutdownThreadPool(Long.parseLong(flowId));
-            FlowThreadPool.shutdownSchedulerPool(Long.parseLong(flowId));
+            FlowThreadPool.shutdownThreadPool(flowId);
+            FlowThreadPool.shutdownSchedulerPool(flowId);
         }
     }
 }

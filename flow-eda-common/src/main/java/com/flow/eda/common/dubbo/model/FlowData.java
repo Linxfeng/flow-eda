@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class FlowData implements Serializable {
     private String id;
     /** 流id */
-    private Long flowId;
+    private String flowId;
     /** 节点类型 */
     private String type;
     /** 节点属性参数 */

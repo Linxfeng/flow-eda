@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 public class Flow {
-    private Long id;
+    private String id;
     private String name;
     private String description;
     private Status status;

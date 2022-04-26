@@ -18,8 +18,8 @@ public interface NodeDataMapper {
     void insert(List<NodeData> list);
 
     @Select("SELECT * FROM eda_flow_node_data WHERE flow_id=#{flowId}")
-    List<NodeData> findByFlowId(Long flowId);
+    List<NodeData> findByFlowId(String flowId);
 
     @Delete("DELETE FROM eda_flow_node_data WHERE flow_id=#{flowId}")
-    void deleteByFlowId(Long flowId);
+    void deleteByFlowId(String flowId);
 }

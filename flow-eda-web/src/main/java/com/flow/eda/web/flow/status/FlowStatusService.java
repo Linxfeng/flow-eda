@@ -19,6 +19,7 @@ public class FlowStatusService {
     private static final String ROUTING_KEY = "flow.status.updated";
     /** 存储流程id对应的状态缓存对象 */
     private final Map<String, FlowStatus> statusMap = new HashMap<>();
+
     @Autowired private RabbitTemplate rabbitTemplate;
     @Autowired private FlowMapper flowMapper;
 
@@ -35,11 +36,10 @@ public class FlowStatusService {
 
     /** 将当前流程的状态更新到数据库 */
     private void updateStatus(String flowId) {
-        Long id = Long.parseLong(flowId);
         if (!statusMap.containsKey(flowId)) {
             return;
         }
-        Flow flow = flowMapper.findById(id);
+        Flow flow = flowMapper.findById(flowId);
         if (flow != null) {
             Flow.Status status = statusMap.get(flowId).getStatus();
             if (!flow.getStatus().equals(status)) {
@@ -48,7 +48,7 @@ public class FlowStatusService {
                 }
                 // 流程状态有变化，发送到mq中，同时更新数据库
                 this.sendFlowStatus(flowId, status.name());
-                flowMapper.updateStatus(id, status.name());
+                flowMapper.updateStatus(flowId, status.name());
             }
         }
     }

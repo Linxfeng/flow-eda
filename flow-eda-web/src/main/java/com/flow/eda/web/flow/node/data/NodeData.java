@@ -10,7 +10,7 @@ public class NodeData {
     /** 节点名称 */
     private String nodeName;
     /** 流id */
-    private Long flowId;
+    private String flowId;
     /** 节点类型id */
     private Long typeId;
     /** 当前节点位置top */

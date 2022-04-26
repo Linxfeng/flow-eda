@@ -25,7 +25,7 @@ public class FlowController {
 
     @PostMapping("/flow")
     public Result<Flow> addFlow(@RequestBody Flow flow) {
-        this.checkName(flow);
+        this.check(flow);
         flowService.addFlow(flow);
         log.info("Create flow {}", flow.getName());
         return Result.of(flow);
@@ -39,7 +39,7 @@ public class FlowController {
     }
 
     @DeleteMapping("/flow")
-    public Result<String> deleteFlow(@RequestBody List<Long> ids) {
+    public Result<String> deleteFlow(@RequestBody List<String> ids) {
         if (CollectionUtil.isNotEmpty(ids)) {
             flowService.deleteFlow(ids);
         }
@@ -50,11 +50,7 @@ public class FlowController {
         if (flow == null || flow.getId() == null) {
             throw new MissingPropertyException("id");
         }
-        this.checkName(flow);
-    }
-
-    private void checkName(Flow flow) {
-        if (flow == null || !StringUtils.hasText(flow.getName())) {
+        if (!StringUtils.hasText(flow.getName())) {
             throw new InvalidParameterException("name", "null");
         }
     }

@@ -24,7 +24,7 @@ public class FlowService {
         flowMapper.insert(flow);
     }
 
-    public Flow findById(long id) {
+    public Flow findById(String id) {
         Flow flow = flowMapper.findById(id);
         if (flow == null) {
             throw new ResourceNotFoundException("id", id);
@@ -38,7 +38,7 @@ public class FlowService {
         return findById(flow.getId());
     }
 
-    public void deleteFlow(List<Long> ids) {
+    public void deleteFlow(List<String> ids) {
         flowMapper.deleteByIds(ids);
     }
 }

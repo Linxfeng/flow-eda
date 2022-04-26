@@ -20,12 +20,12 @@ public class FlowDataServiceImpl implements FlowDataService {
     }
 
     @Override
-    public void stopFlowData(Long flowId) {
+    public void stopFlowData(String flowId) {
         flowDataRuntime.stopFlowData(flowId);
     }
 
     @Override
-    public void noticeRunningNodes(Long flowId, List<String> nodeIds) {
+    public void noticeRunningNodes(String flowId, List<String> nodeIds) {
         flowDataRuntime.sendNodeInterruptStatus(flowId, nodeIds);
     }
 }
