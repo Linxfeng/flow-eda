@@ -32,20 +32,14 @@
                 @selection-change="handleSelectionChange">
         <el-table-column align="center" type="selection" width="55"></el-table-column>
         <el-table-column label="名称" prop="name" show-overflow-tooltip width="250"></el-table-column>
-        <el-table-column :formatter="statusFormat" label="状态" prop="status" width="100"></el-table-column>
+        <el-table-column :formatter="statusFormat" label="状态" prop="status" width="120"></el-table-column>
         <el-table-column label="描述" prop="description" show-overflow-tooltip></el-table-column>
         <el-table-column :formatter="dateFormat" label="创建时间" prop="createDate" width="180"></el-table-column>
         <el-table-column :formatter="dateFormat" label="更新时间" prop="updateDate" width="180"></el-table-column>
-        <el-table-column align="center" label="操作" width="280">
+        <el-table-column align="center" label="操作" width="240">
           <template #default="scope">
             <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row.id)">查看</el-button>
             <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button v-if="scope.row.status!=='RUNNING'" icon="el-icon-caret-right" type="text"
-                       @click="runFlow(scope.row.id)">运行
-            </el-button>
-            <el-button v-if="scope.row.status==='RUNNING'" class="red" icon="el-icon-switch-button" type="text"
-                       @click="stopFlow(scope.row.id)">停止
-            </el-button>
             <el-button class="red" icon="el-icon-delete" type="text" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -80,21 +74,18 @@ import {reactive, ref, computed} from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
 import Moment from "moment";
 import {addFlow, deleteFlow, listFlow, updateFlow} from "../api/flow";
-import {executeNodeData, stopNodeData} from "../api/nodeData";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
 export default {
   name: "Flows",
   setup() {
-    const params = reactive({
-      page: 1
-    });
+    const params = reactive({page: 1});
     const tableData = ref([]);
     const pageTotal = ref(0);
 
     // 查询工作流列表
-    function getData() {
+    const getData = () => {
       listFlow(params).then(res => {
         if (res.message !== undefined) {
           ElMessage.error(res.message);
@@ -104,9 +95,8 @@ export default {
         }
       });
     }
-
-    // 进入页面加载列表
     getData();
+
     // 查询操作
     const handleSearch = () => {
       params.page = 1;
@@ -155,36 +145,6 @@ export default {
         router.push({path: path + id, query: {flowId: id}});
       }
     };
-    // 运行流程
-    const runFlow = (id) => {
-      ElMessageBox.confirm("是否确定运行？确认后本流程会立即开始运行！", "提示", {
-        type: "warning",
-      }).then(() => {
-        executeNodeData(id).then(res => {
-          if (res.message !== undefined) {
-            ElMessage.error(res.message);
-          } else {
-            ElMessage.success("操作成功");
-          }
-        });
-      }).catch(err => {
-      });
-    };
-    // 停止流程
-    const stopFlow = (id) => {
-      ElMessageBox.confirm("是否确定停止？确认后本流程会立即停止运行！", "提示", {
-        type: "warning",
-      }).then(() => {
-        stopNodeData(id).then(res => {
-          if (res.message !== undefined) {
-            ElMessage.error(res.message);
-          } else {
-            ElMessage.success("操作成功");
-          }
-        });
-      }).catch(err => {
-      });
-    };
     // 编辑操作
     const handleEdit = (index, row) => {
       form.value.id = row.id;
@@ -222,6 +182,7 @@ export default {
         });
       }
     };
+
     // 多选操作
     let multipleSelection = [];
     let hasSelection = ref(false);
@@ -229,12 +190,14 @@ export default {
       multipleSelection = val.map(i => i.id);
       hasSelection.value = multipleSelection.length > 0;
     };
+
     // 删除操作
     const handleDelete = (id) => {
       let msg = "确定要删除吗？删除后将无法恢复！";
       let ids = [id];
       deleteBatch(msg, ids);
     };
+
     // 批量删除操作
     const delAllSelection = () => {
       let msg = "确定要删除所选中的项吗？删除后将无法恢复！";
@@ -256,7 +219,8 @@ export default {
         });
       }).catch(err => {
       });
-    }
+    };
+
     // 状态字段转换
     const statusFormat = (row) => {
       if (row.status === 'INIT') {
@@ -269,10 +233,12 @@ export default {
         return "运行失败";
       }
     };
+
     // 日期格式化
     const dateFormat = (row, column) => {
       return Moment(row[column.property]).format('YYYY-MM-DD HH:mm:ss')
     };
+
     return {
       params,
       tableData,
@@ -284,8 +250,6 @@ export default {
       cleanSearch,
       handleAdd,
       handlePageChange,
-      runFlow,
-      stopFlow,
       handleShow,
       handleEdit,
       handleDelete,
