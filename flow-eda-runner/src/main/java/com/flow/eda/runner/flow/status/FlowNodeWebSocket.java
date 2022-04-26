@@ -17,11 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @EqualsAndHashCode
 @ServerEndpoint("/ws/flow/{id}/nodes")
-public class FlowWebSocket {
+public class FlowNodeWebSocket {
     /** 每个流程id对应一个session */
     private static final Map<String, Session> SESSION_POOL = new ConcurrentHashMap<>();
 
-    @Autowired private FlowStatusProducer flowStatusProducer;
+    @Autowired private FlowStatusMqService flowStatusMqService;
 
     @OnOpen
     public void onOpen(Session session, @PathParam("id") String id) {
@@ -62,7 +62,7 @@ public class FlowWebSocket {
 
     /** 将节点状态发送到mq中 */
     private void sendNodeStatus(String flowId, Document message) {
-        flowStatusProducer.sendNodeStatus(
+        flowStatusMqService.sendNodeStatus(
                 flowId, message.getString("nodeId"), message.getString("status"));
     }
 }

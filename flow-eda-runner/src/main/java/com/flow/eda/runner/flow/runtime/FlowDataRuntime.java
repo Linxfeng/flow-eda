@@ -3,7 +3,7 @@ package com.flow.eda.runner.flow.runtime;
 import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.runner.flow.node.Node;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
-import com.flow.eda.runner.flow.status.FlowWebSocket;
+import com.flow.eda.runner.flow.status.FlowNodeWebSocket;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import static com.flow.eda.runner.flow.runtime.FlowThreadPool.getThreadPool;
 
 @Service
 public class FlowDataRuntime {
-    @Autowired private FlowWebSocket ws;
+    @Autowired private FlowNodeWebSocket ws;
 
     /** 应用启动时，需要加载出正在运行中的流数据，继续运行 */
     @PostConstruct

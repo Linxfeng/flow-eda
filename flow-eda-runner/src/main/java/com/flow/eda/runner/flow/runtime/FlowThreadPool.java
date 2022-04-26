@@ -2,7 +2,7 @@ package com.flow.eda.runner.flow.runtime;
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +40,9 @@ public class FlowThreadPool {
             if (SCHEDULER_POOL_MAP.containsKey(flowId)) {
                 SCHEDULER_POOL_MAP.get(flowId).add(threadPoolTaskScheduler);
             } else {
-                SCHEDULER_POOL_MAP.put(flowId, Arrays.asList(threadPoolTaskScheduler));
+                List<ThreadPoolTaskScheduler> list = new ArrayList<>();
+                list.add(threadPoolTaskScheduler);
+                SCHEDULER_POOL_MAP.put(flowId, list);
             }
         }
         return threadPoolTaskScheduler;
