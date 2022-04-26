@@ -3,7 +3,7 @@
     <v-header/>
     <v-sidebar/>
     <div :class="{ 'content-collapse': collapse }" class="content-box">
-      <v-tags></v-tags>
+      <v-tags/>
       <div class="content">
         <router-view v-slot="{ Component }">
           <transition mode="out-in" name="move">
@@ -31,14 +31,13 @@ export default {
   },
   setup() {
     const store = useStore();
-    const tagsList = computed(() =>
-        store.state.tagsList.map((item) => item.name)
-    );
+    const tagsList = computed(() => store.state.tagsList.map((item) => item.name));
     const collapse = computed(() => store.state.collapse);
+
     return {
       tagsList,
-      collapse,
+      collapse
     };
-  },
+  }
 };
 </script>

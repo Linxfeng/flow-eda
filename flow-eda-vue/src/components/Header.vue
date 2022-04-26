@@ -20,12 +20,15 @@ import {useStore} from "vuex";
 
 export default {
   setup() {
+
     const store = useStore();
     const collapse = computed(() => store.state.collapse);
+
     // 侧边栏折叠
     const collapseChange = () => {
       store.commit("handleCollapse", !collapse.value);
     };
+
     //自动折叠侧边栏
     onMounted(() => {
       if (document.body.clientWidth < 1500) {

@@ -1,7 +1,7 @@
 import {createRouter, createWebHashHistory} from "vue-router";
 import Home from "../views/Home.vue";
 import Flows from "../views/Flows.vue";
-import EditorBox from "../views/EditorBox.vue";
+import Editor from "../views/Editor.vue";
 import NodeTypes from "../views/NodeTypes.vue";
 
 const routes = [
@@ -23,11 +23,11 @@ const routes = [
             },
             {
                 path: "/flows/editor",
-                name: "EditorBox",
+                name: "Editor",
                 meta: {
                     title: '编辑工作流'
                 },
-                component: EditorBox,
+                component: Editor,
                 props: route => ({flowId: route.query.flowId})
             },
             {

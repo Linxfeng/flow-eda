@@ -3,22 +3,17 @@ import {createStore} from 'vuex'
 export default createStore({
     state: {
         tagsList: [],
-        editorList: [],
         collapse: false
     },
     mutations: {
         delTagsItem(state, data) {
-            state
-                .tagsList
-                .splice(data.index, 1);
+            state.tagsList.splice(data.index, 1);
         },
         setTagsItem(state, data) {
-            state
-                .tagsList
-                .push(data)
+            state.tagsList.push(data);
         },
         clearTags(state) {
-            state.tagsList = []
+            state.tagsList = [];
         },
         closeTagsOther(state, data) {
             state.tagsList = data;
@@ -28,21 +23,13 @@ export default createStore({
                 const item = state.tagsList[i];
                 if (item.path === data.$route.fullPath) {
                     if (i < len - 1) {
-                        data
-                            .$router
-                            .push(state.tagsList[i + 1].path);
+                        data.$router.push(state.tagsList[i + 1].path);
                     } else if (i > 0) {
-                        data
-                            .$router
-                            .push(state.tagsList[i - 1].path);
+                        data.$router.push(state.tagsList[i - 1].path);
                     } else {
-                        data
-                            .$router
-                            .push("/");
+                        data.$router.push("/");
                     }
-                    state
-                        .tagsList
-                        .splice(i, 1);
+                    state.tagsList.splice(i, 1);
                     break;
                 }
             }
@@ -50,18 +37,8 @@ export default createStore({
         // 侧边栏折叠
         handleCollapse(state, data) {
             state.collapse = data;
-        },
-        addEditorItem(state, data) {
-            state.editorList.push(data);
-        },
-        closeEditorItem(state, data) {
-            state.editorList.forEach((item, index) => {
-                if (item === data) {
-                    state.editorList.splice(index, 1);
-                }
-            });
         }
     },
     actions: {},
     modules: {}
-})
+});

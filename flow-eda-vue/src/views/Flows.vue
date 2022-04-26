@@ -136,13 +136,21 @@ export default {
     // 查看详情,打开流编辑器
     const router = useRouter();
     const store = useStore();
-    const tagsList = computed(() => store.state.tagsList.map((item) => item.path));
+    const tagsList = computed(() => store.state.tagsList.map(i => i.path));
     const handleShow = (id) => {
-      const path = '/flows/editor?flowId=' + id;
-      if (!tagsList.value.includes(id)) {
-        store.commit("addEditorItem", id);
+      const path = "/flows/editor?flowId=";
+      // 是否已经存在打开的编辑器页面
+      const tag = tagsList.value.some(i => {
+        if (i.startsWith(path)) {
+          return i;
+        }
+      });
+      // 对比是否是同一个流
+      const oldId = path.split("=")[1];
+      if (oldId !== id) {
+        console.log("close old " + oldId + " open new id: " + id);
       }
-      router.push({path: path, query: {flowId: id}});
+      router.push({path: path + id, query: {flowId: id}});
     };
     // 运行流程
     const runFlow = (id) => {

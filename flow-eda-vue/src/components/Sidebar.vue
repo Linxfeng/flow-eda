@@ -33,7 +33,6 @@ export default {
     ];
 
     const route = useRoute();
-
     const onRoutes = computed(() => {
       return route.path;
     });

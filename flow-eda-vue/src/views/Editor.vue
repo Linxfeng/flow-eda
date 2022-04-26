@@ -46,7 +46,7 @@ import {generateUniqueID} from "../utils/util.js";
 import {getNodeTypes} from "../api/nodeType.js";
 import {executeNodeData, getNodeData, setNodeData, stopNodeData} from "../api/nodeData.js";
 import {onClose, onOpen} from "../utils/websocket.js";
-import jsplumb from "jsplumb";
+import {jsPlumb} from "jsplumb";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
@@ -65,7 +65,8 @@ export default {
     flowId: String | Number
   },
   setup(props) {
-
+    // jsPlumb实例
+    const jsPlumbInstance = jsPlumb.getInstance();
     // 面板上的节点数据
     const data = reactive({
       nodeTypeList: [],
@@ -73,7 +74,6 @@ export default {
       lineList: [],
       selectedNode: null
     });
-    let jsPlumb;
     const store = useStore();
     // 对齐辅助线
     const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
@@ -113,25 +113,25 @@ export default {
 
     // 初始化画板
     const init = () => {
-      jsPlumb.ready(() => {
+      jsPlumbInstance.ready(() => {
         // 导入默认配置
-        jsPlumb.importDefaults(jsplumbSetting);
+        jsPlumbInstance.importDefaults(jsplumbSetting);
         // 连线创建成功后，维护本地数据
-        jsPlumb.bind("connection", evt => {
+        jsPlumbInstance.bind("connection", evt => {
           addLine(evt);
         });
         //连线双击删除事件
-        jsPlumb.bind("dblclick", line => {
+        jsPlumbInstance.bind("dblclick", line => {
           confirmDeleteLine(line);
         });
         //断开连线后，维护本地数据
-        jsPlumb.bind("connectionDetached", evt => {
+        jsPlumbInstance.bind("connectionDetached", evt => {
           deleteLine(evt);
         });
         // 加载流程图
         loadEasyFlow();
-        // 使整个jsPlumb立即重绘。
-        jsPlumb.setSuspendDrawing(false, true);
+        // 使整个jsPlumbInstance立即重绘。
+        jsPlumbInstance.setSuspendDrawing(false, true);
       });
       // 面板缩放
       initPanZoom();
@@ -151,7 +151,7 @@ export default {
       ElMessageBox.confirm("确认删除该连线？", "提示", {
         type: "warning",
       }).then(() => {
-        jsPlumb.deleteConnection(line);
+        jsPlumbInstance.deleteConnection(line);
       }).catch(() => {
       });
     };
@@ -170,18 +170,18 @@ export default {
       for (let i = 0; i < data.nodeList.length; i++) {
         let node = data.nodeList[i];
         // 设置源点，可以拖出线连接其他节点
-        jsPlumb.makeSource(node.id, jsplumbSourceOptions);
+        jsPlumbInstance.makeSource(node.id, jsplumbSourceOptions);
         // 设置目标点，其他源点拖出的线可以连接该节点
-        jsPlumb.makeTarget(node.id, jsplumbTargetOptions);
+        jsPlumbInstance.makeTarget(node.id, jsplumbTargetOptions);
         // 注册节点拖动事件
         draggableNode(node.id);
       }
       //取消连接事件
-      jsPlumb.unbind("connection");
+      jsPlumbInstance.unbind("connection");
       // 初始化连线
       for (let i = 0; i < data.lineList.length; i++) {
         let line = data.lineList[i];
-        jsPlumb.connect(
+        jsPlumbInstance.connect(
             {
               source: line.from,
               target: line.to
@@ -190,7 +190,7 @@ export default {
         );
       }
       //注册连接事件
-      jsPlumb.bind("connection", evt => {
+      jsPlumbInstance.bind("connection", evt => {
         data.lineList.push({
           id: generateUniqueID(8),
           from: evt.source.id,
@@ -201,7 +201,7 @@ export default {
 
     // 拖动节点事件
     const draggableNode = (nodeId) => {
-      jsPlumb.draggable(nodeId, {
+      jsPlumbInstance.draggable(nodeId, {
         //节点移动最小距离
         grid: [5, 5],
         drag: (params) => {
@@ -247,9 +247,9 @@ export default {
 
     // 设置面板缩放
     const initPanZoom = () => {
-      const mainContainer = jsPlumb.getContainer();
+      const mainContainer = jsPlumbInstance.getContainer();
       const mainContainerWrap = mainContainer.parentNode;
-      // 缩放时设置jsPlumb的缩放比率
+      // 缩放时设置jsPlumbInstance的缩放比率
       const pan = panzoom(mainContainer, {
         smoothScroll: false,
         bounds: true,
@@ -257,11 +257,11 @@ export default {
         minZoom: 0.5,
         maxZoom: 2
       });
-      jsPlumb.mainContainerWrap = mainContainerWrap;
-      jsPlumb.pan = pan;
+      jsPlumbInstance.mainContainerWrap = mainContainerWrap;
+      jsPlumbInstance.pan = pan;
       pan.on("zoom", e => {
         const {x, y, scale} = e.getTransform();
-        jsPlumb.setZoom(scale);
+        jsPlumbInstance.setZoom(scale);
         //根据缩放比例，缩放对齐辅助线长度和位置
         auxiliaryLinePos.width = (1 / scale) * 100 + '%';
         auxiliaryLinePos.height = (1 / scale) * 100 + '%';
@@ -294,8 +294,8 @@ export default {
     };
 
     const drop = (event) => {
-      const containerRect = jsPlumb.getContainer().getBoundingClientRect();
-      const scale = jsPlumb.getZoom();
+      const containerRect = jsPlumbInstance.getContainer().getBoundingClientRect();
+      const scale = jsPlumbInstance.getZoom();
       let left = (event.pageX - containerRect.left - 60) / scale;
       let top = (event.pageY - containerRect.top - 20) / scale;
       let temp = {
@@ -316,8 +316,8 @@ export default {
     const addNode = (temp) => {
       data.nodeList.push(temp);
       nextTick(() => {
-        jsPlumb.makeSource(temp.id, jsplumbSourceOptions);
-        jsPlumb.makeTarget(temp.id, jsplumbTargetOptions);
+        jsPlumbInstance.makeSource(temp.id, jsplumbSourceOptions);
+        jsPlumbInstance.makeTarget(temp.id, jsplumbTargetOptions);
         draggableNode(temp.id);
       });
     };
@@ -353,7 +353,7 @@ export default {
           data.nodeList.map((v, index) => {
             if (v.id === node.id) {
               data.nodeList.splice(index, 1);
-              jsPlumb.remove(v.id);
+              jsPlumbInstance.remove(v.id);
               return v;
             }
           });
@@ -376,9 +376,9 @@ export default {
 
     // 界面缩放，以绘制面板原点为基准，每次缩放25%
     const zoomNode = (e) => {
-      const scale = jsPlumb.getZoom();
-      const max = jsPlumb.pan.getMaxZoom();
-      const min = jsPlumb.pan.getMinZoom();
+      const scale = jsPlumbInstance.getZoom();
+      const max = jsPlumbInstance.pan.getMaxZoom();
+      const min = jsPlumbInstance.pan.getMinZoom();
       let temp;
       if (e === 'in') {
         if (scale < max) {
@@ -406,13 +406,13 @@ export default {
       } else if (temp < min) {
         temp = min;
       }
-      jsPlumb.setZoom(temp);
+      jsPlumbInstance.setZoom(temp);
       document.getElementById("flow").style.transform = "scale(" + temp + ")";
     };
 
     //更改连线状态
     const changeLineState = (nodeId, val) => {
-      let lines = jsPlumb.getAllConnections();
+      let lines = jsPlumbInstance.getAllConnections();
       lines.forEach(line => {
         if (line.targetId === nodeId || line.sourceId === nodeId) {
           if (val) {
@@ -540,28 +540,19 @@ export default {
       });
     };
 
-    // 路由切换 重新加载数据
-    const reloadData = async () => {
-      console.log("重新加载数据:" + props.flowId);
-      jsPlumb = jsplumb.jsPlumb.getInstance();
-      jsPlumb.clear();
+    // 初始化页面数据，渲染流程图
+    onMounted(async () => {
       await initNodeType();
       await initNode();
       await nextTick(() => {
         init();
       });
-    };
-
-    // 初始化页面数据，渲染流程图
-    onMounted(async () => {
-      await reloadData();
     });
 
     // 组件被销毁之前，关闭socket连接
     onBeforeUnmount(() => {
       console.log("销毁:" + props.flowId)
       onClose(props.flowId);
-      store.commit("closeEditorItem", props.flowId);
     });
 
     return {
