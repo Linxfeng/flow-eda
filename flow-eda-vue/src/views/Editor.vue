@@ -1,9 +1,9 @@
 <template>
   <div style="height: 100%">
-    <toolbar @copyNode="copyNode(data.selectedNode)" @deleteNode="deleteNode(data.selectedNode)"
-             @executeFlow="executeFlow" @keyup="keyupNode($event,data.selectedNode)"
-             @pasteNode="pasteNode" @saveData="saveData" @stopFlow="stopFlow"
-             @zoomNode="zoomNode"/>
+    <toolbar :status="flowStatus" @copyNode="copyNode(data.selectedNode)"
+             @deleteNode="deleteNode(data.selectedNode)" @executeFlow="executeFlow"
+             @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"
+             @stopFlow="stopFlow" @zoomNode="zoomNode"/>
     <div id="flow-content" class="flow-content">
       <div class="nodes-wrap">
         <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import {onBeforeUnmount, onMounted, nextTick, reactive} from 'vue';
+import {onBeforeUnmount, onMounted, nextTick, ref, reactive} from 'vue';
 import {jsplumbSetting} from '../utils/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../utils/jsplumbConfig";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -46,7 +46,7 @@ import {jsPlumb} from "jsplumb";
 import {generateUniqueID} from "../utils/util.js";
 import {getNodeTypes} from "../api/nodeType.js";
 import {executeNodeData, getNodeData, setNodeData, stopNodeData} from "../api/nodeData.js";
-import {onClose, onOpen} from "../utils/websocket.js";
+import {onOpenFlow, onOpenNode, onClose} from "../utils/websocket.js";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
@@ -502,8 +502,8 @@ export default {
         v.output = undefined;
       });
       await saveData();
-      // 建立websocket连接
-      await onOpen(props.flowId, (s) => {
+      // 建立websocket连接，接收节点运行信息
+      await onOpenNode(props.flowId, (s) => {
         const res = JSON.parse(s);
         data.nodeList.map(node => {
           if (node.id === res.nodeId) {
@@ -538,6 +538,14 @@ export default {
       });
     };
 
+    // 建立websocket连接，获取当前流程状态
+    const flowStatus = ref("");
+    const getFlowStatus = async () => {
+      await onOpenFlow(props.flowId, (s) => {
+        flowStatus.value = JSON.parse(s).status;
+      });
+    };
+
     // 初始化页面数据，渲染流程图
     onMounted(async () => {
       await initNodeType();
@@ -545,6 +553,7 @@ export default {
       await nextTick(() => {
         init();
       });
+      await getFlowStatus();
     });
 
     // 组件被销毁之前，关闭socket连接
@@ -554,6 +563,7 @@ export default {
 
     return {
       data,
+      flowStatus,
       auxiliaryLine,
       auxiliaryLinePos,
       showDescription,

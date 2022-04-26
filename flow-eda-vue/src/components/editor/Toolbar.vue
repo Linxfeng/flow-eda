@@ -6,14 +6,14 @@
       <span class="icon-lx-save"/>
       </span>
     </el-tooltip>
-    <el-tooltip content="运行" placement="bottom">
+    <el-tooltip v-if="statusRef!=='RUNNING'" content="运行" placement="bottom">
       <span class="command" @click="handle('run')">
       <span class="icon-lx-run"/>
       </span>
     </el-tooltip>
-    <el-tooltip content="停止" placement="bottom">
+    <el-tooltip v-if="statusRef==='RUNNING'" content="停止" placement="bottom">
       <span class="command" @click="handle('stop')">
-      <span class="icon-lx-run"/>
+      <span class="icon-lx-stop"/>
       </span>
     </el-tooltip>
     <span class="separator"/>
@@ -60,16 +60,31 @@
 
 <script>
 import {ElMessage, ElMessageBox} from "element-plus";
+import {ref, watch} from "vue";
 
 export default {
   name: "Toolbar",
+  props: {
+    status: String
+  },
   setup(props, context) {
+
+    // 运行状态副本，通过watch监听状态变化
+    let statusRef = ref("");
+    watch(() => props.status,
+        (n, o) => statusRef.value = n
+    );
 
     const run = () => {
       ElMessageBox.confirm("确认运行本流程？这将会保存本流程并覆盖之前的数据", "提示", {
         type: "warning",
       }).then(() => {
-        context.emit("executeFlow");
+        if (statusRef.value === "RUNNING") {
+          ElMessage.warning("流程正在运行中，请稍候")
+        } else {
+          context.emit("executeFlow");
+          statusRef.value = "RUNNING";
+        }
       }).catch(() => {
       });
     };
@@ -78,7 +93,12 @@ export default {
       ElMessageBox.confirm("确认停止运行？这将会立即停止本流程的运行", "提示", {
         type: "warning",
       }).then(() => {
-        context.emit("stopFlow");
+        if (statusRef.value !== "RUNNING") {
+          ElMessage.warning("流程已运行完成")
+        } else {
+          context.emit("stopFlow");
+          statusRef.value = "FAILED";
+        }
       }).catch(() => {
       });
     };
@@ -103,6 +123,7 @@ export default {
     };
 
     return {
+      statusRef,
       handle
     }
   }
