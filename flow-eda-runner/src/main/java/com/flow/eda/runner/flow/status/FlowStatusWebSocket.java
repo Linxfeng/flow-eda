@@ -3,7 +3,6 @@ package com.flow.eda.runner.flow.status;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -20,8 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FlowStatusWebSocket {
     /** 每个流程id对应一个session */
     private static final Map<String, Session> SESSION_POOL = new ConcurrentHashMap<>();
-
-    @Autowired private FlowStatusMqService flowStatusMqService;
 
     @OnOpen
     public void onOpen(Session session, @PathParam("id") String id) {
