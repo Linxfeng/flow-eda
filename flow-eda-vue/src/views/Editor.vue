@@ -38,21 +38,20 @@
 </template>
 
 <script>
-import {nextTick, onBeforeUnmount, onMounted, reactive} from 'vue';
+import {onBeforeUnmount, onMounted, nextTick, reactive} from 'vue';
 import {jsplumbSetting} from '../utils/jsplumbConfig.js';
 import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../utils/jsplumbConfig";
 import {ElMessage, ElMessageBox} from "element-plus";
+import {jsPlumb} from "jsplumb";
 import {generateUniqueID} from "../utils/util.js";
 import {getNodeTypes} from "../api/nodeType.js";
 import {executeNodeData, getNodeData, setNodeData, stopNodeData} from "../api/nodeData.js";
 import {onClose, onOpen} from "../utils/websocket.js";
-import {jsPlumb} from "jsplumb";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
 import nodeDetail from "../components/editor/NodeDetail.vue";
 import screenfull from "screenfull";
-import {useStore} from "vuex";
 
 export default {
   name: "Editor",
@@ -74,7 +73,6 @@ export default {
       lineList: [],
       selectedNode: null
     });
-    const store = useStore();
     // 对齐辅助线
     const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
     const auxiliaryLinePos = reactive({width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20});
@@ -551,7 +549,6 @@ export default {
 
     // 组件被销毁之前，关闭socket连接
     onBeforeUnmount(() => {
-      console.log("销毁:" + props.flowId)
       onClose(props.flowId);
     });
 

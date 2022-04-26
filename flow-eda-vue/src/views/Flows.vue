@@ -77,11 +77,11 @@
 
 <script>
 import {reactive, ref, computed} from "vue";
-import {useRouter} from "vue-router";
 import {ElMessage, ElMessageBox} from "element-plus";
+import Moment from "moment";
 import {addFlow, deleteFlow, listFlow, updateFlow} from "../api/flow";
 import {executeNodeData, stopNodeData} from "../api/nodeData";
-import Moment from "moment";
+import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 
 export default {
@@ -133,24 +133,27 @@ export default {
       getData();
     };
 
-    // 查看详情,打开流编辑器
     const router = useRouter();
     const store = useStore();
-    const tagsList = computed(() => store.state.tagsList.map(i => i.path));
+    const tagsList = computed(() => store.state.tagsList);
+
+    // 查看详情，打开流编辑器
     const handleShow = (id) => {
       const path = "/flows/editor?flowId=";
       // 是否已经存在打开的编辑器页面
-      const tag = tagsList.value.some(i => {
-        if (i.startsWith(path)) {
-          return i;
-        }
-      });
-      // 对比是否是同一个流
-      const oldId = path.split("=")[1];
-      if (oldId !== id) {
-        console.log("close old " + oldId + " open new id: " + id);
+      const tags = tagsList.value.filter(i => i.path.startsWith(path));
+      if (tags.length > 0 && tags[0].path.split("=")[1] !== id.toString()) {
+        ElMessageBox.confirm("您有未关闭编辑页，是否打开新的编辑页？这将会丢失未保存的数据！", "提示", {
+          type: "warning",
+        }).then(() => {
+          // 先销毁，再重新加载组件
+          store.commit("delTagsItem", {index: tagsList.value.indexOf(tags[0])});
+          router.push({path: path + id, query: {flowId: id}});
+        }).catch(err => {
+        });
+      } else {
+        router.push({path: path + id, query: {flowId: id}});
       }
-      router.push({path: path + id, query: {flowId: id}});
     };
     // 运行流程
     const runFlow = (id) => {
