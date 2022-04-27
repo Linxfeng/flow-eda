@@ -4,10 +4,15 @@ import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.runner.flow.node.AbstractNode;
 import com.flow.eda.runner.flow.node.NodeFunction;
+import com.flow.eda.runner.flow.node.NodeVerify;
 import lombok.Getter;
 import org.bson.Document;
 import org.springframework.scheduling.support.CronExpression;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import static com.flow.eda.runner.flow.node.NodeVerify.isTrue;
@@ -21,6 +26,8 @@ public class TimerNode extends AbstractNode {
     private TimeUnit unit;
     private Integer times;
     private String cron;
+    private String timePattern;
+    private DateFormat dateFormat;
     private Runnable runnable;
 
     public TimerNode(Document params) {
@@ -33,7 +40,21 @@ public class TimerNode extends AbstractNode {
 
     @Override
     public void run(NodeFunction callback) {
-        this.runnable = () -> callback.callback(output());
+        this.runnable =
+                () -> {
+                    Document output = super.output();
+                    // 输出指定格式的时间戳
+                    if (this.timePattern != null) {
+                        Object timestamp;
+                        if (dateFormat != null) {
+                            timestamp = dateFormat.format(new Date());
+                        } else {
+                            timestamp = Instant.now().toEpochMilli();
+                        }
+                        output.append("timestamp", timestamp);
+                    }
+                    callback.callback(output);
+                };
         // 执行指定次数后，需要停止任务并设置节点状态
         if (this.times > 0) {
             TimerTask.runTimes(this, () -> setStatus(Status.FINISHED));
@@ -67,8 +88,25 @@ public class TimerNode extends AbstractNode {
                 this.unit = TimeUnit.valueOf(pd.split(",")[1]);
                 notNull(unit, "period");
             }
+
+            if (params.containsKey("timestamp")) {
+                String pattern = params.getString("timestamp");
+                if (!"timestamp".equals(pattern)) {
+                    this.checkPattern(pattern);
+                }
+                this.timePattern = pattern;
+            }
         } catch (Exception e) {
             throw FlowException.wrap(e, "The timer node parameters is invalid");
+        }
+    }
+
+    private void checkPattern(String pattern) {
+        try {
+            this.dateFormat = new SimpleDateFormat(pattern);
+            this.dateFormat.format(new Date());
+        } catch (Exception e) {
+            NodeVerify.throwWithName("timestamp");
         }
     }
 }
