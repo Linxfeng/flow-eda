@@ -66,7 +66,7 @@ export default {
       data.isSelected = false;
       setTimeout(() => {
         context.emit("changeLineState", props.node.id, true);
-        context.emit("showNodeDetail", props.node, true);
+        context.emit("showNodeDetail", props.node);
       }, 0);
     };
 

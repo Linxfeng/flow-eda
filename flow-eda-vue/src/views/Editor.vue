@@ -20,7 +20,7 @@
       </div>
       <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop" @drop="drop"
            @keyup="keyupNode($event,data.selectedNode)">
-        <div id="flow">
+        <div id="flow" tabindex="1" @focusin="showNodeDetail(null)">
           <div v-show="auxiliaryLine.isShowXLine"
                :style="{width: auxiliaryLinePos.width, top:auxiliaryLinePos.y + 'px', left: auxiliaryLinePos.offsetX + 'px'}"
                class="auxiliary-line-x"></div>
@@ -435,12 +435,8 @@ export default {
     };
 
     // 右侧栏展示节点详情
-    const showNodeDetail = (node, show) => {
-      if (show) {
-        data.selectedNode = node;
-      } else {
-        data.selectedNode = null;
-      }
+    const showNodeDetail = (node) => {
+      data.selectedNode = node;
     };
 
     // 更新节点属性信息

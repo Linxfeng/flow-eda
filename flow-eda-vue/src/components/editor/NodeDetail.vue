@@ -1,5 +1,5 @@
 <template>
-  <div v-click-outside="hideDetail" class="node-detail">
+  <div class="node-detail">
     <div class="detail-header">
       <div class="title">{{ node.nodeType.typeName }}</div>
       <el-button class="button el-button--small" style="float: right" type="primary" @click="submitNode(detailFormRef)">
@@ -49,7 +49,6 @@
 
 <script>
 import {reactive, ref} from "vue";
-import vClickOutside from 'click-outside-vue3'
 import {ElMessage} from "element-plus";
 import JsonViewer from 'vue-json-viewer';
 
@@ -60,9 +59,6 @@ export default {
   },
   components: {
     JsonViewer
-  },
-  directives: {
-    clickOutside: vClickOutside.directive
   },
   setup(props, context) {
     // 节点参数定义
@@ -119,10 +115,6 @@ export default {
     }
     const rules = reactive(ruleForm);
 
-    const hideDetail = () => {
-      context.emit("showNodeDetail", props.node, false);
-    };
-
     // 提交表单节点信息
     const submitNode = (formEl) => {
       formEl.validate((valid) => {
@@ -159,7 +151,6 @@ export default {
       detailForm,
       rules,
       detailFormRef,
-      hideDetail,
       submitNode
     };
   }
