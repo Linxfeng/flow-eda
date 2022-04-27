@@ -456,6 +456,32 @@ export default {
       });
     };
 
+    // 建立websocket连接，获取当前流程状态
+    const flowStatus = ref("");
+    const getFlowStatus = async () => {
+      await onOpenFlow(props.flowId, (s) => {
+        flowStatus.value = JSON.parse(s).status;
+      });
+    };
+    // 建立websocket连接，获取节点状态信息
+    const getNodeStatus = async () => {
+      await onOpenNode(props.flowId, (s) => {
+        const res = JSON.parse(s);
+        data.nodeList.forEach(node => {
+          if (node.id === res.nodeId) {
+            node.status = res.status;
+            if (res.output) {
+              node.output = res.output;
+            }
+            if (res.error) {
+              node.error = res.error;
+              ElMessage.error(res.error);
+            }
+          }
+        });
+      });
+    };
+
     // 保存流程图所有节点数据
     const saveData = async () => {
       if (data.nodeList.length === 0) {
@@ -502,23 +528,10 @@ export default {
         v.output = undefined;
       });
       await saveData();
-      // 建立websocket连接，接收节点运行信息
-      await onOpenNode(props.flowId, (s) => {
-        const res = JSON.parse(s);
-        data.nodeList.map(node => {
-          if (node.id === res.nodeId) {
-            node.status = res.status;
-            if (res.output) {
-              node.output = res.output;
-            }
-            if (res.error) {
-              node.error = res.error;
-              ElMessage.error(res.error);
-            }
-            return node;
-          }
-        });
-      });
+      // 建立websocket连接
+      await getNodeStatus();
+      await getFlowStatus();
+      // 运行
       const res = await executeNodeData(props.flowId);
       if (res.message !== undefined) {
         ElMessage.error(res.message);
@@ -527,7 +540,7 @@ export default {
       }
     };
 
-    // 停止本流程
+    // 停止流程
     const stopFlow = () => {
       stopNodeData(props.flowId).then(res => {
         if (res.message !== undefined) {
@@ -538,14 +551,6 @@ export default {
       });
     };
 
-    // 建立websocket连接，获取当前流程状态
-    const flowStatus = ref("");
-    const getFlowStatus = async () => {
-      await onOpenFlow(props.flowId, (s) => {
-        flowStatus.value = JSON.parse(s).status;
-      });
-    };
-
     // 初始化页面数据，渲染流程图
     onMounted(async () => {
       await initNodeType();
@@ -553,7 +558,6 @@ export default {
       await nextTick(() => {
         init();
       });
-      await getFlowStatus();
     });
 
     // 组件被销毁之前，关闭socket连接
