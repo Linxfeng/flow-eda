@@ -18,3 +18,6 @@ dubbo:
   protocol:
     name: dubbo
     port: 20880
+logging:
+  level:
+    com.alibaba.nacos.common.remote.client: warn
