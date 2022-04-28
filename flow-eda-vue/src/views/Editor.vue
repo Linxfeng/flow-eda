@@ -46,7 +46,7 @@ import {jsPlumb} from "jsplumb";
 import {generateUniqueID} from "../utils/util.js";
 import {getNodeTypes} from "../api/nodeType.js";
 import {executeNodeData, getNodeData, setNodeData, stopNodeData} from "../api/nodeData.js";
-import {onClose, onOpenFlow, onOpenNode} from "../utils/websocket.js";
+import {onClose, onOpen} from "../utils/websocket.js";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
@@ -452,16 +452,11 @@ export default {
       });
     };
 
-    // 建立websocket连接，获取当前流程状态
+    // 建立websocket连接，获取节点状态信息
     const flowStatus = ref("");
-    const getFlowStatus = async () => {
-      await onOpenFlow(props.flowId, (s) => {
-        flowStatus.value = JSON.parse(s).status;
-      });
-    };
     // 建立websocket连接，获取节点状态信息
     const getNodeStatus = async () => {
-      await onOpenNode(props.flowId, (s) => {
+      await onOpen(props.flowId, (s) => {
         const res = JSON.parse(s);
         data.nodeList.forEach(node => {
           if (node.id === res.nodeId) {
@@ -475,6 +470,9 @@ export default {
             }
           }
         });
+        if (res.flowStatus) {
+          flowStatus.value = res.flowStatus;
+        }
       });
     };
 
@@ -526,7 +524,6 @@ export default {
       await saveData();
       // 建立websocket连接
       await getNodeStatus();
-      await getFlowStatus();
       // 运行
       const res = await executeNodeData(props.flowId);
       if (res.message !== undefined) {
