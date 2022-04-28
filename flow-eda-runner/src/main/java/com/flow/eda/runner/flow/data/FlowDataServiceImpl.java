@@ -25,7 +25,7 @@ public class FlowDataServiceImpl implements FlowDataService {
     }
 
     @Override
-    public void noticeRunningNodes(String flowId, List<String> nodeIds) {
-        flowDataRuntime.sendNodeInterruptStatus(flowId, nodeIds);
+    public void clearFlowData(String flowId) {
+        flowDataRuntime.clearFlowData(flowId);
     }
 }
