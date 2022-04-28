@@ -21,7 +21,8 @@ public class FlowNodeWebSocket {
     /** 每个流程id对应一个session */
     private static final Map<String, Session> SESSION_POOL = new ConcurrentHashMap<>();
 
-    @Autowired private FlowStatusMqService flowStatusMqService;
+    @Autowired private FlowStatusMqProducer flowStatusMqProducer;
+    @Autowired private FlowStatusService flowStatusService;
 
     @OnOpen
     public void onOpen(Session session, @PathParam("id") String id) {
@@ -47,22 +48,19 @@ public class FlowNodeWebSocket {
 
     /** 推送节点状态和输出信息 */
     public void sendMessage(String flowId, Document message) {
-        sendNodeStatus(flowId, message);
-        if (SESSION_POOL.get(flowId) == null) {
-            return;
-        }
-        try {
-            synchronized (SESSION_POOL.get(flowId)) {
-                SESSION_POOL.get(flowId).getBasicRemote().sendText(message.toJson());
+        // 获取流程实时状态信息一起推送
+        String flowStatus = flowStatusService.getFlowStatus(flowId, message);
+        message.append("flowStatus", flowStatus);
+        if (SESSION_POOL.get(flowId) != null) {
+            try {
+                synchronized (SESSION_POOL.get(flowId)) {
+                    SESSION_POOL.get(flowId).getBasicRemote().sendText(message.toJson());
+                }
+            } catch (Exception e) {
+                log.error("Send websocket message failed:{}", e.getMessage());
             }
-        } catch (Exception e) {
-            log.error("Send websocket message failed:{}", e.getMessage());
         }
-    }
-
-    /** 将节点状态发送到mq中 */
-    private void sendNodeStatus(String flowId, Document message) {
-        flowStatusMqService.sendNodeStatus(
-                flowId, message.getString("nodeId"), message.getString("status"));
+        // 向mq中推送流程的实时运行状态信息
+        flowStatusMqProducer.sendFlowStatus(flowId, flowStatus);
     }
 }
