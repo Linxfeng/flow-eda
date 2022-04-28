@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 public class FlowStatusWatchDog {
     /** 刷新周期 */
     private static final long SLEEP = 2000;
-    /** key为流程id，节点状态更新时会更新对应的value值为true */
+    /** key为流程id，流程状态更新时会更新对应的value值为true */
     private static final Map<String, Boolean> MAP = new ConcurrentHashMap<>();
 
     /** 刷新看门狗 */
