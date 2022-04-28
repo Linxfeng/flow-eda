@@ -23,10 +23,9 @@ public interface FlowDataService {
     void stopFlowData(String flowId);
 
     /**
-     * 用于通知运行服务正在运行中的节点id
+     * 清理当前流程缓存数据（流程运行结束后调用）
      *
      * @param flowId 流程id
-     * @param nodeIds 运行中的节点id
      */
-    void noticeRunningNodes(String flowId, List<String> nodeIds);
+    void clearFlowData(String flowId);
 }
