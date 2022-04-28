@@ -3,13 +3,10 @@ package com.flow.eda.web.flow.node.data;
 import com.flow.eda.common.dubbo.api.FlowDataService;
 import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InvalidStateException;
-import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.common.utils.MergeBuilder;
-import com.flow.eda.web.flow.Flow;
 import com.flow.eda.web.flow.FlowService;
 import com.flow.eda.web.flow.node.type.NodeType;
 import com.flow.eda.web.flow.node.type.NodeTypeService;
-import com.flow.eda.web.flow.status.FlowStatusService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +24,6 @@ public class NodeDataService {
     @Autowired private NodeDataMapper nodeDataMapper;
     @Autowired private NodeTypeService nodeTypeService;
     @Autowired private FlowService flowService;
-    @Autowired private FlowStatusService flowStatusService;
 
     public List<NodeData> getNodeData(String flowId) {
         List<NodeData> list = nodeDataMapper.findByFlowId(flowId);
@@ -58,18 +54,11 @@ public class NodeDataService {
         flowDataService.runFlowData(data);
     }
 
-    /** 停止运行当前流程 (仅运行中状态的流程可被停止) */
+    /** 停止运行当前流程 */
     public void stopNodeData(String flowId) {
-        Flow flow = flowService.findById(flowId);
-        if (Flow.Status.RUNNING.equals(flow.getStatus())) {
-            // 调用远程接口，停止运行当前流程
-            flowDataService.stopFlowData(flowId);
-            // 通知运行服务,哪些节点被中断
-            List<String> runningNodes = flowStatusService.getRunningNodes(flowId);
-            if (CollectionUtil.isNotEmpty(runningNodes)) {
-                flowDataService.noticeRunningNodes(flowId, runningNodes);
-            }
-        }
+        flowService.findById(flowId);
+        // 调用远程接口，停止运行当前流程
+        flowDataService.stopFlowData(flowId);
     }
 
     private FlowData convert(NodeData nodeData) {
