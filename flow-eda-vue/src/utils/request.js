@@ -2,7 +2,7 @@ import axios from 'axios'
 import {ElMessage} from "element-plus";
 
 const service = axios.create({
-    timeout: 15000,
+    timeout: 8000,
     headers: {
         'Content-Type': 'application/json;charset=utf-8',
         'Access-Control-Allow-Origin': '*'
@@ -30,7 +30,11 @@ service.interceptors.response.use(
         }
     },
     error => {
-        ElMessage.error(error.response.data.error);
+        if (error.response) {
+            ElMessage.error(error.response.data.error);
+        } else {
+            ElMessage.error("request timeout");
+        }
     }
 );
 
