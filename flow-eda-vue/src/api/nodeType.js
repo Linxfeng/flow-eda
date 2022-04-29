@@ -8,30 +8,3 @@ export function getNodeTypes(params) {
         params: params
     });
 }
-
-// 新增节点类型
-export function addNodeType(body) {
-    return request({
-        url: '/api/v1/node/type',
-        method: 'post',
-        data: body
-    });
-}
-
-// 修改节点类型
-export function updateNodeType(body) {
-    return request({
-        url: '/api/v1/node/type',
-        method: 'put',
-        data: body
-    });
-}
-
-// 删除节点类型
-export function deleteNodeType(body) {
-    return request({
-        url: '/api/v1/node/type',
-        method: 'delete',
-        data: body
-    });
-}
