@@ -88,9 +88,7 @@ export default {
     // 查询工作流列表
     const getData = () => {
       listFlow(params).then(res => {
-        if (res.message !== undefined) {
-          ElMessage.error(res.message);
-        } else {
+        if (res) {
           tableData.value = res.result;
           pageTotal.value = res.total;
         }
@@ -164,9 +162,7 @@ export default {
       if (form.value.title === "新增工作流") {
         body.id = generateUniqueID(8);
         addFlow(body).then(res => {
-          if (res.message !== undefined) {
-            ElMessage.error(res.message);
-          } else {
+          if (res) {
             ElMessage.success("操作成功");
             dialogVisible.value = false;
             getData();
@@ -174,9 +170,7 @@ export default {
         });
       } else {
         updateFlow(body).then(res => {
-          if (res.message !== undefined) {
-            ElMessage.error(res.message);
-          } else {
+          if (res) {
             ElMessage.success("操作成功");
             dialogVisible.value = false;
             getData();
@@ -212,9 +206,7 @@ export default {
         type: "warning",
       }).then(() => {
         deleteFlow(ids).then(res => {
-          if (res.message !== undefined) {
-            ElMessage.error(res.message);
-          } else {
+          if (res) {
             ElMessage.success("操作成功");
             getData();
           }

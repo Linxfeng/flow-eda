@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {ElMessage} from "element-plus";
 
 const service = axios.create({
     timeout: 15000,
@@ -21,14 +22,15 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
     response => {
-        if (response.status === 200) {
-            return response.data;
+        const res = response.data;
+        if (res.message) {
+            ElMessage.error(res.message);
         } else {
-            return response;
+            return res;
         }
     },
     error => {
-        return error.response.data;
+        ElMessage.error(error.response.data.error);
     }
 );
 

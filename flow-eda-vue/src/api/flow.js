@@ -18,7 +18,7 @@ export function addFlow(body) {
     });
 }
 
-// 修改/启用/禁用工作流
+// 更新工作流
 export function updateFlow(body) {
     return request({
         url: '/api/v1/flow',

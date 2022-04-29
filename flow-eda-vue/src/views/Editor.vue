@@ -82,9 +82,7 @@ export default {
     // 初始化节点类型
     const initNodeType = async () => {
       const res = await getNodeTypes({limit: 1000});
-      if (res.message !== undefined) {
-        ElMessage.error(res.message);
-      } else {
+      if (res) {
         data.nodeTypeList = res.result;
       }
     };
@@ -92,9 +90,7 @@ export default {
     // 初始化节点数据
     const initNode = async () => {
       const res = await getNodeData({flowId: props.flowId});
-      if (res.message !== undefined) {
-        ElMessage.error(res.message);
-      } else {
+      if (res) {
         const node = [];
         const line = [];
         res.result.map(d => {
@@ -508,10 +504,7 @@ export default {
         body.push(line);
       });
       // 保存流程数据
-      const res = await setNodeData(body);
-      if (res.message !== undefined) {
-        ElMessage.error(res.message);
-      }
+      await setNodeData(body);
     };
 
     // 运行本流程
@@ -526,19 +519,15 @@ export default {
       await getNodeStatus();
       // 运行
       const res = await executeNodeData(props.flowId);
-      if (res.message !== undefined) {
-        ElMessage.error(res.message);
-      } else {
-        ElMessage.success("运行成功");
+      if (res) {
+        ElMessage.success("操作成功");
       }
     };
 
     // 停止流程
     const stopFlow = () => {
       stopNodeData(props.flowId).then(res => {
-        if (res.message !== undefined) {
-          ElMessage.error(res.message);
-        } else {
+        if (res) {
           ElMessage.success("操作成功");
         }
       });
