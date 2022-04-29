@@ -24,12 +24,7 @@ export default {
         icon: "icon-lx-flow",
         index: "/flows",
         title: "工作流管理"
-      },
-      {
-        icon: "icon-lx-picklist_type",
-        index: "/flows/nodeTypes",
-        title: "节点类型管理"
-      },
+      }
     ];
 
     const route = useRoute();

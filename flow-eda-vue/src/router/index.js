@@ -2,7 +2,6 @@ import {createRouter, createWebHashHistory} from "vue-router";
 import Home from "../views/Home.vue";
 import Flows from "../views/Flows.vue";
 import Editor from "../views/Editor.vue";
-import NodeTypes from "../views/NodeTypes.vue";
 
 const routes = [
     {
@@ -29,14 +28,6 @@ const routes = [
                 },
                 component: Editor,
                 props: route => ({flowId: route.query.flowId})
-            },
-            {
-                path: "/flows/nodeTypes",
-                name: "NodeTypes",
-                meta: {
-                    title: '节点类型管理'
-                },
-                component: NodeTypes
             }
         ]
     }
