@@ -56,6 +56,7 @@ public class FlowDataRuntime {
 
     /** 清理流程运行的缓存数据 */
     public void clearFlowData(String flowId) {
+        FlowLogs.info(flowId, "clean flow {} cached data", flowId);
         FlowThreadPool.shutdownThreadPool(flowId);
         FlowThreadPool.shutdownSchedulerPool(flowId);
         flowStatusService.clear(flowId);

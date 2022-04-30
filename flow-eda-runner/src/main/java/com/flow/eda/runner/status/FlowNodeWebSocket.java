@@ -1,5 +1,7 @@
 package com.flow.eda.runner.status;
 
+import com.flow.eda.runner.node.Node;
+import com.flow.eda.runner.utils.FlowLogs;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -62,5 +64,8 @@ public class FlowNodeWebSocket {
         }
         // 向mq中推送流程的实时运行状态信息
         flowStatusMqProducer.sendFlowStatus(flowId, flowStatus);
+        if (Node.Status.FINISHED.name().equals(flowStatus)) {
+            FlowLogs.info(flowId, "flow {} run finished", flowId);
+        }
     }
 }
