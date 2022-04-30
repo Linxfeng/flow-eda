@@ -17,7 +17,6 @@ public class FlowException extends RuntimeException {
     private HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
     private String message;
     private List<ApiError.SubError> errors;
-    private String description;
 
     public FlowException(String message) {
         this.message = message;
@@ -39,7 +38,6 @@ public class FlowException extends RuntimeException {
         this.message = error.getMessage();
         this.errors = error.getErrors();
         this.httpStatus = error.getHttpStatus();
-        this.description = error.getDescription();
     }
 
     public static FlowException wrap(Throwable e) {
@@ -57,11 +55,7 @@ public class FlowException extends RuntimeException {
     }
 
     public ApiError getApiError() {
-        return new ApiError()
-                .error(this.error)
-                .status(httpStatus.value())
-                .message(getMessage())
-                .description(description);
+        return new ApiError().error(this.error).status(httpStatus.value()).message(getMessage());
     }
 
     @Override
@@ -77,8 +71,7 @@ public class FlowException extends RuntimeException {
         return this;
     }
 
-    public FlowException description(String description) {
-        this.description = description;
-        return this;
+    public int getStatus() {
+        return this.httpStatus.value();
     }
 }
