@@ -8,6 +8,8 @@ spring:
     port: 5672
     username: admin
     password: 123456
+    log_exchange: flow.log
+    log_routing_key: flow.running.log
 dubbo:
   application:
     name: flow-eda-runner
