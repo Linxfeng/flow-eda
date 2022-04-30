@@ -39,7 +39,7 @@
     </appender>
 
     <!-- 只发送指定类的日志到mq -->
-    <logger name="com.flow.eda.runner.flow.utils.FlowLogs" level="info" additivity="false">
+    <logger name="com.flow.eda.runner.utils.FlowLogs" level="info" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="AMQP"/>
     </logger>
