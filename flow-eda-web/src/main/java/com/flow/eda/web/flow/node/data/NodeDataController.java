@@ -3,6 +3,7 @@ package com.flow.eda.web.flow.node.data;
 import com.flow.eda.common.exception.InvalidStateException;
 import com.flow.eda.common.exception.MissingPropertyException;
 import com.flow.eda.common.http.Result;
+import com.flow.eda.web.log.OperationLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +16,13 @@ import static com.flow.eda.common.utils.CollectionUtil.isEmpty;
 public class NodeDataController {
     @Autowired private NodeDataService nodeDataService;
 
+    @OperationLog
     @GetMapping("/node/data")
     public Result<List<NodeData>> getNodeData(@RequestParam("flowId") String flowId) {
         return Result.of(nodeDataService.getNodeData(flowId));
     }
 
+    @OperationLog
     @PostMapping("/node/data")
     public Result<String> setNodeData(@RequestBody List<NodeData> data) {
         this.check(data);
@@ -27,12 +30,14 @@ public class NodeDataController {
         return Result.ok();
     }
 
+    @OperationLog
     @PostMapping("/node/data/run")
     public Result<String> runNodeData(@RequestParam("flowId") String flowId) {
         nodeDataService.runNodeData(flowId);
         return Result.ok();
     }
 
+    @OperationLog
     @PostMapping("/node/data/stop")
     public Result<String> stopNodeData(@RequestParam("flowId") String flowId) {
         nodeDataService.stopNodeData(flowId);

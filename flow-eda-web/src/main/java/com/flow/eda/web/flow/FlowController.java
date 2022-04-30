@@ -5,6 +5,7 @@ import com.flow.eda.common.exception.MissingPropertyException;
 import com.flow.eda.common.http.Result;
 import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.web.http.PageResult;
+import com.flow.eda.web.log.OperationLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -18,11 +19,13 @@ import java.util.List;
 public class FlowController {
     @Autowired private FlowService flowService;
 
+    @OperationLog
     @GetMapping("/flow")
     public PageResult<Flow> listFlow(FlowRequest request) {
         return PageResult.of(flowService.listFlowByPage(request));
     }
 
+    @OperationLog
     @PostMapping("/flow")
     public Result<Flow> addFlow(@RequestBody Flow flow) {
         this.check(flow);
@@ -31,6 +34,7 @@ public class FlowController {
         return Result.of(flow);
     }
 
+    @OperationLog
     @PutMapping("/flow")
     public Result<Flow> updateFlow(@RequestBody Flow flow) {
         this.check(flow);
@@ -38,6 +42,7 @@ public class FlowController {
         return Result.of(flowService.updateFlow(flow));
     }
 
+    @OperationLog
     @DeleteMapping("/flow")
     public Result<String> deleteFlow(@RequestBody List<String> ids) {
         if (CollectionUtil.isNotEmpty(ids)) {
