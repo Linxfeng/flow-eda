@@ -5,6 +5,7 @@ import com.flow.eda.runner.flow.node.Node;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
 import com.flow.eda.runner.flow.status.FlowNodeWebSocket;
 import com.flow.eda.runner.flow.status.FlowStatusService;
+import com.flow.eda.runner.flow.utils.FlowLogs;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class FlowDataRuntime {
         List<FlowData> starts = filter(data, this::isStartNode);
         // 过滤掉非起始节点的定时器节点
         List<FlowData> timers = filter(data, d -> isTimerNode(d) && isStart(d.getId(), data));
+        FlowLogs.info(flowId, "start running flow {}", flowId);
         // 用于实时计算流程运行状态
         flowStatusService.startRun(flowId, data, starts, timers);
         // 异步执行
@@ -41,6 +43,7 @@ public class FlowDataRuntime {
 
     /** 停止流程 */
     public void stopFlowData(String flowId) {
+        FlowLogs.info(flowId, "stop flow {}", flowId);
         FlowThreadPool.shutdownThreadPool(flowId);
         FlowThreadPool.shutdownSchedulerPool(flowId);
         // 获取运行中的节点id，推送中断信息

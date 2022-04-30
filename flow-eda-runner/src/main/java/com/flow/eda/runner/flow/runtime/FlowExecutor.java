@@ -5,6 +5,7 @@ import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.flow.node.Node;
 import com.flow.eda.runner.flow.node.NodeTypeEnum;
 import com.flow.eda.runner.flow.status.FlowNodeWebSocket;
+import com.flow.eda.runner.flow.utils.FlowLogs;
 import org.bson.Document;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 import static com.flow.eda.common.utils.CollectionUtil.*;
 import static com.flow.eda.runner.flow.runtime.FlowThreadPool.getThreadPool;
+import static com.flow.eda.runner.flow.utils.FlowLogs.info;
 
 /** 单条流程的执行者 */
 public class FlowExecutor {
@@ -38,11 +40,21 @@ public class FlowExecutor {
     /** 执行当前节点 */
     private void run(FlowData currentNode) {
         Thread.currentThread().setName("flowId:" + flowId);
+        String type = currentNode.getType();
+        String input = "{}";
+        if (currentNode.getParams() != null) {
+            input = currentNode.getParams().toJson();
+        }
         try {
             Node nodeInstance = getInstance(currentNode);
             sendNodeStatus(
                     currentNode.getId(), new Document("status", nodeInstance.status().name()));
-            nodeInstance.run((p) -> runNext(currentNode, nodeInstance, p));
+            info(flowId, "start running [{}] node. input:{}", type, input);
+            nodeInstance.run(
+                    (p) -> {
+                        info(flowId, "run [{}] node finished. output:{}", type, p.toJson());
+                        runNext(currentNode, nodeInstance, p);
+                    });
         } catch (Exception e) {
             String message;
             if (e.getMessage() != null) {
@@ -52,6 +64,7 @@ public class FlowExecutor {
             }
             Document status = new Document("status", Node.Status.FAILED.name());
             sendNodeStatus(currentNode.getId(), status.append("error", message));
+            FlowLogs.error(flowId, "run [{}] node failed. error:{}", type, message);
         }
     }
 
