@@ -1,4 +1,4 @@
-package com.flow.eda.web.flow.http;
+package com.flow.eda.web.http;
 
 import com.flow.eda.common.http.Result;
 import com.github.pagehelper.Page;

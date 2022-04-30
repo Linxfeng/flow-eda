@@ -1,4 +1,4 @@
-package com.flow.eda.web.flow.http;
+package com.flow.eda.web.http;
 
 import lombok.Getter;
 import lombok.Setter;

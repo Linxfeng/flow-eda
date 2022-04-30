@@ -4,7 +4,7 @@ import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.common.exception.MissingPropertyException;
 import com.flow.eda.common.http.Result;
 import com.flow.eda.common.utils.CollectionUtil;
-import com.flow.eda.web.flow.http.PageResult;
+import com.flow.eda.web.http.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;

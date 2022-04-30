@@ -1,6 +1,6 @@
 package com.flow.eda.web.flow.node.type;
 
-import com.flow.eda.web.flow.http.PageResult;
+import com.flow.eda.web.http.PageResult;
 import com.flow.eda.web.flow.node.data.NodeRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

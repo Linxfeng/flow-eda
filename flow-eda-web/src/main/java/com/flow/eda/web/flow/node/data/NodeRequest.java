@@ -1,6 +1,6 @@
 package com.flow.eda.web.flow.node.data;
 
-import com.flow.eda.web.flow.http.PageRequest;
+import com.flow.eda.web.http.PageRequest;
 import lombok.Getter;
 import lombok.Setter;
 

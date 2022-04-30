@@ -1,4 +1,4 @@
-package com.flow.eda.web.flow.mybatis;
+package com.flow.eda.web.mybatis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
