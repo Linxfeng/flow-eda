@@ -1,9 +1,11 @@
 package com.flow.eda.logger.listener;
 
+import com.flow.eda.logger.writer.LogFileWriter;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FlowRunningLogListener {
     private static final String SEPARATOR = "#flowId:";
+    @Autowired private LogFileWriter logFileWriter;
 
     @RabbitListener(
             bindings =
@@ -21,9 +24,8 @@ public class FlowRunningLogListener {
     public void onRabbitMessage(@Payload String message) {
         if (message.contains(SEPARATOR)) {
             String log = message.split(SEPARATOR)[0];
-            String flowId = message.split(SEPARATOR)[1];
-            System.out.println(flowId);
-            System.out.println(log);
+            String flowId = message.split(SEPARATOR)[1].replace("\n", "").replace("\r", "");
+            logFileWriter.writeRunningLogs(flowId, log + "\n");
         }
     }
 }
