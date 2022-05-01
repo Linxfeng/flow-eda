@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @EnableDubbo
-@DubboComponentScan(basePackages = "com.flow.eda.runner.flow.data")
+@DubboComponentScan(basePackages = "com.flow.eda.runner.data")
 @SpringBootApplication
 public class FlowEdaRunnerApplication {
 
