@@ -5,7 +5,7 @@ spring:
     name: flow-eda-web
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://124.221.84.22:3306/flow-eda?useSSL=false&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://127.0.0.1:3306/flow-eda?useSSL=false&useUnicode=true&characterEncoding=utf-8
     username: root
     password: 123456
     hikari:
@@ -19,8 +19,10 @@ spring:
     port: 5672
     username: admin
     password: 123456
+    log_exchange: flow.log
+    log_routing_key: flow.operation.log
 mybatis:
-  type-handlers-package: com.flow.eda.web.flow.mybatis
+  type-handlers-package: com.flow.eda.web.mybatis
   configuration:
     map-underscore-to-camel-case: true
 dubbo:

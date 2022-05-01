@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 读取mq配置-->
+    <springProperty name="rabbitmqHost" source="spring.rabbitmq.host"/>
+    <springProperty name="rabbitmqPort" source="spring.rabbitmq.port"/>
+    <springProperty name="rabbitmqUsername" source="spring.rabbitmq.username"/>
+    <springProperty name="rabbitmqPassword" source="spring.rabbitmq.password"/>
+    <springProperty name="rabbitmqExchange" source="spring.rabbitmq.log_exchange"/>
+    <springProperty name="rabbitmqRoutingKey" source="spring.rabbitmq.log_routing_key"/>
+
+    <!-- 控制台日志 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%5level) %magenta(${PID:-}) --- [%15.15t] %cyan(%-40.40logger{39}) : %msg%n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 发送日志到mq -->
+    <appender name="AMQP" class="org.springframework.amqp.rabbit.logback.AmqpAppender">
+        <layout>
+            <pattern>
+                <![CDATA[%d{yyyy-MM-dd HH:mm:ss.SSS} %5level [%15.15t] %-40.40logger{39} : %m%n]]>
+            </pattern>
+        </layout>
+        <addresses>${rabbitmqHost}:${rabbitmqPort}</addresses>
+        <username>${rabbitmqUsername}</username>
+        <password>${rabbitmqPassword}</password>
+        <exchangeName>${rabbitmqExchange}</exchangeName>
+        <routingKeyPattern>${rabbitmqRoutingKey}</routingKeyPattern>
+        <exchangeType>direct</exchangeType>
+        <declareExchange>true</declareExchange>
+        <durable>true</durable>
+        <generateId>true</generateId>
+        <charset>UTF-8</charset>
+        <deliveryMode>NON_PERSISTENT</deliveryMode>
+    </appender>
+
+    <!-- 只发送指定类的日志到mq -->
+    <logger name="com.flow.eda.web.log.LogAspect" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="AMQP"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
