@@ -49,18 +49,14 @@ public class NodeDataController {
         if (isEmpty(data)) {
             throw new InvalidStateException("The flow node data is empty");
         }
+        // 校验必填参数
         for (NodeData node : data) {
-            // 校验必填参数
             if (node.getId() == null) {
                 throw new MissingPropertyException("id");
             }
             if (node.getFlowId() == null) {
                 throw new MissingPropertyException("flowId");
             }
-            if (node.getNodeName() != null && node.getTypeId() == null) {
-                throw new MissingPropertyException("typeId");
-            }
-            // 待完善...
         }
     }
 }

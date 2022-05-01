@@ -1,13 +1,12 @@
 package com.flow.eda.web.flow.status;
 
-import lombok.extern.slf4j.Slf4j;
+import com.flow.eda.web.log.LogAspect;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /** 看门狗，用于监听流程状态变化 */
-@Slf4j
 public class FlowStatusWatchDog {
     /** 刷新周期 */
     private static final long SLEEP = 2000;
@@ -39,7 +38,7 @@ public class FlowStatusWatchDog {
                         try {
                             Thread.sleep(SLEEP);
                         } catch (InterruptedException e) {
-                            log.error(e.getMessage());
+                            LogAspect.error(e.getMessage());
                         }
                         MAP.keySet()
                                 .forEach(

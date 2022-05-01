@@ -22,6 +22,10 @@ import java.time.Instant;
 @Component
 public class LogAspect {
 
+    public static void error(String message) {
+        log.error(message);
+    }
+
     @Pointcut("@annotation(com.flow.eda.web.log.OperationLog)")
     public void logPointcut() {}
 
