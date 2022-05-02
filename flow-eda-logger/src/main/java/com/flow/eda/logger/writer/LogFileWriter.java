@@ -3,7 +3,6 @@ package com.flow.eda.logger.writer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,6 +19,10 @@ public class LogFileWriter {
 
     public LogFileWriter() {
         this.path = System.getProperty("user.dir") + "\\logs";
+        // 初始化日志目录
+        createDir(path);
+        createDir(path + "\\running");
+        createDir(path + "\\operation");
     }
 
     /** 若指定目录不存在，则创建目录 */
@@ -53,14 +56,6 @@ public class LogFileWriter {
                 log.error(e.getMessage());
             }
         }
-    }
-
-    /** 初始化日志目录 */
-    @PostConstruct
-    public void initLogsDir() {
-        createDir(path);
-        createDir(path + "\\running");
-        createDir(path + "\\operation");
     }
 
     /** 写入操作日志文件 */
