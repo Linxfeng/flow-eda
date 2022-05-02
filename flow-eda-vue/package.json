@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "0.24.0",
     "click-outside-vue3": "^4.0.1",
+    "codemirror-editor-vue3": "^2.0.6",
     "element-plus": "1.0.2-beta.52",
     "jsplumb": "^2.15.6",
     "less": "4.1.2",
