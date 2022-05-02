@@ -3,7 +3,7 @@
     <toolbar :status="flowStatus" @copyNode="copyNode(data.selectedNode)"
              @deleteNode="deleteNode(data.selectedNode)" @executeFlow="executeFlow"
              @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"
-             @stopFlow="stopFlow" @zoomNode="zoomNode"/>
+             @showLogs="showLogs" @stopFlow="stopFlow" @zoomNode="zoomNode"/>
     <div id="flow-content" class="flow-content">
       <div class="nodes-wrap">
         <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
@@ -33,6 +33,7 @@
       </div>
       <nodeDetail v-if="data.selectedNode" :node="data.selectedNode" @showNodeDetail="showNodeDetail"
                   @updateNode="updateNode"/>
+      <flow-log v-if="logVisible" :log-content="logContent"/>
     </div>
   </div>
 </template>
@@ -51,6 +52,7 @@ import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
 import nodeDetail from "../components/editor/NodeDetail.vue";
+import flowLog from "../components/editor/FlowLog.vue";
 import screenfull from "screenfull";
 
 export default {
@@ -58,7 +60,8 @@ export default {
   components: {
     flowNode,
     toolbar,
-    nodeDetail
+    nodeDetail,
+    flowLog
   },
   props: {
     flowId: String
@@ -448,6 +451,14 @@ export default {
       });
     };
 
+    // 展示流程运行日志
+    const logVisible = ref(false);
+    let logContent = ref("");
+    const showLogs = () => {
+      // logContent.value = logContent.value.concat(JSON.stringify(res.output));
+      logVisible.value = true;
+    };
+
     // 建立websocket连接，获取节点状态信息
     const flowStatus = ref("");
     // 建立websocket连接，获取节点状态信息
@@ -568,7 +579,10 @@ export default {
       hideDes,
       saveData,
       executeFlow,
-      stopFlow
+      stopFlow,
+      logVisible,
+      logContent,
+      showLogs
     };
   }
 };
