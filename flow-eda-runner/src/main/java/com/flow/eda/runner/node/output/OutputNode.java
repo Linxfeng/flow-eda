@@ -16,7 +16,6 @@ public class OutputNode extends AbstractNode {
 
     @Override
     public void run(NodeFunction callback) {
-        System.out.println("执行输出节点！");
         Document payload = output.append("params", getInput());
         payload.putAll(output());
         setStatus(Status.FINISHED);

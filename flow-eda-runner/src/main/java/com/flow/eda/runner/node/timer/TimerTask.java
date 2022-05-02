@@ -28,7 +28,6 @@ public class TimerTask {
         Runnable command =
                 () -> {
                     if (n.getAndIncrement() < times) {
-                        System.out.println("执行定时器节点");
                         // 最后一次执行前需要回调
                         if (n.get() == times) {
                             callback.run();

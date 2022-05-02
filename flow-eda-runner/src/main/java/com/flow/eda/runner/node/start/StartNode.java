@@ -13,7 +13,6 @@ public class StartNode extends AbstractNode {
 
     @Override
     public void run(NodeFunction function) {
-        System.out.println("执行开始节点！");
         setStatus(Status.FINISHED);
         function.callback(output());
     }

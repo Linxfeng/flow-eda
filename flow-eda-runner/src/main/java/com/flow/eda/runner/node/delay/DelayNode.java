@@ -23,7 +23,6 @@ public class DelayNode extends AbstractNode {
     @Override
     public void run(NodeFunction callback) {
         try {
-            System.out.println("执行延时器节点！");
             unit.sleep(delay);
             setStatus(Status.FINISHED);
             callback.callback(output());

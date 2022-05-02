@@ -33,7 +33,6 @@ public class HttpNode extends AbstractNode {
     @Override
     public void run(NodeFunction function) {
         try {
-            System.out.println("执行HTTP节点！");
             Document res = this.executeHttpRequest();
             setStatus(Status.FINISHED);
             function.callback(output().append("httpResult", res));

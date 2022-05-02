@@ -23,7 +23,6 @@ public class ParserNode extends AbstractNode {
 
     @Override
     public void run(NodeFunction callback) {
-        System.out.println("执行解析器节点");
         Document result = PlaceholderUtil.parse(payload, keys);
         result.append("params", getInput());
         result.putAll(output());
