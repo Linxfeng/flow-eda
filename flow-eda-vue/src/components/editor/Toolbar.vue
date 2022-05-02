@@ -1,5 +1,10 @@
 <template>
   <div class="toolbar">
+    <el-tooltip content="日志" placement="bottom">
+      <span class="command" @click="handle('logs')">
+      <span class="icon-lx-copy"/>
+      </span>
+    </el-tooltip>
     <span class="separator"/>
     <el-tooltip content="保存" placement="bottom">
       <span class="command" @click="handle('save')">
@@ -89,6 +94,8 @@ export default {
     const handle = (command) => {
       if (command.startsWith("zoom")) {
         context.emit("zoomNode", command.split('-')[1]);
+      } else if (command === "logs") {
+        context.emit("showLogs");
       } else if (command === "save") {
         context.emit("saveData");
         ElMessage.success("保存成功");
