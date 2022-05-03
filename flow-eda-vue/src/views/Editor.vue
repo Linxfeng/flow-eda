@@ -33,7 +33,7 @@
       </div>
       <nodeDetail v-if="data.selectedNode" :node="data.selectedNode" @showNodeDetail="showNodeDetail"
                   @updateNode="updateNode"/>
-      <flow-log v-if="logVisible" :log-content="logContent"/>
+      <flowLog v-if="logVisible" :log-content="logContent"/>
     </div>
   </div>
 </template>
@@ -47,7 +47,7 @@ import {jsPlumb} from "jsplumb";
 import {generateUniqueID} from "../utils/util.js";
 import {getNodeTypes} from "../api/nodeType.js";
 import {executeNodeData, getNodeData, setNodeData, stopNodeData} from "../api/nodeData.js";
-import {onClose, onOpen} from "../utils/websocket.js";
+import {onClose, onCloseLogs, onOpen, onOpenLogs} from "../utils/websocket.js";
 import panzoom from "panzoom";
 import toolbar from '../components/editor/Toolbar.vue';
 import flowNode from "../components/editor/FlowNode.vue";
@@ -455,8 +455,10 @@ export default {
     const logVisible = ref(false);
     let logContent = ref("");
     const showLogs = () => {
-      // logContent.value = logContent.value.concat(JSON.stringify(res.output));
       logVisible.value = true;
+      onOpenLogs(props.flowId, (s) => {
+        logContent.value = logContent.value.concat(s);
+      });
     };
 
     // 建立websocket连接，获取节点状态信息
@@ -555,6 +557,7 @@ export default {
 
     // 组件被销毁之前，关闭socket连接
     onBeforeUnmount(() => {
+      onCloseLogs(props.flowId);
       onClose(props.flowId);
     });
 
