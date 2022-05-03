@@ -451,14 +451,18 @@ export default {
       });
     };
 
-    // 展示流程运行日志
+    // 展示/关闭流程实时运行日志
     const logVisible = ref(false);
     let logContent = ref("");
-    const showLogs = () => {
-      logVisible.value = true;
-      onOpenLogs(props.flowId, (s) => {
-        logContent.value = logContent.value.concat(s);
-      });
+    const showLogs = (show) => {
+      if (show) {
+        logVisible.value = true;
+        onOpenLogs(props.flowId, (s) => {
+          logContent.value = logContent.value.concat(s);
+        });
+      } else {
+        logVisible.value = false;
+      }
     };
 
     // 建立websocket连接，获取节点状态信息
