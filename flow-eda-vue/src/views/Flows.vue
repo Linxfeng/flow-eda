@@ -40,7 +40,7 @@
           <template #default="scope">
             <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row.id)">查看</el-button>
             <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-            <el-button class="red" icon="el-icon-delete" type="text" @click="handleDelete(scope.row.id)">删除</el-button>
+            <el-button icon="el-icon-delete" type="text" style="color: #ff0000" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -274,10 +274,6 @@ export default {
 .table {
   width: 100%;
   font-size: 14px;
-}
-
-.red {
-  color: #ff0000;
 }
 
 .mr10 {
