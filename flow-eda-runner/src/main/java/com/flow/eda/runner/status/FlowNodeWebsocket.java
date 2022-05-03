@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @EqualsAndHashCode
 @ServerEndpoint("/ws/flow/{id}/nodes")
-public class FlowNodeWebSocket {
+public class FlowNodeWebsocket {
     /** 每个流程id对应一个session */
     private static final Map<String, Session> SESSION_POOL = new ConcurrentHashMap<>();
 

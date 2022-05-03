@@ -3,7 +3,7 @@ package com.flow.eda.runner.runtime;
 import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.runner.node.Node;
 import com.flow.eda.runner.node.NodeTypeEnum;
-import com.flow.eda.runner.status.FlowNodeWebSocket;
+import com.flow.eda.runner.status.FlowNodeWebsocket;
 import com.flow.eda.runner.status.FlowStatusService;
 import com.flow.eda.runner.utils.FlowLogs;
 import org.bson.Document;
@@ -18,7 +18,7 @@ import static com.flow.eda.runner.runtime.FlowThreadPool.getThreadPool;
 
 @Service
 public class FlowDataRuntime {
-    @Autowired private FlowNodeWebSocket ws;
+    @Autowired private FlowNodeWebsocket ws;
     @Autowired private FlowStatusService flowStatusService;
 
     /** 运行流程 */

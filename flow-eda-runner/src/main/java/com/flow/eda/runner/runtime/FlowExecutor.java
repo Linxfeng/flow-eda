@@ -4,7 +4,7 @@ import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.Node;
 import com.flow.eda.runner.node.NodeTypeEnum;
-import com.flow.eda.runner.status.FlowNodeWebSocket;
+import com.flow.eda.runner.status.FlowNodeWebsocket;
 import com.flow.eda.runner.utils.FlowLogs;
 import org.bson.Document;
 
@@ -21,13 +21,13 @@ public class FlowExecutor {
     /** 存储当前流程的完整流节点数据 */
     private final List<FlowData> flowData;
     /** 用于推送消息的ws服务 */
-    private final FlowNodeWebSocket flowNodeWebSocket;
+    private final FlowNodeWebsocket flowNodeWebsocket;
     /** 当前流程的id */
     private final String flowId;
 
-    public FlowExecutor(List<FlowData> flowData, FlowNodeWebSocket ws) {
+    public FlowExecutor(List<FlowData> flowData, FlowNodeWebsocket ws) {
         this.flowData = flowData;
-        this.flowNodeWebSocket = ws;
+        this.flowNodeWebsocket = ws;
         this.flowId =
                 Objects.requireNonNull(findFirst(flowData, n -> n.getFlowId() != null)).getFlowId();
     }
@@ -125,6 +125,6 @@ public class FlowExecutor {
 
     private void sendNodeStatus(String nodeId, Document msg) {
         msg.append("nodeId", nodeId);
-        flowNodeWebSocket.sendMessage(String.valueOf(flowId), msg);
+        flowNodeWebsocket.sendMessage(String.valueOf(flowId), msg);
     }
 }
