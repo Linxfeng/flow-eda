@@ -1,6 +1,7 @@
 package com.flow.eda.logger.listener;
 
 import com.flow.eda.logger.writer.LogFileWriter;
+import com.flow.eda.logger.ws.FlowLogWebsocket;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class FlowRunningLogListener {
     private static final String SEPARATOR = "#flowId:";
     @Autowired private LogFileWriter logFileWriter;
+    @Autowired private FlowLogWebsocket flowLogWebsocket;
 
     @RabbitListener(
             bindings =
@@ -23,9 +25,10 @@ public class FlowRunningLogListener {
                             key = "flow.running.log"))
     public void onRabbitMessage(@Payload String message) {
         if (message.contains(SEPARATOR)) {
-            String log = message.split(SEPARATOR)[0];
+            String log = message.split(SEPARATOR)[0] + "\n";
             String flowId = message.split(SEPARATOR)[1].replace("\n", "").replace("\r", "");
-            logFileWriter.writeRunningLogs(flowId, log + "\n");
+            flowLogWebsocket.sendMessage(flowId, log);
+            logFileWriter.writeRunningLogs(flowId, log);
         }
     }
 }
