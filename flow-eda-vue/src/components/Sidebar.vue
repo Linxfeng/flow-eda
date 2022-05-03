@@ -23,7 +23,7 @@ export default {
       {
         icon: "icon-lx-flow",
         index: "/flows",
-        title: "工作流管理"
+        title: "流程管理"
       }
     ];
 

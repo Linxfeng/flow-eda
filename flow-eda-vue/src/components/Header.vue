@@ -4,7 +4,7 @@
       <i v-if="!collapse" class="el-icon-s-fold"></i>
       <i v-else class="el-icon-s-unfold"></i>
     </div>
-    <div class="logo">工作流管理系统</div>
+    <div class="logo">流程管理系统</div>
     <div class="header-right">
       <div class="header-avatar">
         <div class="user-avatar">

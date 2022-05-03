@@ -1,6 +1,6 @@
 import request from '../utils/request';
 
-// 查询工作流列表
+// 查询流程列表
 export function listFlow(params) {
     return request({
         url: '/api/v1/flow',
@@ -9,7 +9,7 @@ export function listFlow(params) {
     });
 }
 
-// 新增工作流
+// 新增流程
 export function addFlow(body) {
     return request({
         url: '/api/v1/flow',
@@ -18,7 +18,7 @@ export function addFlow(body) {
     });
 }
 
-// 更新工作流
+// 更新流程
 export function updateFlow(body) {
     return request({
         url: '/api/v1/flow',
@@ -27,7 +27,7 @@ export function updateFlow(body) {
     });
 }
 
-// 删除工作流
+// 删除流程
 export function deleteFlow(body) {
     return request({
         url: '/api/v1/flow',

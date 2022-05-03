@@ -16,7 +16,7 @@ const routes = [
                 path: "/flows",
                 name: "Flows",
                 meta: {
-                    title: '工作流管理'
+                    title: '流程管理'
                 },
                 component: Flows
             },
@@ -24,7 +24,7 @@ const routes = [
                 path: "/flows/editor",
                 name: "Editor",
                 meta: {
-                    title: '编辑工作流'
+                    title: '流程编辑器'
                 },
                 component: Editor,
                 props: route => ({flowId: route.query.flowId})

@@ -3,7 +3,7 @@
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
-          <span class="icon-lx-flow"></span> 工作流管理
+          <span class="icon-lx-flow"></span> 流程管理
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -39,7 +39,7 @@
         <el-table-column align="center" label="操作" width="240">
           <template #default="scope">
             <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row.id)">查看</el-button>
-            <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
             <el-button class="red" icon="el-icon-delete" type="text" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -85,7 +85,7 @@ export default {
     const tableData = ref([]);
     const pageTotal = ref(0);
 
-    // 查询工作流列表
+    // 查询流程列表
     const getData = () => {
       listFlow(params).then(res => {
         if (res) {
@@ -113,7 +113,7 @@ export default {
     let form = ref({});
     const handleAdd = () => {
       form.value = {};
-      form.value.title = "新增工作流";
+      form.value.title = "新增流程";
       dialogVisible.value = true;
     };
     // 分页导航
@@ -149,7 +149,7 @@ export default {
       form.value.id = row.id;
       form.value.name = row.name;
       form.value.description = row.description;
-      form.value.title = "编辑工作流";
+      form.value.title = "修改流程";
       dialogVisible.value = true;
     };
     //新增/编辑弹框提交表单
@@ -159,7 +159,7 @@ export default {
         name: form.value.name,
         description: form.value.description
       }
-      if (form.value.title === "新增工作流") {
+      if (form.value.title === "新增流程") {
         body.id = generateUniqueID(8);
         addFlow(body).then(res => {
           if (res) {
