@@ -34,7 +34,7 @@ dubbo:
     password: nacos
   protocol:
     name: dubbo
-    port: 20880
+    port: 20881
   consumer:
     check: false
     timeout: 5000
