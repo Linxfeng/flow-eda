@@ -19,7 +19,7 @@ dubbo:
     password: nacos
   protocol:
     name: dubbo
-    port: 20880
+    port: 20882
 logging:
   level:
     com.alibaba.nacos.common.remote.client: warn
