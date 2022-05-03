@@ -3,8 +3,7 @@
     <Codemirror
         v-model:value="logContent"
         :KeepCursorInEnd="true"
-        :options='{mode: "text", theme: "dracula"}'
-        border
+        :options="{mode: 'javascript', styleActiveLine: true, theme: 'dracula', readOnly: true}"
         style="font-size: 14px;"
     />
   </div>
@@ -33,7 +32,7 @@ export default {
 <style>
 .flow-log {
   height: 400px;
-  width: 89%;
+  width: 96%;
   position: fixed;
   bottom: 0;
 }
