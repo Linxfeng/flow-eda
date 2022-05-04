@@ -24,6 +24,11 @@ export default {
         icon: "icon-lx-flow",
         index: "/flows",
         title: "流程管理"
+      },
+      {
+        icon: "icon-lx-logs",
+        index: "/logs",
+        title: "日志管理"
       }
     ];
 
