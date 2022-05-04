@@ -3,6 +3,7 @@ import Home from "../views/Home.vue";
 import Flows from "../views/Flows.vue";
 import Editor from "../views/Editor.vue";
 import Logs from "../views/Logs.vue";
+import LogDetail from "../views/LogDetail.vue";
 
 const routes = [
     {
@@ -37,6 +38,15 @@ const routes = [
                 },
                 component: Editor,
                 props: route => ({flowId: route.query.flowId})
+            },
+            {
+                path: "/logs/detail",
+                name: "LogDetail",
+                meta: {
+                    title: '日志详情'
+                },
+                component: LogDetail,
+                props: route => ({path: route.params.path})
             }
         ]
     }
