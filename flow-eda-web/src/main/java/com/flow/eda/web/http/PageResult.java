@@ -28,4 +28,25 @@ public class PageResult<T> extends Result<List<T>> {
         pageResult.setTotal(((Page) result).getTotal());
         return pageResult;
     }
+
+    /** 逻辑分页 */
+    public static <T> PageResult<T> ofPage(List<T> result, PageRequest request) {
+        Assert.notNull(result, "result must not be null!");
+        PageResult<T> pageResult = new PageResult<>();
+        pageResult.setPage(request.getPage());
+        pageResult.setLimit(request.getLimit());
+        pageResult.setTotal(result.size());
+        if (result.isEmpty()) {
+            pageResult.setResult(result);
+            return pageResult;
+        }
+        // 逻辑分页
+        int fromIndex = (pageResult.getPage() - 1) * pageResult.getLimit();
+        int toIndex = fromIndex + pageResult.getLimit();
+        if (toIndex > pageResult.getTotal()) {
+            toIndex = (int) pageResult.getTotal();
+        }
+        pageResult.setResult(result.subList(fromIndex, toIndex));
+        return pageResult;
+    }
 }
