@@ -2,6 +2,7 @@ import {createRouter, createWebHashHistory} from "vue-router";
 import Home from "../views/Home.vue";
 import Flows from "../views/Flows.vue";
 import Editor from "../views/Editor.vue";
+import Logs from "../views/Logs.vue";
 
 const routes = [
     {
@@ -19,6 +20,14 @@ const routes = [
                     title: '流程管理'
                 },
                 component: Flows
+            },
+            {
+                path: "/logs",
+                name: "Logs",
+                meta: {
+                    title: '日志管理'
+                },
+                component: Logs
             },
             {
                 path: "/flows/editor",
