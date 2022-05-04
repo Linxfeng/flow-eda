@@ -15,7 +15,7 @@ import java.util.Date;
 @Component
 public class LogFileWriter {
     private final String path;
-    private final DateFormat format = new SimpleDateFormat("yyyy_MM_dd");
+    private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     public LogFileWriter() {
         this.path = System.getProperty("user.dir") + "\\logs";
