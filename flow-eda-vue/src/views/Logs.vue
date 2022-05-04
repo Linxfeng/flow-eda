@@ -3,7 +3,7 @@
     <div class="crumbs">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>
-          <span class="icon-lx-logs"></span> 日志管理
+          <span class="icon-lx-logs"/> 日志管理
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -25,11 +25,11 @@
                 header-cell-class-name="table-header"
                 size="small"
                 @selection-change="handleSelectionChange">
-        <el-table-column align="center" type="selection" width="55"></el-table-column>
-        <el-table-column label="日志类型" prop="type" show-overflow-tooltip width="345"></el-table-column>
-        <el-table-column label="日志日期" prop="date" show-overflow-tooltip width="300"></el-table-column>
-        <el-table-column label="流程名称" prop="flow" show-overflow-tooltip></el-table-column>
-        <el-table-column label="文件大小(单位：kb)" prop="size" show-overflow-tooltip width="300"></el-table-column>
+        <el-table-column align="center" type="selection" width="55"/>
+        <el-table-column label="日志类型" prop="type" show-overflow-tooltip width="345"/>
+        <el-table-column label="日志日期" prop="date" show-overflow-tooltip width="300"/>
+        <el-table-column label="流程名称" prop="flow" show-overflow-tooltip/>
+        <el-table-column label="文件大小(单位：kb)" prop="size" show-overflow-tooltip width="300"/>
         <el-table-column align="center" label="操作" width="250">
           <template #default="scope">
             <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row.path)">查看</el-button>
@@ -41,7 +41,7 @@
       </el-table>
       <div class="pagination">
         <el-pagination :current-page="params.page" :total="pageTotal" background layout="total, prev, pager, next"
-                       @current-change="handlePageChange"></el-pagination>
+                       @current-change="handlePageChange"/>
       </div>
     </div>
   </div>
@@ -82,7 +82,7 @@ export default {
           });
         }
       });
-    }
+    };
     getData();
 
     // 查询操作
@@ -102,8 +102,13 @@ export default {
     const tagsList = computed(() => store.state.tagsList);
 
     // 查看详情，打开日志详情页
-    const handleShow = (id) => {
-
+    const handleShow = (path) => {
+      const index = tagsList.value.findIndex(i => i.path === "/logs/detail");
+      if (index !== -1) {
+        // 页面已存在时，先销毁，再重新加载组件
+        store.commit("delTagsItem", {index: index});
+      }
+      router.push({name: "LogDetail", params: {path: path}});
     };
 
     // 多选操作
