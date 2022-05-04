@@ -1,5 +1,6 @@
 let ws = {};
 let logWs = {};
+let logContentWs = {};
 
 // 建立连接，监听消息并进行回调
 async function onOpen(id, callback) {
@@ -46,4 +47,26 @@ function onCloseLogs(id) {
     }
 }
 
-export {onOpen, onClose, onOpenLogs, onCloseLogs}
+// 接收日志文件内容
+function onOpenLogDetail(path, callback) {
+    if (Object.keys(logContentWs).length === 0 || !logContentWs[path]) {
+        const url = 'ws://localhost:8082/ws/logs/content/' + path.replaceAll("\\", ":");
+        const socket = new WebSocket(url);
+        socket.onmessage = function (msg) {
+            callback(msg.data);
+        };
+        logContentWs[path] = socket;
+    }
+}
+
+function onCloseLogDetail(path) {
+    if (logContentWs && logContentWs[path]) {
+        try {
+            logContentWs[path].close();
+        } catch (ignore) {
+        }
+        logContentWs[path] = null;
+    }
+}
+
+export {onOpen, onClose, onOpenLogs, onCloseLogs, onOpenLogDetail, onCloseLogDetail}
