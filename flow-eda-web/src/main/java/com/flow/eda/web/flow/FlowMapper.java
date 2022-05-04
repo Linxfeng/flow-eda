@@ -11,6 +11,10 @@ public interface FlowMapper {
     Flow findById(String id);
 
     @Select(
+            "<script>SELECT `id`,`name` FROM eda_flow WHERE id in <foreach collection='ids' item='id' open='(' separator=',' close=')'>#{id}</foreach></script>")
+    List<Flow> findByIds(List<String> ids);
+
+    @Select(
             "<script>SELECT * FROM eda_flow WHERE 1=1 "
                     + "<if test='status!=null'>AND `status`=#{status}</if>"
                     + "<if test='name!=null'> AND `name` LIKE '%${name}%'</if>"
