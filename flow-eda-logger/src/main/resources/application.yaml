@@ -8,3 +8,16 @@ spring:
     port: 5672
     username: admin
     password: 123456
+dubbo:
+  application:
+    name: flow-eda-logger
+  registry:
+    address: nacos://127.0.0.1:8848
+    username: nacos
+    password: nacos
+  protocol:
+    name: dubbo
+    port: 20883
+logging:
+  level:
+    com.alibaba.nacos.common.remote.client: warn
