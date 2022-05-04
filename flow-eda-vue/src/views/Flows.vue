@@ -9,12 +9,12 @@
     </div>
     <div class="container">
       <div class="handle-box">
-        <el-input v-model="params.name" class="handle-input mr10" placeholder="名称"></el-input>
+        <el-input v-model="params.name" class="handle-input mr10" placeholder="名称"/>
         <el-select v-model="params.status" class="handle-select mr10" placeholder="状态">
-          <el-option key="INIT" label="未运行" value="INIT"></el-option>
-          <el-option key="RUNNING" label="运行中" value="RUNNING"></el-option>
-          <el-option key="FINISHED" label="运行完成" value="FINISHED"></el-option>
-          <el-option key="FAILED" label="运行失败" value="FAILED"></el-option>
+          <el-option key="INIT" label="未运行" value="INIT"/>
+          <el-option key="RUNNING" label="运行中" value="RUNNING"/>
+          <el-option key="FINISHED" label="运行完成" value="FINISHED"/>
+          <el-option key="FAILED" label="运行失败" value="FAILED"/>
         </el-select>
         <el-button icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
         <el-button icon="el-icon-refresh" type="primary" @click="cleanSearch">重置</el-button>
@@ -30,33 +30,35 @@
                 header-cell-class-name="table-header"
                 size="small"
                 @selection-change="handleSelectionChange">
-        <el-table-column align="center" type="selection" width="55"></el-table-column>
-        <el-table-column label="名称" prop="name" show-overflow-tooltip width="250"></el-table-column>
-        <el-table-column :formatter="statusFormat" label="状态" prop="status" width="120"></el-table-column>
-        <el-table-column label="描述" prop="description" show-overflow-tooltip></el-table-column>
-        <el-table-column :formatter="dateFormat" label="创建时间" prop="createDate" width="180"></el-table-column>
-        <el-table-column :formatter="dateFormat" label="更新时间" prop="updateDate" width="180"></el-table-column>
-        <el-table-column align="center" label="操作" width="240">
+        <el-table-column align="center" type="selection" width="55"/>
+        <el-table-column label="名称" prop="name" show-overflow-tooltip width="250"/>
+        <el-table-column :formatter="statusFormat" label="状态" prop="status" width="120"/>
+        <el-table-column label="描述" prop="description" show-overflow-tooltip/>
+        <el-table-column :formatter="dateFormat" label="创建时间" prop="createDate" width="180"/>
+        <el-table-column :formatter="dateFormat" label="更新时间" prop="updateDate" width="180"/>
+        <el-table-column align="center" label="操作" width="265">
           <template #default="scope">
             <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row.id)">查看</el-button>
             <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-            <el-button icon="el-icon-delete" type="text" style="color: #ff0000" @click="handleDelete(scope.row.id)">删除</el-button>
+            <el-button icon="el-icon-tickets" type="text" @click="handleLogs(scope.row.id)">日志</el-button>
+            <el-button icon="el-icon-delete" style="color: #ff0000" type="text" @click="handleDelete(scope.row.id)">删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
       <div class="pagination">
         <el-pagination :current-page="params.page" :total="pageTotal" background layout="total, prev, pager, next"
-                       @current-change="handlePageChange"></el-pagination>
+                       @current-change="handlePageChange"/>
       </div>
     </div>
     <!-- 新增/编辑弹出框 -->
     <el-dialog v-model="dialogVisible" :title="form.title" center width="30%">
       <el-form label-width="70px">
         <el-form-item label="名称">
-          <el-input v-model="form.name"></el-input>
+          <el-input v-model="form.name"/>
         </el-form-item>
         <el-form-item label="描述">
-          <el-input v-model="form.description"></el-input>
+          <el-input v-model="form.description"/>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -93,7 +95,7 @@ export default {
           pageTotal.value = res.total;
         }
       });
-    }
+    };
     getData();
 
     // 查询操作
@@ -179,6 +181,18 @@ export default {
       }
     };
 
+    // 查看流程日志
+    const handleLogs = (id) => {
+      const date = Moment().format('YYYY-MM-DD');
+      const path = "\\logs\\running\\" + id + "\\" + date + ".log";
+      const index = tagsList.value.findIndex(i => i.path === "/logs/detail");
+      if (index !== -1) {
+        // 页面已存在时，先销毁，再重新加载组件
+        store.commit("delTagsItem", {index: index});
+      }
+      router.push({name: "LogDetail", params: {path: path}});
+    };
+
     // 多选操作
     let multipleSelection = [];
     let hasSelection = ref(false);
@@ -230,7 +244,7 @@ export default {
 
     // 日期格式化
     const dateFormat = (row, column) => {
-      return Moment(row[column.property]).format('YYYY-MM-DD HH:mm:ss')
+      return Moment(row[column.property]).format('YYYY-MM-DD HH:mm:ss');
     };
 
     return {
@@ -246,6 +260,7 @@ export default {
       handlePageChange,
       handleShow,
       handleEdit,
+      handleLogs,
       handleDelete,
       handleSelectionChange,
       delAllSelection,
