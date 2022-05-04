@@ -1,0 +1,7 @@
+2022-05-04 18:59:01.530  INFO [:20882-thread-4] com.flow.eda.runner.utils.FlowLogs       : start running flow 4ccr0y2xtwu000
+2022-05-04 18:59:01.533  INFO [:4ccr0y2xtwu000] com.flow.eda.runner.utils.FlowLogs       : run [start] node finished. output:{"input": {"a": "123"}}
+2022-05-04 18:59:01.533  INFO [:4ccr0y2xtwu000] com.flow.eda.runner.utils.FlowLogs       : start running [start] node. input:{"payload": {"a": "123"}}
+2022-05-04 18:59:01.536  INFO [:4ccr0y2xtwu000] com.flow.eda.runner.utils.FlowLogs       : start running [delay] node. input:{"delay": "8,SECONDS", "payload": {"b": "b-${a}"}, "input": {"a": "123"}}
+2022-05-04 18:59:06.185  INFO [:20882-thread-5] com.flow.eda.runner.utils.FlowLogs       : stop flow 4ccr0y2xtwu000
+2022-05-04 18:59:06.187 ERROR [:4ccr0y2xtwu000] com.flow.eda.runner.utils.FlowLogs       : run [delay] node failed. error:sleep interrupted
+2022-05-04 18:59:10.410  INFO [:20882-thread-6] com.flow.eda.runner.utils.FlowLogs       : clean flow 4ccr0y2xtwu000 cached data

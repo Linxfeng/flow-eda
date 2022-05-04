@@ -1,0 +1,7 @@
+2022-05-04 19:02:54.728  INFO [20882-thread-24] com.flow.eda.runner.utils.FlowLogs       : start running flow 58zsx5ui7go000
+2022-05-04 19:02:54.729  INFO [:58zsx5ui7go000] com.flow.eda.runner.utils.FlowLogs       : start running [timer] node. input:{"times": "3", "period": "5,SECONDS", "timestamp": "HH:mm:ss", "payload": {"a": "123"}}
+2022-05-04 19:02:54.738  INFO [scheduledTask-1] com.flow.eda.runner.utils.FlowLogs       : run [timer] node finished. output:{"input": {"a": "123"}, "timestamp": "19:02:54"}
+2022-05-04 19:02:54.739  INFO [:58zsx5ui7go000] com.flow.eda.runner.utils.FlowLogs       : start running [output] node. input:{"input": {"a": "123"}, "timestamp": "19:02:54"}
+2022-05-04 19:02:54.739  INFO [:58zsx5ui7go000] com.flow.eda.runner.utils.FlowLogs       : run [output] node finished. output:{"input": {"a": "123"}, "timestamp": "19:02:54", "params": {"a": "123"}}
+2022-05-04 19:02:59.220  INFO [20882-thread-25] com.flow.eda.runner.utils.FlowLogs       : stop flow 58zsx5ui7go000
+2022-05-04 19:03:01.422  INFO [20882-thread-26] com.flow.eda.runner.utils.FlowLogs       : clean flow 58zsx5ui7go000 cached data
