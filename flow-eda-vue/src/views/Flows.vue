@@ -209,14 +209,14 @@ export default {
       deleteBatch(msg, multipleSelection);
     };
     const deleteBatch = (msg, ids) => {
-      params.page = 1;
-      multipleSelection = [];
       ElMessageBox.confirm(msg, "提示", {
         type: "warning",
       }).then(() => {
         deleteFlow(ids).then(res => {
           if (res) {
             ElMessage.success("操作成功");
+            params.page = 1;
+            multipleSelection = [];
             getData();
           }
         });
