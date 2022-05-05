@@ -10,7 +10,7 @@
 import Codemirror from "codemirror-editor-vue3";
 import "codemirror/mode/javascript/javascript.js";
 import "codemirror/theme/dracula.css";
-import {onBeforeUnmount, ref} from "vue";
+import {onBeforeUnmount, ref, watch} from "vue";
 import {onCloseLogDetail, onOpenLogDetail} from "../utils/websocket.js";
 
 export default {
@@ -23,14 +23,27 @@ export default {
   },
   setup(props) {
 
-    // 获取日志内容
     const logContent = ref("");
-    const getData = () => {
-      onOpenLogDetail(props.path, (s) => {
+
+    // 监听参数变化，加载新数据，关闭旧连接
+    watch(
+        () => props.path,
+        (n, o) => {
+          getData(n);
+          onCloseLogDetail(o);
+        }
+    );
+
+    // 获取日志内容
+    const getData = (path) => {
+      logContent.value = "";
+      onOpenLogDetail(path, (s) => {
         logContent.value = logContent.value.concat(s);
       });
     };
-    getData();
+
+    // 初始加载
+    getData(props.path);
 
     // 组件被销毁之前，关闭socket连接
     onBeforeUnmount(() => {
