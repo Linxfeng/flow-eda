@@ -8,3 +8,12 @@ export function listLogs(params) {
         params: params
     });
 }
+
+// 删除日志文件
+export function deleteLogs(body) {
+    return request({
+        url: '/api/v1/logs',
+        method: 'delete',
+        data: body
+    });
+}
