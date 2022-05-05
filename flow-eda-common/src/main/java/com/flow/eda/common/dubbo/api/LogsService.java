@@ -15,6 +15,13 @@ public interface LogsService {
      */
     List<Logs> getLogList(Type type);
 
+    /**
+     * 删除日志文件
+     *
+     * @param path 日志文件路径
+     */
+    void deleteLogFiles(List<String> path);
+
     /** 日志类型 */
     enum Type {
         /** 操作日志 */
