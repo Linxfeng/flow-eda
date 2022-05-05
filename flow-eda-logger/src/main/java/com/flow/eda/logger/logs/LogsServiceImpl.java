@@ -2,6 +2,7 @@ package com.flow.eda.logger.logs;
 
 import com.flow.eda.common.dubbo.api.LogsService;
 import com.flow.eda.common.dubbo.model.Logs;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @DubboService(interfaceClass = LogsService.class)
 public class LogsServiceImpl implements LogsService {
@@ -21,6 +23,11 @@ public class LogsServiceImpl implements LogsService {
         } else {
             return getRunningLogs();
         }
+    }
+
+    @Override
+    public void deleteLogFiles(List<String> path) {
+        path.forEach(this::deleteLogFile);
     }
 
     /** 获取操作日志信息列表 */
@@ -62,5 +69,16 @@ public class LogsServiceImpl implements LogsService {
             }
         }
         return result;
+    }
+
+    private void deleteLogFile(String path) {
+        try {
+            File file = new File(ROOT + path);
+            boolean success = file.delete();
+            if (success) {
+                log.info("delete log file {} success", path);
+            }
+        } catch (Exception ignored) {
+        }
     }
 }
