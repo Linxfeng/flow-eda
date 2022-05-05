@@ -19,6 +19,7 @@ public class LogService {
     @DubboReference private LogsService logsService;
     @Autowired private FlowMapper flowMapper;
 
+    /** 获取日志文件信息列表 */
     public List<Logs> getLogList(LogRequest request) {
         List<Logs> list = logsService.getLogList(request.getType());
         List<String> ids = filterMap(list, l -> l.getFlow() != null, Logs::getFlow);
@@ -30,5 +31,10 @@ public class LogService {
                     .mergeS((log, flow) -> log.setFlowName(flow.getName()));
         }
         return list;
+    }
+
+    /** 删除日志文件 */
+    public void deleteLogs(List<String> path) {
+        logsService.deleteLogFiles(path);
     }
 }
