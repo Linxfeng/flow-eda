@@ -48,10 +48,9 @@
 </template>
 
 <script>
-import {computed, reactive, ref} from "vue";
+import {reactive, ref} from "vue";
 import {listLogs} from "../api/logs.js";
 import {useRouter} from "vue-router";
-import {useStore} from "vuex";
 
 export default {
   name: "Logs",
@@ -98,16 +97,9 @@ export default {
     };
 
     const router = useRouter();
-    const store = useStore();
-    const tagsList = computed(() => store.state.tagsList);
 
     // 查看详情，打开日志详情页
     const handleShow = (path) => {
-      const index = tagsList.value.findIndex(i => i.path === "/logs/detail");
-      if (index !== -1) {
-        // 页面已存在时，先销毁，再重新加载组件
-        store.commit("delTagsItem", {index: index});
-      }
       router.push({name: "LogDetail", params: {path: path}});
     };
 

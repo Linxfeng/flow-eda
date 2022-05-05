@@ -185,11 +185,6 @@ export default {
     const handleLogs = (id) => {
       const date = Moment().format('YYYY-MM-DD');
       const path = "\\logs\\running\\" + id + "\\" + date + ".log";
-      const index = tagsList.value.findIndex(i => i.path === "/logs/detail");
-      if (index !== -1) {
-        // 页面已存在时，先销毁，再重新加载组件
-        store.commit("delTagsItem", {index: index});
-      }
       router.push({name: "LogDetail", params: {path: path}});
     };
 
