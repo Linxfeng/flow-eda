@@ -49,8 +49,9 @@
 
 <script>
 import {reactive, ref} from "vue";
-import {listLogs} from "../api/logs.js";
+import {listLogs, deleteLogs} from "../api/logs.js";
 import {useRouter} from "vue-router";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 export default {
   name: "Logs",
@@ -107,14 +108,14 @@ export default {
     let multipleSelection = [];
     let hasSelection = ref(false);
     const handleSelectionChange = (val) => {
-      multipleSelection = val.map(i => i.id);
+      multipleSelection = val.map(i => i.path);
       hasSelection.value = multipleSelection.length > 0;
     };
 
     // 删除操作
-    const handleDelete = (id) => {
+    const handleDelete = (path) => {
       let msg = "确定要删除吗？删除后将无法恢复！";
-      let ids = [id];
+      let ids = [path];
       deleteBatch(msg, ids);
     };
 
@@ -124,6 +125,19 @@ export default {
       deleteBatch(msg, multipleSelection);
     };
     const deleteBatch = (msg, ids) => {
+      ElMessageBox.confirm(msg, "提示", {
+        type: "warning",
+      }).then(() => {
+        deleteLogs(ids).then(res => {
+          if (res) {
+            ElMessage.success("操作成功");
+            params.page = 1;
+            multipleSelection = [];
+            getData();
+          }
+        });
+      }).catch(err => {
+      });
     };
 
 
