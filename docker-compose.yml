@@ -1,0 +1,71 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - 3306:3306
+    volumes:
+      - /root/app/mysql/data/:/var/lib/mysql
+      - /root/app/mysql/conf.d:/etc/mysql/conf.d
+      - /root/app/mysql/my.cnf:/etc/mysql/my.cnf
+  rabbitmq:
+    image: rabbitmq
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - /root/app/rabbitmq/data:/var/lib/rabbitmq
+  nacos:
+    image: nacos/nacos-server
+    container_name: nacos
+    depends_on:
+      - mysql
+    restart: always
+    ports:
+      - 8848:8848
+      - 9848:9848
+      - 9849:9849
+    environment:
+      MODE: standalone
+      SPRING_DATASOURCE_PLATFORM: mysql
+      MYSQL_SERVICE_HOST: mysql
+      MYSQL_SERVICE_USER: root
+      MYSQL_SERVICE_PASSWORD: 123456
+      MYSQL_SERVICE_DB_NAME: nacos_config
+      JVM_XMS: 256m
+      JVM_XMX: 256m
+      JVM_XMN: 256m
+  logger:
+    image: flow-eda-logger
+    container_name: logger
+    depends_on:
+      - mysql
+      - nacos
+      - rabbitmq
+    ports:
+      - 8082:8082
+  runner:
+    image: flow-eda-runner
+    container_name: runner
+    depends_on:
+      - mysql
+      - nacos
+      - rabbitmq
+    ports:
+      - 8088:8088
+  web:
+    image: flow-eda-web
+    container_name: web
+    depends_on:
+      - mysql
+      - nacos
+      - rabbitmq
+    ports:
+      - 8081:8081
