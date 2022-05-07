@@ -42,6 +42,16 @@ services:
       JVM_XMS: 256m
       JVM_XMX: 256m
       JVM_XMN: 256m
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - 80:80
+    volumes:
+      - /root/app/nginx/www:/www
+      - /root/app/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - /root/app/nginx/conf/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+      - /root/app/nginx/logs:/wwwlogs
   logger:
     image: flow-eda-logger
     container_name: logger
