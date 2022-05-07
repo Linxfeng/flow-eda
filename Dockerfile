@@ -1,4 +1,4 @@
-FROM java:8
+FROM anapsix/alpine-java
 ARG APP_NAME
 ENV APP_NAME=${APP_NAME}
 ADD ./flow-eda-${APP_NAME}-0.0.1-SNAPSHOT.jar ./flow-eda-${APP_NAME}.jar
