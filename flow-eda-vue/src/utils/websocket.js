@@ -50,7 +50,7 @@ function onCloseLogs(id) {
 // 接收日志文件内容
 function onOpenLogDetail(path, callback) {
     if (Object.keys(logContentWs).length === 0 || !logContentWs[path]) {
-        const url = 'ws://localhost:8082/ws/logs/content/' + path.replaceAll("\\", ":");
+        const url = 'ws://localhost:8082/ws/logs/content/' + path.replaceAll("/", ":");
         const socket = new WebSocket(url);
         socket.onmessage = function (msg) {
             callback(msg.data);

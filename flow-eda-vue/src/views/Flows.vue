@@ -184,7 +184,7 @@ export default {
     // 查看流程日志
     const handleLogs = (id) => {
       const date = Moment().format('YYYY-MM-DD');
-      const path = "\\logs\\running\\" + id + "\\" + date + ".log";
+      const path = "/logs/running/" + id + "/" + date + ".log";
       router.push({name: "LogDetail", params: {path: path}});
     };
 
