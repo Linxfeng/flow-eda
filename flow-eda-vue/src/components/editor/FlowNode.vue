@@ -78,7 +78,6 @@ export default {
         return;
       }
       context.emit("changeLineState", props.node.id, false);
-      context.emit("showNodeDetail", null);
       data.isActive = false;
     };
 

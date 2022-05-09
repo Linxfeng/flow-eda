@@ -435,7 +435,12 @@ export default {
 
     // 右侧栏展示节点详情
     const showNodeDetail = (node) => {
-      data.selectedNode = node;
+      data.selectedNode = null;
+      if (node) {
+        setTimeout(() => {
+          data.selectedNode = node;
+        }, 0)
+      }
     };
 
     // 更新节点属性信息
