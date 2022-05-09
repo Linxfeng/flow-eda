@@ -2,6 +2,7 @@ package com.flow.eda.runner.utils;
 
 import com.flow.eda.common.utils.CollectionUtil;
 import org.bson.Document;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -40,11 +41,15 @@ public class PlaceholderUtil {
     public static Document parse(Document input, List<String> keys) {
         Document result = new Document();
         for (String key : keys) {
-            String[] k = key.trim().split("\\.");
-            Object temp = input.get(k[0]);
-            Object value = getValue(temp, k, 1);
-            if (value != null) {
-                result.append(key.trim(), value);
+            if (input.containsKey(key)) {
+                result.append(key, input.get(key));
+            } else {
+                String[] k = key.split("\\.");
+                Object temp = input.get(k[0]);
+                Object value = getValue(temp, k, 1);
+                if (value != null) {
+                    result.append(key, value);
+                }
             }
         }
         return result;
@@ -83,7 +88,10 @@ public class PlaceholderUtil {
     public static Document fillValue(Document output, List<String> keys, Document res) {
         String str = output.toJson();
         for (String k : keys) {
-            str = str.replaceAll("\\$\\{" + k + "}", String.valueOf(res.get(k)));
+            Object value = res.get(k);
+            if (value != null) {
+                str = StringUtils.replace(str, "${" + k + "}", String.valueOf(value));
+            }
         }
         return Document.parse(str);
     }
