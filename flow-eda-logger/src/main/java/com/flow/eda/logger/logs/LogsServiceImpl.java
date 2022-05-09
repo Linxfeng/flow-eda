@@ -33,7 +33,7 @@ public class LogsServiceImpl implements LogsService {
     /** 获取操作日志信息列表 */
     private List<Logs> getOperationLogs() {
         List<Logs> result = new ArrayList<>();
-        String path = "\\logs\\operation";
+        String path = "/logs/operation";
         File dir = new File(ROOT + path);
         if (dir.exists()) {
             File[] logs = dir.listFiles();
@@ -49,7 +49,7 @@ public class LogsServiceImpl implements LogsService {
     /** 获取运行日志信息列表 */
     private List<Logs> getRunningLogs() {
         List<Logs> result = new ArrayList<>();
-        String path = "\\logs\\running";
+        String path = "/logs/running";
         File dir = new File(ROOT + path);
         if (!dir.exists()) {
             return result;

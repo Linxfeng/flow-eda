@@ -57,7 +57,7 @@ public class LogContentWebsocket {
     /** 推送日志文件内容 */
     private void pushLogContent(String path) {
         try {
-            String filePath = ROOT + path.replaceAll(":", "\\\\");
+            String filePath = ROOT + path.replaceAll(":", "/");
             BufferedReader in = new BufferedReader(new FileReader(filePath));
             StringBuilder builder = new StringBuilder();
             int lines = 0;

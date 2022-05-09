@@ -30,9 +30,9 @@ public class Logs implements Serializable {
 
     public Logs fileInfo(String path, long size) {
         if (flow != null) {
-            this.path = path + "\\" + flow + "\\" + date + ".log";
+            this.path = path + "/" + flow + "/" + date + ".log";
         } else {
-            this.path = path + "\\" + date + ".log";
+            this.path = path + "/" + date + ".log";
         }
         this.size = size / 1024;
         return this;

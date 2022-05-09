@@ -18,11 +18,11 @@ public class LogFileWriter {
     private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     public LogFileWriter() {
-        this.path = System.getProperty("user.dir") + "\\logs";
+        this.path = System.getProperty("user.dir") + "/logs";
         // 初始化日志目录
         createDir(path);
-        createDir(path + "\\running");
-        createDir(path + "\\operation");
+        createDir(path + "/running");
+        createDir(path + "/operation");
     }
 
     /** 若指定目录不存在，则创建目录 */
@@ -61,14 +61,14 @@ public class LogFileWriter {
     /** 写入操作日志文件 */
     public void writeOperationLogs(String message) {
         String date = format.format(new Date());
-        write(path + "\\operation\\" + date + ".log", message);
+        write(path + "/operation/" + date + ".log", message);
     }
 
     /** 写入流程运行日志文件 */
     public void writeRunningLogs(String flowId, String message) {
-        String dir = path + "\\running\\" + flowId;
+        String dir = path + "/running/" + flowId;
         createDir(dir);
         String date = format.format(new Date());
-        write(dir + "\\" + date + ".log", message);
+        write(dir + "/" + date + ".log", message);
     }
 }
