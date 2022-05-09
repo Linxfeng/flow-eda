@@ -22,7 +22,7 @@ public interface FlowMapper {
     List<Flow> findByRequest(FlowRequest request);
 
     @Insert(
-            "INSERT INTO eda_flow (`name`,description,`status`,create_date,update_date) VALUES(#{name},#{description},#{status},#{createDate},#{updateDate})")
+            "INSERT INTO eda_flow (`id`,`name`,description,`status`,create_date,update_date) VALUES(#{id},#{name},#{description},#{status},#{createDate},#{updateDate})")
     void insert(Flow flow);
 
     @Update(
