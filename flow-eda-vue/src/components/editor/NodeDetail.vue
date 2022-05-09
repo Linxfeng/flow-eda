@@ -137,6 +137,8 @@ export default {
           }
           if (detailForm.payload) {
             props.node.payload = JSON.parse(detailForm.payload);
+          } else {
+            props.node.payload = null;
           }
           if (Object.keys(params).length === 0) {
             params = undefined;
