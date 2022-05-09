@@ -106,6 +106,8 @@ public class FlowExecutor {
     /** 设置input，上游节点的输出参数需要传递至下一节点 */
     private FlowData setInput(FlowData currentNode, Document input) {
         if (input != null) {
+            // 自定义参数仅可传递至下一节点
+            input.remove("payload");
             Document params = Optional.ofNullable(currentNode.getParams()).orElseGet(Document::new);
             params.putAll(input);
             currentNode.setParams(params);
