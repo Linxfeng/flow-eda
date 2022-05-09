@@ -55,27 +55,14 @@ services:
   logger:
     image: flow-eda-logger
     container_name: logger
-    depends_on:
-      - mysql
-      - nacos
-      - rabbitmq
-    ports:
-      - 8082:8082
-  runner:
-    image: flow-eda-runner
-    container_name: runner
-    depends_on:
-      - mysql
-      - nacos
-      - rabbitmq
-    ports:
-      - 8088:8088
-  web:
-    image: flow-eda-web
-    container_name: web
-    depends_on:
-      - mysql
-      - nacos
-      - rabbitmq
-    ports:
-      - 8081:8081
+    network_mode: host
+    volumes:
+      - /root/app/springboot/logger/logs:/logs
+    runner:
+      image: flow-eda-runner
+      container_name: runner
+      network_mode: host
+    web:
+      image: flow-eda-web
+      container_name: web
+      network_mode: host
