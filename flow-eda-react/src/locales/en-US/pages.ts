@@ -12,6 +12,7 @@ export default {
   'pages.flowList.flows.operate': 'Option',
   'pages.flowList.flows.add': 'New',
   'pages.flowList.flows.addFlow': 'New Flow',
+  'pages.flowList.flows.addFlow.nameRule': 'Please input flow name',
   'pages.flowList.flows.chosen': 'chosen',
   'pages.flowList.flows.item': 'item',
   'pages.flowList.flows.batchDeletion': 'batch deletion',

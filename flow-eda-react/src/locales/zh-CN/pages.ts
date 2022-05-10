@@ -12,6 +12,7 @@ export default {
   'pages.flowList.flows.operate': '操作',
   'pages.flowList.flows.add': '新增',
   'pages.flowList.flows.addFlow': '新增流程',
+  'pages.flowList.flows.addFlow.nameRule': '请输入流程名称',
   'pages.flowList.flows.chosen': '已选择',
   'pages.flowList.flows.item': '项',
   'pages.flowList.flows.batchDeletion': '批量删除',

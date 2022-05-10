@@ -7,13 +7,14 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { addFlow, deleteFlow, getFlowList, updateFlow } from '@/services/api';
-import {ModalForm, ProFormText, ProFormTextArea} from "@ant-design/pro-form";
-
+import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
+import { generateUniqueID } from '@/utils/util';
 
 /**新增流程*/
 const handleAdd = async (fields: API.Flow) => {
   const hide = message.loading('Operating');
   try {
+    fields.id = generateUniqueID(8);
     await addFlow(fields);
     hide();
     message.success('Successful operation');
@@ -81,55 +82,55 @@ const FlowList: React.FC = () => {
 
   const columns: ProColumns<API.Flow>[] = [
     {
-      title: formatMessage({ id: "pages.flowList.flows.name", defaultMessage: "名称"}),
+      title: formatMessage({ id: 'pages.flowList.flows.name', defaultMessage: '名称' }),
       dataIndex: 'name',
       ellipsis: true,
     },
     {
-      title: formatMessage({ id:"pages.flowList.flows.status", defaultMessage: "状态"}),
+      title: formatMessage({ id: 'pages.flowList.flows.status', defaultMessage: '状态' }),
       dataIndex: 'status',
       filters: true,
       onFilter: true,
       valueType: 'select',
       valueEnum: {
         init: {
-          text: formatMessage({ id:"pages.flowList.flows.status.init"}),
+          text: formatMessage({ id: 'pages.flowList.flows.status.init' }),
           status: 'INIT',
         },
         RUNNING: {
-          text: formatMessage({ id:"pages.flowList.flows.status.running"}),
+          text: formatMessage({ id: 'pages.flowList.flows.status.running' }),
           status: 'RUNNING',
         },
         FINISHED: {
-          text: formatMessage({ id:"pages.flowList.flows.status.finished"}),
+          text: formatMessage({ id: 'pages.flowList.flows.status.finished' }),
           status: 'FINISHED',
         },
         FAILED: {
-          text: formatMessage({ id:"pages.flowList.flows.status.failed"}),
+          text: formatMessage({ id: 'pages.flowList.flows.status.failed' }),
           status: 'FAILED',
         },
       },
     },
     {
-      title: formatMessage({ id:"pages.flowList.flows.desc", defaultMessage: "描述"}),
+      title: formatMessage({ id: 'pages.flowList.flows.desc', defaultMessage: '描述' }),
       dataIndex: 'description',
       ellipsis: true,
-      search: false
+      search: false,
     },
     {
-      title: formatMessage({ id:"pages.flowList.flows.createDate", defaultMessage: "创建时间"}),
+      title: formatMessage({ id: 'pages.flowList.flows.createDate', defaultMessage: '创建时间' }),
       dataIndex: 'createDate',
       valueType: 'dateTime',
-      search: false
+      search: false,
     },
     {
-      title: formatMessage({ id:"pages.flowList.flows.updateDate", defaultMessage: "更新时间"}),
+      title: formatMessage({ id: 'pages.flowList.flows.updateDate', defaultMessage: '更新时间' }),
       dataIndex: 'updateDate',
       valueType: 'dateTime',
-      search: false
+      search: false,
     },
     {
-      title: formatMessage({ id:"pages.flowList.flows.operate", defaultMessage: "操作"}),
+      title: formatMessage({ id: 'pages.flowList.flows.operate', defaultMessage: '操作' }),
       valueType: 'option',
       render: (text, record, _, action) => [
         <a
@@ -192,7 +193,7 @@ const FlowList: React.FC = () => {
         ]}
       />
 
-      <ModalForm
+      <ModalForm<API.Flow>
         title={formatMessage({
           id: 'pages.flowList.flows.addFlow',
           defaultMessage: '新增流程',
@@ -211,21 +212,19 @@ const FlowList: React.FC = () => {
         }}
       >
         <ProFormText
+          name="name"
+          label="${formatMessage({id:'',defaultMessage:''}}"
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
+              message: formatMessage({
+                id: 'pages.flowList.flows.addFlow.nameRule',
+                defaultMessage: '请输入流程名称',
+              }),
             },
           ]}
-          width="md"
-          name="name"
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProFormTextArea name="description" label="描述" />
       </ModalForm>
     </PageContainer>
   );
