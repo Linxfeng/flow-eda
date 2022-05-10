@@ -23,7 +23,7 @@ a {
 
 .content-box {
     position: absolute;
-    left: 200px;
+    left: 185px;
     right: 0;
     top: 70px;
     bottom: 0;
@@ -50,10 +50,6 @@ a {
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 5px;
-}
-
-.crumbs {
-    margin: 10px 0;
 }
 
 .el-table th {

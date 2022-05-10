@@ -56,7 +56,6 @@ export default {
   left: 0;
   top: 70px;
   bottom: 0;
-  overflow-y: scroll;
 
   ::-webkit-scrollbar {
     width: 0;
@@ -68,6 +67,6 @@ export default {
 }
 
 .sidebar-el-menu:not(.el-menu--collapse) {
-  width: 200px;
+  width: 185px;
 }
 </style>

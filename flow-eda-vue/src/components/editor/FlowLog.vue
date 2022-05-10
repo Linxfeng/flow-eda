@@ -60,7 +60,7 @@ export default {
 
 <style>
 .flow-log {
-  height: 340px;
+  height: 320px;
   width: 96%;
   position: fixed;
   bottom: 0;

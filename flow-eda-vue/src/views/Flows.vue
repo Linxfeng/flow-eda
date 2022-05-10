@@ -1,12 +1,5 @@
 <template>
   <div>
-    <div class="crumbs">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>
-          <span class="icon-lx-flow"></span> 流程管理
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
     <div class="container">
       <div class="handle-box">
         <el-input v-model="params.name" class="handle-input mr10" placeholder="名称"/>
@@ -30,13 +23,13 @@
                 header-cell-class-name="table-header"
                 size="small"
                 @selection-change="handleSelectionChange">
-        <el-table-column align="center" type="selection" width="55"/>
-        <el-table-column label="名称" prop="name" show-overflow-tooltip width="250"/>
+        <el-table-column align="center" type="selection" width="45"/>
+        <el-table-column label="名称" prop="name" show-overflow-tooltip width="210"/>
         <el-table-column :formatter="statusFormat" label="状态" prop="status" width="120"/>
         <el-table-column label="描述" prop="description" show-overflow-tooltip/>
-        <el-table-column :formatter="dateFormat" label="创建时间" prop="createDate" width="180"/>
-        <el-table-column :formatter="dateFormat" label="更新时间" prop="updateDate" width="180"/>
-        <el-table-column align="center" label="操作" width="265">
+        <el-table-column :formatter="dateFormat" label="创建时间" prop="createDate" width="170"/>
+        <el-table-column :formatter="dateFormat" label="更新时间" prop="updateDate" width="170"/>
+        <el-table-column align="center" label="操作" width="255">
           <template #default="scope">
             <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row.id)">查看</el-button>
             <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
@@ -273,11 +266,11 @@ export default {
 }
 
 .handle-select {
-  width: 120px;
+  width: 110px;
 }
 
 .handle-input {
-  width: 300px;
+  width: 255px;
   display: inline-block;
 }
 

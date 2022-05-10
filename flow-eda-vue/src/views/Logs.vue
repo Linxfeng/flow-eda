@@ -1,12 +1,5 @@
 <template>
   <div>
-    <div class="crumbs">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item>
-          <span class="icon-lx-logs"/> 日志管理
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
     <div class="container">
       <div class="handle-box">
         <el-select v-model="params.type" class="handle-select mr10">
@@ -25,12 +18,12 @@
                 header-cell-class-name="table-header"
                 size="small"
                 @selection-change="handleSelectionChange">
-        <el-table-column align="center" type="selection" width="55"/>
-        <el-table-column label="日志类型" prop="type" show-overflow-tooltip width="345"/>
-        <el-table-column label="日志日期" prop="date" show-overflow-tooltip width="300"/>
+        <el-table-column align="center" type="selection" width="45"/>
+        <el-table-column label="日志类型" prop="type" show-overflow-tooltip width="255"/>
         <el-table-column label="流程名称" prop="flow" show-overflow-tooltip/>
-        <el-table-column label="文件大小(单位：kb)" prop="size" show-overflow-tooltip width="300"/>
-        <el-table-column align="center" label="操作" width="250">
+        <el-table-column label="日志日期" prop="date" show-overflow-tooltip width="220"/>
+        <el-table-column label="文件大小(单位：kb)" prop="size" show-overflow-tooltip width="220"/>
+        <el-table-column align="center" label="操作" width="220">
           <template #default="scope">
             <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row.path)">查看</el-button>
             <el-button icon="el-icon-delete" style="color: #ff0000" type="text" @click="handleDelete(scope.row.path)">
