@@ -40,7 +40,7 @@ public class LogAspect {
                 "URI: {}, METHOD: {}, IP: {}, STATUS: {}, TIME: {}",
                 request.getRequestURI(),
                 request.getMethod(),
-                request.getRemoteAddr(),
+                getIp(request),
                 response.getStatus(),
                 end - start);
         return proceed;
@@ -57,7 +57,7 @@ public class LogAspect {
                 "URI: {}, METHOD: {}, IP: {}, STATUS: {}, ERROR: {}",
                 request.getRequestURI(),
                 request.getMethod(),
-                request.getRemoteAddr(),
+                getIp(request),
                 status,
                 e.getMessage());
     }
@@ -83,5 +83,10 @@ public class LogAspect {
             }
         }
         throw new InternalException("can not get HttpServletResponse");
+    }
+
+    private String getIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Real-IP");
+        return ip != null ? ip : request.getRemoteAddr();
     }
 }
