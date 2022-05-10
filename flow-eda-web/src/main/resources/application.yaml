@@ -5,7 +5,7 @@ spring:
     name: flow-eda-web
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.0.4.17:3306/flow-eda?useSSL=false&useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/flow-eda?useSSL=false&useUnicode=true&characterEncoding=utf-8
     username: root
     password: 123456
     hikari:
@@ -15,7 +15,7 @@ spring:
       maximum-pool-size: 10
       minimum-idle: 5
   rabbitmq:
-    host: 10.0.4.17
+    host: localhost
     port: 5672
     username: guest
     password: guest
@@ -32,7 +32,7 @@ dubbo:
     qos-accept-foreign-ip: false
   registry:
     protocol: dubbo
-    address: nacos://10.0.4.17:8848
+    address: nacos://localhost:8848
     username: nacos
     password: nacos
   protocol:

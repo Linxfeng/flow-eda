@@ -4,7 +4,7 @@ spring:
   application:
     name: flow-eda-logger
   rabbitmq:
-    host: 10.0.4.17
+    host: localhost
     port: 5672
     username: guest
     password: guest
@@ -15,7 +15,7 @@ dubbo:
     qos-accept-foreign-ip: false
   registry:
     protocol: dubbo
-    address: nacos://10.0.4.17:8848
+    address: nacos://localhost:8848
     username: nacos
     password: nacos
   protocol:
