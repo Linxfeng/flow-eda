@@ -2,14 +2,15 @@
 import { FormattedMessage } from 'umi';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, message, Modal, Space } from 'antd';
+import { Button, Modal, Space } from 'antd';
 import type { Key } from 'react';
 import React, { useRef, useState } from 'react';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { addFlow, deleteFlow, getFlowList, updateFlow } from '@/services/api';
 import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
-import { generateUniqueID, useFormatMessage } from '@/utils/util';
+import { generateUniqueID } from '@/utils/util';
+import { useFormatMessage, useSubmit } from '@/hooks/index';
 
 const FlowList: React.FC = () => {
   const [modalFormVisible, handleModalFormVisible] = useState<boolean>(false);
@@ -18,60 +19,22 @@ const FlowList: React.FC = () => {
   const [currentRow, setCurrentRow] = useState<API.Flow>();
   const [selectedRowKeys, setSelectedRows] = useState<Key[]>([]);
   const { formatMsg } = useFormatMessage();
+  const { submitRequest } = useSubmit();
 
-  /** 新增流程 */
-  const handleAdd = async (body: API.Flow) => {
-    const hide = message.loading('Operating');
-    try {
-      body.id = generateUniqueID(8);
-      await addFlow(body);
-      hide();
-      message.success('Successful operation');
-      return true;
-    } catch (error) {
-      hide();
-      return false;
-    }
-  };
-
-  /** 更新流程 */
-  const handleUpdate = async (body: API.Flow) => {
-    const hide = message.loading('operating');
-    try {
-      await updateFlow(body);
-      hide();
-      message.success('Successful operation');
-      return true;
-    } catch (error) {
-      hide();
-      return false;
-    }
-  };
-
-  /** 删除流程 */
-  const handleRemove = async (selectedRows: Key[]) => {
-    const hide = message.loading('operating');
-    try {
-      await deleteFlow(selectedRows);
-      hide();
-      message.success('Successful operation');
-      setSelectedRows([]);
-      actionRef.current?.reloadAndRest?.();
-    } catch (error) {
-      hide();
-    }
-  };
-
-  /**删除二次确认*/
-  const showDeleteConfirm = async (selectedRows: Key[]) => {
+  /** 删除流程，二次确认 */
+  const showDeleteConfirm = async (selectedRows: Key[] | string[]) => {
     Modal.confirm({
       title: formatMsg('component.modalForm.confirm.title'),
       icon: <ExclamationCircleOutlined />,
       okType: 'danger',
       okText: formatMsg('component.modalForm.confirm'),
       cancelText: formatMsg('component.modalForm.cancel'),
-      onOk() {
-        handleRemove(selectedRows);
+      async onOk() {
+        const success = await submitRequest(deleteFlow, selectedRows);
+        if (success) {
+          setSelectedRows([]);
+          actionRef.current?.reloadAndRest?.();
+        }
       },
     });
   };
@@ -146,6 +109,19 @@ const FlowList: React.FC = () => {
           }}
         >
           <FormattedMessage id="pages.flowList.flows.edit" defaultMessage="编辑" />
+        </a>,
+        <a
+          key="delete"
+          style={{
+            color: 'red',
+          }}
+          onClick={async () => {
+            if (record?.id) {
+              await showDeleteConfirm([record.id]);
+            }
+          }}
+        >
+          <FormattedMessage id="pages.flowList.flows.delete" defaultMessage="删除" />
         </a>,
       ],
     },
@@ -245,9 +221,10 @@ const FlowList: React.FC = () => {
             let success;
             if (modalFormType === 'edit') {
               body.id = currentRow?.id;
-              success = await handleUpdate(body);
+              success = await submitRequest(updateFlow, body);
             } else {
-              success = await handleAdd(body);
+              body.id = generateUniqueID(8);
+              success = await submitRequest(addFlow, body);
             }
             if (success) {
               setCurrentRow(undefined);
