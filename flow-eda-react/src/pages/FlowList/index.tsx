@@ -1,148 +1,151 @@
 // @ts-ignore
-import { FormattedMessage, useIntl } from 'umi';
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
-import React, { useRef, useState } from 'react';
+import { FormattedMessage } from 'umi';
+import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
+import { Button, message, Modal, Space } from 'antd';
+import type { Key } from 'react';
+import React, { useRef, useState } from 'react';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { addFlow, deleteFlow, getFlowList, updateFlow } from '@/services/api';
 import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
-import { generateUniqueID } from '@/utils/util';
-
-/**新增流程*/
-const handleAdd = async (fields: API.Flow) => {
-  const hide = message.loading('Operating');
-  try {
-    fields.id = generateUniqueID(8);
-    await addFlow(fields);
-    hide();
-    message.success('Successful operation');
-    return true;
-  } catch (error) {
-    hide();
-    return false;
-  }
-};
-
-/**
- * @en-US Update Flow
- * @zh-CN 更新流程
- * @param fields
- */
-const handleUpdate = async (fields: API.Flow) => {
-  const hide = message.loading('operating');
-  try {
-    await updateFlow({
-      name: fields.name,
-      desc: fields.desc,
-    });
-    hide();
-    message.success('Successful operation');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Configuration failed, please try again!');
-    return false;
-  }
-};
-
-/**
- * @en-US Delete Flow
- * @zh-CN 删除流程
- * @param selectedRows
- */
-const handleRemove = async (selectedRows: API.Flow[]) => {
-  const hide = message.loading('operating');
-  if (!selectedRows) return true;
-  try {
-    await deleteFlow({
-      ids: selectedRows.map((row) => row.id),
-    });
-    hide();
-    message.success('Successful operation');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Delete failed, please try again');
-    return false;
-  }
-};
+import { generateUniqueID, useFormatMessage } from '@/utils/util';
 
 const FlowList: React.FC = () => {
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
+  const [modalFormVisible, handleModalFormVisible] = useState<boolean>(false);
+  const [modalFormType, setModalFormType] = useState<'add' | 'edit'>('add');
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<API.Flow>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-  const { formatMessage } = useIntl();
+  const [selectedRowKeys, setSelectedRows] = useState<Key[]>([]);
+  const { formatMsg } = useFormatMessage();
+
+  /** 新增流程 */
+  const handleAdd = async (body: API.Flow) => {
+    const hide = message.loading('Operating');
+    try {
+      body.id = generateUniqueID(8);
+      await addFlow(body);
+      hide();
+      message.success('Successful operation');
+      return true;
+    } catch (error) {
+      hide();
+      return false;
+    }
+  };
+
+  /** 更新流程 */
+  const handleUpdate = async (body: API.Flow) => {
+    const hide = message.loading('operating');
+    try {
+      await updateFlow(body);
+      hide();
+      message.success('Successful operation');
+      return true;
+    } catch (error) {
+      hide();
+      return false;
+    }
+  };
+
+  /** 删除流程 */
+  const handleRemove = async (selectedRows: Key[]) => {
+    const hide = message.loading('operating');
+    try {
+      await deleteFlow(selectedRows);
+      hide();
+      message.success('Successful operation');
+      setSelectedRows([]);
+      actionRef.current?.reloadAndRest?.();
+    } catch (error) {
+      hide();
+    }
+  };
+
+  /**删除二次确认*/
+  const showDeleteConfirm = async (selectedRows: Key[]) => {
+    Modal.confirm({
+      title: formatMsg('component.modalForm.confirm.title'),
+      icon: <ExclamationCircleOutlined />,
+      okType: 'danger',
+      okText: formatMsg('component.modalForm.confirm'),
+      cancelText: formatMsg('component.modalForm.cancel'),
+      onOk() {
+        handleRemove(selectedRows);
+      },
+    });
+  };
 
   const columns: ProColumns<API.Flow>[] = [
     {
-      title: formatMessage({ id: 'pages.flowList.flows.name', defaultMessage: '名称' }),
+      title: formatMsg('pages.flowList.flows.name', '名称'),
       dataIndex: 'name',
       ellipsis: true,
     },
     {
-      title: formatMessage({ id: 'pages.flowList.flows.status', defaultMessage: '状态' }),
+      title: formatMsg('pages.flowList.flows.status', '状态'),
       dataIndex: 'status',
       filters: true,
       onFilter: true,
       valueType: 'select',
       valueEnum: {
-        init: {
-          text: formatMessage({ id: 'pages.flowList.flows.status.init' }),
+        INIT: {
+          text: formatMsg('pages.flowList.flows.status.init'),
           status: 'INIT',
         },
         RUNNING: {
-          text: formatMessage({ id: 'pages.flowList.flows.status.running' }),
+          text: formatMsg('pages.flowList.flows.status.running'),
           status: 'RUNNING',
         },
         FINISHED: {
-          text: formatMessage({ id: 'pages.flowList.flows.status.finished' }),
+          text: formatMsg('pages.flowList.flows.status.finished'),
           status: 'FINISHED',
         },
         FAILED: {
-          text: formatMessage({ id: 'pages.flowList.flows.status.failed' }),
+          text: formatMsg('pages.flowList.flows.status.failed'),
           status: 'FAILED',
         },
       },
     },
     {
-      title: formatMessage({ id: 'pages.flowList.flows.desc', defaultMessage: '描述' }),
+      title: formatMsg('pages.flowList.flows.desc', '描述'),
       dataIndex: 'description',
       ellipsis: true,
       search: false,
     },
     {
-      title: formatMessage({ id: 'pages.flowList.flows.createDate', defaultMessage: '创建时间' }),
+      title: formatMsg('pages.flowList.flows.createDate', '创建时间'),
       dataIndex: 'createDate',
       valueType: 'dateTime',
       search: false,
     },
     {
-      title: formatMessage({ id: 'pages.flowList.flows.updateDate', defaultMessage: '更新时间' }),
+      title: formatMsg('pages.flowList.flows.updateDate', '更新时间'),
       dataIndex: 'updateDate',
       valueType: 'dateTime',
       search: false,
     },
     {
-      title: formatMessage({ id: 'pages.flowList.flows.operate', defaultMessage: '操作' }),
+      title: formatMsg('pages.flowList.flows.operate', '操作'),
       valueType: 'option',
-      render: (text, record, _, action) => [
+      render: (text, record) => [
         <a
-          key="editable"
+          key="show"
           onClick={() => {
-            action?.startEditable?.(record.id);
+            // 打开流编辑器
           }}
         >
-          查看
+          <FormattedMessage id="pages.flowList.flows.show" defaultMessage="查看" />
         </a>,
-        <a href={record.url} target="_blank" rel="noopener noreferrer" key="view">
-          编辑
+        <a
+          key="edit"
+          onClick={() => {
+            setCurrentRow(record);
+            setModalFormType('edit');
+            handleModalFormVisible(true);
+          }}
+        >
+          <FormattedMessage id="pages.flowList.flows.edit" defaultMessage="编辑" />
         </a>,
       ],
     },
@@ -151,10 +154,7 @@ const FlowList: React.FC = () => {
   return (
     <PageContainer>
       <ProTable<API.Flow>
-        headerTitle={formatMessage({
-          id: 'pages.flowList.flows.title',
-          defaultMessage: '流程列表',
-        })}
+        headerTitle={formatMsg('pages.flowList.flows.title', '流程列表')}
         columns={columns}
         actionRef={actionRef}
         rowKey="id"
@@ -166,66 +166,114 @@ const FlowList: React.FC = () => {
         }}
         request={getFlowList}
         rowSelection={{
-          onChange: (_, selectedRows) => {
+          selectedRowKeys,
+          onChange: (selectedRows) => {
             setSelectedRows(selectedRows);
           },
         }}
         toolBarRender={() => [
           <Button
             type="primary"
-            key="primary"
+            key="add"
             onClick={() => {
-              handleModalVisible(true);
+              setModalFormType('add');
+              handleModalFormVisible(true);
             }}
           >
             <PlusOutlined />
             <FormattedMessage id="pages.flowList.flows.add" defaultMessage="新增" />
           </Button>,
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <FormattedMessage id="pages.flowList.flows.batchDeletion" defaultMessage="批量删除" />
-          </Button>,
         ]}
+        tableAlertRender={() => (
+          <span>
+            <FormattedMessage id="pages.flowList.flows.chosen" defaultMessage="已选择" />
+            &nbsp;{selectedRowKeys.length}&nbsp;
+            <FormattedMessage id="pages.flowList.flows.item" defaultMessage="项" />
+          </span>
+        )}
+        tableAlertOptionRender={() => {
+          return (
+            <Space size={16}>
+              <a onClick={() => setSelectedRows([])}>
+                <FormattedMessage id="pages.flowList.flows.clear" defaultMessage="取消选择" />
+              </a>
+              <a
+                onClick={async () => {
+                  await showDeleteConfirm(selectedRowKeys);
+                }}
+              >
+                <FormattedMessage
+                  id="pages.flowList.flows.batchDeletion"
+                  defaultMessage="批量删除"
+                />
+              </a>
+            </Space>
+          );
+        }}
       />
 
-      <ModalForm<API.Flow>
-        title={formatMessage({
-          id: 'pages.flowList.flows.addFlow',
-          defaultMessage: '新增流程',
-        })}
-        width="600px"
-        visible={createModalVisible}
-        onVisibleChange={handleModalVisible}
-        onFinish={async (value) => {
-          const success = await handleAdd(value as API.Flow);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
+      {modalFormVisible && (
+        <ModalForm<API.Flow>
+          title={
+            modalFormType === 'edit'
+              ? formatMsg('pages.flowList.flows.editFlow')
+              : formatMsg('pages.flowList.flows.addFlow')
           }
-        }}
-      >
-        <ProFormText
-          name="name"
-          label="${formatMessage({id:'',defaultMessage:''}}"
-          rules={[
-            {
-              required: true,
-              message: formatMessage({
-                id: 'pages.flowList.flows.addFlow.nameRule',
-                defaultMessage: '请输入流程名称',
-              }),
+          width="496px"
+          initialValues={currentRow}
+          visible={modalFormVisible}
+          onVisibleChange={handleModalFormVisible}
+          submitter={{
+            render: (props) => {
+              return [
+                <Button
+                  key="cancel"
+                  onClick={() => {
+                    setCurrentRow(undefined);
+                    handleModalFormVisible(false);
+                  }}
+                >
+                  <FormattedMessage id="component.modalForm.cancel" defaultMessage="取消" />
+                </Button>,
+                <Button type="primary" key="confirm" onClick={() => props.submit()}>
+                  <FormattedMessage id="component.modalForm.confirm" defaultMessage="确认" />
+                </Button>,
+              ];
             },
-          ]}
-        />
-        <ProFormTextArea name="description" label="描述" />
-      </ModalForm>
+          }}
+          onFinish={async (body) => {
+            let success;
+            if (modalFormType === 'edit') {
+              body.id = currentRow?.id;
+              success = await handleUpdate(body);
+            } else {
+              success = await handleAdd(body);
+            }
+            if (success) {
+              setCurrentRow(undefined);
+              handleModalFormVisible(false);
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+        >
+          <ProFormText
+            name="name"
+            label={formatMsg('pages.flowList.flows.name', '名称')}
+            rules={[
+              {
+                required: true,
+                message: formatMsg('pages.flowList.flows.addFlow.nameRule', '请输入流程名称'),
+              },
+            ]}
+          />
+          <ProFormTextArea
+            name="description"
+            label={formatMsg('pages.flowList.flows.desc', '描述')}
+          />
+        </ModalForm>
+      )}
     </PageContainer>
   );
 };
