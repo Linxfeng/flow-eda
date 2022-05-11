@@ -1,6 +1,7 @@
 /* eslint-disable */
 // @ts-ignore
 import { request } from 'umi';
+import { Key } from 'react';
 
 /**获取流程列表*/
 export async function getFlowList(params: any) {
@@ -18,13 +19,10 @@ export async function getFlowList(params: any) {
 
 /** 新增流程 */
 export async function addFlow(body: API.Flow) {
-  console.log(body)
-  const res = await request('/api/v1/flow', {
+  await request('/api/v1/flow', {
     method: 'POST',
     data: body,
   });
-  console.log(res)
-  return { data: res.result };
 }
 
 /** 更新流程 */
@@ -36,7 +34,7 @@ export async function updateFlow(body: API.Flow) {
 }
 
 /** 删除流程 */
-export async function deleteFlow(body: { [key: string]: any }) {
+export async function deleteFlow(body: Key[]) {
   return request<API.ApiResult>('/api/v1/flow', {
     method: 'DELETE',
     data: body,
