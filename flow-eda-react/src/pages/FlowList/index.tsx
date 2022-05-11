@@ -43,30 +43,32 @@ const FlowList: React.FC = () => {
     {
       title: formatMsg('pages.flowList.flows.name', '名称'),
       dataIndex: 'name',
+      width: '18%',
       ellipsis: true,
     },
     {
       title: formatMsg('pages.flowList.flows.status', '状态'),
       dataIndex: 'status',
+      width: '8%',
       filters: true,
       onFilter: true,
       valueType: 'select',
       valueEnum: {
         INIT: {
           text: formatMsg('pages.flowList.flows.status.init'),
-          status: 'INIT',
+          status: 'Default',
         },
         RUNNING: {
           text: formatMsg('pages.flowList.flows.status.running'),
-          status: 'RUNNING',
+          status: 'Processing',
         },
         FINISHED: {
           text: formatMsg('pages.flowList.flows.status.finished'),
-          status: 'FINISHED',
+          status: 'Success',
         },
         FAILED: {
           text: formatMsg('pages.flowList.flows.status.failed'),
-          status: 'FAILED',
+          status: 'Error',
         },
       },
     },
@@ -80,24 +82,22 @@ const FlowList: React.FC = () => {
       title: formatMsg('pages.flowList.flows.createDate', '创建时间'),
       dataIndex: 'createDate',
       valueType: 'dateTime',
+      width: '14%',
       search: false,
     },
     {
       title: formatMsg('pages.flowList.flows.updateDate', '更新时间'),
       dataIndex: 'updateDate',
       valueType: 'dateTime',
+      width: '14%',
       search: false,
     },
     {
       title: formatMsg('pages.flowList.flows.operate', '操作'),
       valueType: 'option',
+      width: '15%',
       render: (text, record) => [
-        <a
-          key="show"
-          onClick={() => {
-            // 打开流编辑器
-          }}
-        >
+        <a key="show" onClick={() => {}}>
           <FormattedMessage id="pages.flowList.flows.show" defaultMessage="查看" />
         </a>,
         <a
@@ -109,6 +109,9 @@ const FlowList: React.FC = () => {
           }}
         >
           <FormattedMessage id="pages.flowList.flows.edit" defaultMessage="编辑" />
+        </a>,
+        <a key="logs" onClick={() => {}}>
+          <FormattedMessage id="pages.flowList.flows.logs" defaultMessage="日志" />
         </a>,
         <a
           key="delete"
