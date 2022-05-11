@@ -19,7 +19,7 @@ export async function getFlowList(params: any) {
 
 /** 新增流程 */
 export async function addFlow(body: API.Flow) {
-  await request('/api/v1/flow', {
+  return request<API.ApiResult>('/api/v1/flow', {
     method: 'POST',
     data: body,
   });
