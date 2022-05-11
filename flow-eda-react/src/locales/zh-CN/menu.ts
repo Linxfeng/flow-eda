@@ -1,4 +1,6 @@
 export default {
+  'menu.list.flow-list': "流程管理",
+
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',
@@ -23,7 +25,6 @@ export default {
   'menu.form.advanced-form': '高级表单',
   'menu.list': '列表页',
   'menu.list.table-list': '查询表格',
-  'menu.list.flow-list':"流程管理",
   'menu.list.basic-list': '标准列表',
   'menu.list.card-list': '卡片列表',
   'menu.list.search-list': '搜索列表',

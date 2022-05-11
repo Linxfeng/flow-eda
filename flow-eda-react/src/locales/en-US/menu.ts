@@ -1,4 +1,6 @@
 export default {
+  'menu.list.flow-list':"Flows",
+
   'menu.welcome': 'Welcome',
   'menu.more-blocks': 'More Blocks',
   'menu.home': 'Home',
