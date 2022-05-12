@@ -4,6 +4,13 @@ export default {
   'component.modalForm.confirm.title': '确认要删除吗？删除后将无法恢复！',
   'component.message.loading': '操作中...',
   'component.message.success': '操作成功',
+  'component.option': '操作',
+  'component.option.show': '查看',
+  'component.option.delete': '删除',
+  'component.option.chosen': '已选择',
+  'component.option.item': '项',
+  'component.option.clear': '取消选择',
+  'component.option.batchDeletion': '批量删除',
 
 
 
