@@ -1,5 +1,7 @@
 export default {
   'menu.list.flow-list':"Flows",
+  'menu.list.log-list':"Logs",
+
 
   'menu.welcome': 'Welcome',
   'menu.more-blocks': 'More Blocks',

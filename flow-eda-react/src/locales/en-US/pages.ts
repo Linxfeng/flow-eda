@@ -9,19 +9,20 @@ export default {
   'pages.flowList.flows.desc': 'Description',
   'pages.flowList.flows.createDate': 'Create Date',
   'pages.flowList.flows.updateDate': 'Update Date',
-  'pages.flowList.flows.operate': 'Option',
-  'pages.flowList.flows.show': 'Show',
   'pages.flowList.flows.edit': 'Edit',
   'pages.flowList.flows.logs': 'Logs',
-  'pages.flowList.flows.delete': 'Delete',
   'pages.flowList.flows.add': 'Add',
   'pages.flowList.flows.addFlow': 'Add Flow',
   'pages.flowList.flows.editFlow': 'Edit Flow',
   'pages.flowList.flows.addFlow.nameRule': 'Please input flow name',
-  'pages.flowList.flows.chosen': 'Chosen',
-  'pages.flowList.flows.item': 'Item',
-  'pages.flowList.flows.clear': 'Clear selection',
-  'pages.flowList.flows.batchDeletion': 'Batch deletion',
+
+  'pages.logList.logs.title': 'Log List',
+  'pages.logList.logs.type': 'Log type',
+  'pages.logList.logs.type.running': 'Running logs',
+  'pages.logList.logs.type.operation': 'Operation logs',
+  'pages.logList.logs.flowName': 'Flow name',
+  'pages.logList.logs.date': 'Log date',
+  'pages.logList.logs.fileSize': 'File size(unit:kb)',
 
 
   'pages.layouts.userLayout.title':

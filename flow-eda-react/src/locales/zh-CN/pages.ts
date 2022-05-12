@@ -9,19 +9,21 @@ export default {
   'pages.flowList.flows.desc': '描述',
   'pages.flowList.flows.createDate': '创建时间',
   'pages.flowList.flows.updateDate': '更新时间',
-  'pages.flowList.flows.operate': '操作',
-  'pages.flowList.flows.show': '查看',
   'pages.flowList.flows.edit': '编辑',
   'pages.flowList.flows.logs': '日志',
-  'pages.flowList.flows.delete': '删除',
   'pages.flowList.flows.add': '新增',
   'pages.flowList.flows.addFlow': '新增流程',
   'pages.flowList.flows.editFlow': '修改流程',
   'pages.flowList.flows.addFlow.nameRule': '请输入流程名称',
-  'pages.flowList.flows.chosen': '已选择',
-  'pages.flowList.flows.item': '项',
-  'pages.flowList.flows.clear': '取消选择',
-  'pages.flowList.flows.batchDeletion': '批量删除',
+
+  'pages.logList.logs.title': '日志列表',
+  'pages.logList.logs.type': '日志类型',
+  'pages.logList.logs.type.running': '运行日志',
+  'pages.logList.logs.type.operation': '操作日志',
+  'pages.logList.logs.flowName': '流程名称',
+  'pages.logList.logs.date': '日志日期',
+  'pages.logList.logs.fileSize': '文件大小（单位：kb）',
+
 
 
 
