@@ -50,6 +50,13 @@
     component: './FlowList',
   },
   {
+    name: 'list.flow-editor',
+    icon: 'table',
+    path: '/flows/editor/:id',
+    hideInMenu: true,
+    component: './FlowEditor',
+  },
+  {
     name: 'list.log-list',
     icon: 'table',
     path: '/logs',

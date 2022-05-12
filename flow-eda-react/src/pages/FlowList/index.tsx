@@ -1,16 +1,15 @@
-// @ts-ignore
-import { FormattedMessage } from 'umi';
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import type { ActionType, ProColumns } from '@ant-design/pro-table';
+import ProTable from '@ant-design/pro-table';
+import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Modal, Space } from 'antd';
 import type { Key } from 'react';
 import React, { useRef, useState } from 'react';
-import type { ActionType, ProColumns } from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
+import { FormattedMessage, Link } from 'umi';
 import { addFlow, deleteFlow, getFlowList, updateFlow } from '@/services/api';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
-import { generateUniqueID } from '@/utils/util';
 import { useFormatMessage, useSubmit } from '@/hooks/index';
+import { generateUniqueID } from '@/utils/util';
 
 const FlowList: React.FC = () => {
   const [modalFormVisible, handleModalFormVisible] = useState<boolean>(false);
@@ -93,13 +92,13 @@ const FlowList: React.FC = () => {
       search: false,
     },
     {
-      title: formatMsg('pages.flowList.flows.operate', '操作'),
+      title: formatMsg('component.option', '操作'),
       valueType: 'option',
       width: '15%',
       render: (text, record) => [
-        <a key="show" onClick={() => {}}>
-          <FormattedMessage id="pages.flowList.flows.show" defaultMessage="查看" />
-        </a>,
+        <Link key="show" to={`/flows/editor/${record.id}`}>
+          {formatMsg('component.option.show', '查看')}
+        </Link>,
         <a
           key="edit"
           onClick={() => {
@@ -115,16 +114,14 @@ const FlowList: React.FC = () => {
         </a>,
         <a
           key="delete"
-          style={{
-            color: 'red',
-          }}
+          style={{ color: 'red' }}
           onClick={async () => {
             if (record?.id) {
               await showDeleteConfirm([record.id]);
             }
           }}
         >
-          <FormattedMessage id="pages.flowList.flows.delete" defaultMessage="删除" />
+          <FormattedMessage id="component.option.delete" defaultMessage="删除" />
         </a>,
       ],
     },
@@ -165,26 +162,23 @@ const FlowList: React.FC = () => {
         ]}
         tableAlertRender={() => (
           <span>
-            <FormattedMessage id="pages.flowList.flows.chosen" defaultMessage="已选择" />
+            <FormattedMessage id="component.option.chosen" defaultMessage="已选择" />
             &nbsp;{selectedRowKeys.length}&nbsp;
-            <FormattedMessage id="pages.flowList.flows.item" defaultMessage="项" />
+            <FormattedMessage id="component.option.item" defaultMessage="项" />
           </span>
         )}
         tableAlertOptionRender={() => {
           return (
             <Space size={16}>
               <a onClick={() => setSelectedRows([])}>
-                <FormattedMessage id="pages.flowList.flows.clear" defaultMessage="取消选择" />
+                <FormattedMessage id="component.option.clear" defaultMessage="取消选择" />
               </a>
               <a
                 onClick={async () => {
                   await showDeleteConfirm(selectedRowKeys);
                 }}
               >
-                <FormattedMessage
-                  id="pages.flowList.flows.batchDeletion"
-                  defaultMessage="批量删除"
-                />
+                <FormattedMessage id="component.option.batchDeletion" defaultMessage="批量删除" />
               </a>
             </Space>
           );
