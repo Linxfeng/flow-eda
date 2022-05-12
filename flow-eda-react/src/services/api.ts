@@ -1,9 +1,7 @@
-/* eslint-disable */
-// @ts-ignore
 import { request } from 'umi';
-import { Key } from 'react';
+import type { Key } from 'react';
 
-/**获取流程列表*/
+/** 获取流程列表 */
 export async function getFlowList(params: any) {
   const { result, total } = await request('/api/v1/flow', {
     method: 'GET',
@@ -36,6 +34,27 @@ export async function updateFlow(body: API.Flow) {
 /** 删除流程 */
 export async function deleteFlow(body: Key[]) {
   return request<API.ApiResult>('/api/v1/flow', {
+    method: 'DELETE',
+    data: body,
+  });
+}
+
+/** 获取日志列表 */
+export async function getLogList(params: any) {
+  const { result, total } = await request('/api/v1/logs', {
+    method: 'GET',
+    params: {
+      limit: params?.pageSize,
+      page: params?.current,
+      type: params?.type,
+    },
+  });
+  return { data: result, total };
+}
+
+/** 删除日志 */
+export async function deleteLogs(body: Key[]) {
+  return request<API.ApiResult>('/api/v1/logs', {
     method: 'DELETE',
     data: body,
   });

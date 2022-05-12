@@ -46,8 +46,14 @@
   {
     name: 'list.flow-list',
     icon: 'table',
-    path: '/flow',
+    path: '/flows',
     component: './FlowList',
+  },
+  {
+    name: 'list.log-list',
+    icon: 'table',
+    path: '/logs',
+    component: './LogList',
   },
   {
     path: '/',

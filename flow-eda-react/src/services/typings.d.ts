@@ -32,6 +32,14 @@ declare namespace API {
     updateDate?: string;
   };
 
+  type Log = {
+    type?: string;
+    path?: string;
+    date?: string;
+    flow?: string;
+    size?: number;
+  };
+
 
 
   type CurrentUser = {
