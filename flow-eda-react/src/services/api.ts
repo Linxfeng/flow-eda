@@ -60,6 +60,14 @@ export async function deleteLogs(body: Key[]) {
   });
 }
 
+/** 获取流程数据 */
+export async function getFlowData(id: string) {
+  return request<API.ApiResult>('/api/v1/node/data', {
+    method: 'GET',
+    params: { flowId: id },
+  });
+}
+
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
   return request<{

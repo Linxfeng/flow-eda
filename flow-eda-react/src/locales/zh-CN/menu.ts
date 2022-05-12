@@ -1,6 +1,7 @@
 export default {
   'menu.list.flow-list': "流程管理",
   'menu.list.log-list': "日志管理",
+  'menu.list.flow-editor': "流编辑器",
 
 
   'menu.welcome': '欢迎',

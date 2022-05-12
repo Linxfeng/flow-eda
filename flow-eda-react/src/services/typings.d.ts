@@ -1,10 +1,9 @@
 // @ts-ignore
 /* eslint-disable */
 declare namespace API {
-
   type PageResult = {
     result?: any[];
-    error?:string;
+    error?: string;
     limit?: number;
     page?: number;
     total?: number;
@@ -12,9 +11,9 @@ declare namespace API {
 
   type ApiResult = {
     result?: any[];
-    error?:string;
-    message?:string;
-    status?:number;
+    error?: string;
+    message?: string;
+    status?: number;
   };
 
   type Page = {
@@ -40,7 +39,20 @@ declare namespace API {
     size?: number;
   };
 
-
+  type Node = {
+    id: string;
+    flowId: string;
+    left?: string;
+    top?: string;
+    nodeName?: string;
+    typeId?: number;
+    from?: string;
+    to?: string;
+    remark?: string;
+    params?: object;
+    nodeType?: object;
+    payload?: object;
+  };
 
   type CurrentUser = {
     name?: string;
