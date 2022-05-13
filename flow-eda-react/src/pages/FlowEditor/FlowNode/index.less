@@ -1,0 +1,86 @@
+@nodeSize: 20px;
+.node-item {
+  position: absolute;
+  z-index: 9995;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: content-box;
+  width: 120px;
+  height: 40px;
+  border: 1px solid #b7b6b6;
+  border-radius: 4px;
+  cursor: move;
+
+  &:hover {
+    z-index: 9998;
+
+    .delete-btn {
+      display: block;
+    }
+  }
+
+  .node-svg {
+    width: 40px;
+    height: 40px;
+    border-right: 1px solid #b7b6b6;
+  }
+
+  .node-name {
+    flex-grow: 1;
+    width: 0;
+    overflow: hidden;
+    font-size: 14px;
+    white-space: nowrap;
+    text-align: center;
+    text-overflow: ellipsis;
+  }
+
+  .node-status {
+    position: absolute;
+    top: -6px;
+    left: 110px;
+  }
+
+  .node-anchor {
+    position: absolute;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: @nodeSize;
+    height: @nodeSize;
+    background: -webkit-radial-gradient(sandybrown 10%, white 30%, #9a54ff 60%);
+    border-radius: 10px;
+    cursor: crosshair;
+  }
+
+  .anchor-top {
+    top: calc((@nodeSize / 2) * -1);
+    left: 50%;
+    margin-left: calc((@nodeSize / 2) * -1);
+  }
+
+  .anchor-right {
+    top: 50%;
+    right: calc((@nodeSize / 2) * -1);
+    margin-top: calc((@nodeSize / 2) * -1);
+  }
+
+  .anchor-bottom {
+    bottom: calc((@nodeSize / 2) * -1);
+    left: 50%;
+    margin-left: calc((@nodeSize / 2) * -1);
+  }
+
+  .anchor-left {
+    top: 50%;
+    left: calc((@nodeSize / 2) * -1);
+    margin-top: calc((@nodeSize / 2) * -1);
+  }
+}
+
+.active {
+  border: 1px dashed #409eff;
+  box-shadow: 0 5px 9px 0 rgba(0, 0, 0, 0.5);
+}
