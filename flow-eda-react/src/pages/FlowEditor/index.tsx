@@ -1,19 +1,27 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'umi';
 import jsplumb from 'jsplumb';
-import { getFlowData } from '@/services/api';
+import { getFlowData, getNodeTypes } from '@/services/api';
 import {
   jsplumbConnectOptions,
   jsplumbSetting,
   jsplumbSourceOptions,
   jsplumbTargetOptions,
-} from '@/utils/jsplumbConfig';
+} from '@/pages/FlowEditor/jsplumb/jsplumbConfig';
 import { generateUniqueID } from '@/utils/util';
+import { PageContainer } from '@ant-design/pro-layout';
+import { Card } from 'antd';
+import ToolBar from '@/pages/FlowEditor/ToolBar';
+import FlowNode from '@/pages/FlowEditor/FlowNode/index';
 
-const FlowEditor = () => {
+const FlowEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [jsPlumbInstance] = useState(jsplumb.jsPlumb.getInstance());
-  const [data, setDate] = useState<{ nodeList: API.Node[]; lineList: API.Node[] }>();
+  const [data, setDate] = useState<{ nodeList: API.Node[]; lineList: API.Node[] }>({
+    nodeList: [],
+    lineList: [],
+  });
+  const [nodeTypes, setNodeTypes] = useState<API.NodeType[]>([]);
   const [auxiliaryLine, setAuxiliaryLine] = useState<{ showXLine: boolean; showYLine: boolean }>({
     showXLine: false,
     showYLine: false,
@@ -40,13 +48,21 @@ const FlowEditor = () => {
     setDate({ nodeList: node, lineList: line });
   };
 
+  // 初始化节点类型
+  const initNodeType = async () => {
+    const res = await getNodeTypes();
+    if (res) {
+      setNodeTypes(res);
+    }
+  };
+
   /** 移动节点时，动态显示对齐线 */
   const alignForLine = (nodeId: string, position: number[]) => {
     let showXLine = false;
     let showYLine = false;
     let xPos = auxiliaryLinePos.x;
     let yPos = auxiliaryLinePos.y;
-    data?.nodeList.some((el) => {
+    data.nodeList.some((el) => {
       if (el.id !== nodeId && el.left === position[0] + 'px') {
         xPos = position[0] + 60;
         showYLine = true;
@@ -69,7 +85,7 @@ const FlowEditor = () => {
       start: () => {},
       stop: (params) => {
         setAuxiliaryLine({ showXLine: false, showYLine: false });
-        data?.nodeList.forEach((v) => {
+        data.nodeList.forEach((v) => {
           if (nodeId === v.id) {
             v.left = params.pos[0] + 'px';
             v.top = params.pos[1] + 'px';
@@ -81,7 +97,7 @@ const FlowEditor = () => {
 
   /** 加载流程图 */
   const loadEasyFlow = () => {
-    const nodes = data?.nodeList;
+    const nodes = data.nodeList;
     if (nodes && nodes.length > 0) {
       nodes.forEach((node) => {
         // 设置源点，可以拖出线连接其他节点
@@ -94,7 +110,7 @@ const FlowEditor = () => {
     }
     //取消连接事件
     jsPlumbInstance.unbind('connection');
-    const lines = data?.lineList;
+    const lines = data.lineList;
     if (lines && lines.length > 0) {
       // 初始化连线
       lines.forEach((line) => {
@@ -133,7 +149,7 @@ const FlowEditor = () => {
           from: evt.source.id,
           to: evt.target.id,
         };
-        if (data?.lineList) {
+        if (data.lineList) {
           data.lineList.push(line);
         }
       });
@@ -145,7 +161,7 @@ const FlowEditor = () => {
       });
       //断开连线后，维护本地数据
       jsPlumbInstance.bind('connectionDetached', (evt) => {
-        if (data?.lineList) {
+        if (data.lineList) {
           data.lineList.forEach((item, index) => {
             if (item.from === evt.sourceId && item.to === evt.targetId) {
               data.lineList.splice(index, 1);
@@ -162,27 +178,61 @@ const FlowEditor = () => {
     // initPanZoom();
   };
 
-  useEffect(() => {
-    // 加载流程节点数据
-    initFlowData().then(() => {
-      // 初始化编辑器画板
-      initPanel();
-    });
-  });
+  // initNodeType();
+  // initFlowData();
+  // initPanel();
 
-  useEffect(() => {
-    return () => {
-      if (jsPlumbInstance) {
-        jsPlumbInstance.reset();
-      }
-    };
-  });
+  // useEffect(() => {
+  //   initNodeType();
+  //   initFlowData();
+  //   initPanel();
+  // 加载流程节点数据
+  // initFlowData().then(() => {
+  //   // 初始化编辑器画板
+  //   initPanel();
+  // });
+  //
+  // return () => {
+  //   if (jsPlumbInstance) {
+  //     jsPlumbInstance.reset();
+  //   }
+  // };
+  // });
 
   return (
-    <div id="LineContainer" style={{ display: 'relative' }}>
-      <div id="item_left" style={{ display: 'absolute' }}></div>
-      <div id="item_right" style={{ display: 'absolute' }}></div>
-    </div>
+    <PageContainer>
+      <Card>
+        <ToolBar />
+        <div id="flow-content" className="flow-content">
+          <div className="nodes-wrap">
+            {nodeTypes.map((t) => {
+              return (
+                <div
+                  key={t.type}
+                  style={{ background: t.background }}
+                  className="node"
+                  draggable="true"
+                >
+                  <div className="svg">
+                    <img src={t.svg} alt="" style={{ padding: '4px' }} />
+                  </div>
+                  <div className="name">{t.typeName}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div id="flowWrap" className="flow-wrap">
+            <div id="flow">
+              {data.nodeList.map((n) => {
+                // <FlowNode id={n.id} key={n.id} node={n} />;
+                return <FlowNode key={n.id} />;
+              })}
+            </div>
+          </div>
+        </div>
+      </Card>
+    </PageContainer>
   );
 };
 
