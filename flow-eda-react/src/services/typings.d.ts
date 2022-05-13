@@ -54,6 +54,16 @@ declare namespace API {
     payload?: object;
   };
 
+  type NodeType = {
+    id: number;
+    type: string;
+    typeName?: string;
+    svg?: string;
+    background?: number;
+    params?: any[];
+    description?: string;
+  };
+
   type CurrentUser = {
     name?: string;
     avatar?: string;

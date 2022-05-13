@@ -60,6 +60,15 @@ export async function deleteLogs(body: Key[]) {
   });
 }
 
+/** 获取节点类型 */
+export async function getNodeTypes() {
+  const { result } = await request('/api/v1/node/type', {
+    method: 'GET',
+    params: { limit: 1000 },
+  });
+  return result;
+}
+
 /** 获取流程数据 */
 export async function getFlowData(id: string) {
   return request<API.ApiResult>('/api/v1/node/data', {
