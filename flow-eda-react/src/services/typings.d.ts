@@ -50,8 +50,11 @@ declare namespace API {
     to?: string;
     remark?: string;
     params?: object;
-    nodeType?: object;
     payload?: object;
+    status?: string;
+    error?: string;
+    output?: string;
+    nodeType?: API.NodeType;
   };
 
   type NodeType = {
