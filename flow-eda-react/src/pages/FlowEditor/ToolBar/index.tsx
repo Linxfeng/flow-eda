@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { message, Tooltip } from 'antd';
 import ConfirmModal from '@/components/ConfirmModal';
+import IconFont from '@/components/IconFont';
 import './index.less';
 
 const ToolBar: React.FC<{
@@ -16,6 +17,7 @@ const ToolBar: React.FC<{
 }> = (props) => {
   const [seeLog, setSeeLog] = useState<string>('查看日志');
   const [openLog, setOpenLog] = useState<boolean>(false);
+  const iconStyle = { width: '18px', height: '18px' };
 
   const handle = (command: string) => {
     if (command.startsWith('zoom')) {
@@ -45,13 +47,13 @@ const ToolBar: React.FC<{
     <div className="toolbar">
       <Tooltip title={seeLog} placement="bottom">
         <span className="command" onClick={() => handle('logs')}>
-          <span className="icon-lx-logs" />
+          <IconFont type="icon-lx-logs" style={iconStyle} />
         </span>
       </Tooltip>
       <span className="separator" />
       <Tooltip title="保存" placement="bottom">
         <span className="command" onClick={() => handle('save')}>
-          <span className="icon-lx-save" />
+          <IconFont type="icon-lx-save" style={iconStyle} />
         </span>
       </Tooltip>
       <ConfirmModal
@@ -62,7 +64,7 @@ const ToolBar: React.FC<{
       >
         <Tooltip v-if="status!=='RUNNING'" title="运行" placement="bottom">
           <span className="command">
-            <span className="icon-lx-run" />
+            <IconFont type="icon-lx-run" style={iconStyle} />
           </span>
         </Tooltip>
       </ConfirmModal>
@@ -74,49 +76,48 @@ const ToolBar: React.FC<{
       >
         <Tooltip v-if="status==='RUNNING'" title="停止" placement="bottom">
           <span className="command">
-            <span className="icon-lx-stop" />
+            <IconFont type="icon-lx-stop" style={iconStyle} />
           </span>
         </Tooltip>
       </ConfirmModal>
       <span className="separator" />
       <Tooltip title="复制" placement="bottom">
         <span className="command" onClick={() => handle('copy')}>
-          <span className="icon-lx-copy" />
+          <IconFont type="icon-lx-copy" style={iconStyle} />
         </span>
       </Tooltip>
       <Tooltip title="粘贴" placement="bottom">
         <span className="command" onClick={() => handle('paste')}>
-          <span className="icon-lx-paste" />
+          <IconFont type="icon-lx-paste" style={iconStyle} />
         </span>
       </Tooltip>
       <Tooltip title="删除" placement="bottom">
         <span className="command" onClick={() => handle('del')}>
-          <span className="icon-lx-delete" />
+          <IconFont type="icon-lx-delete" style={iconStyle} />
         </span>
       </Tooltip>
       <span className="separator" />
       <Tooltip title="放大" placement="bottom">
         <span className="command" onClick={() => handle('zoom-in')}>
-          <span className="icon-lx-zoomIn" />
+          <IconFont type="icon-lx-zoomIn" style={iconStyle} />
         </span>
       </Tooltip>
       <Tooltip title="缩小" placement="bottom">
         <span className="command" onClick={() => handle('zoom-out')}>
-          <span className="icon-lx-zoomOut" />
+          <IconFont type="icon-lx-zoomOut" style={iconStyle} />
         </span>
       </Tooltip>
       <span className="separator" />
       <Tooltip title="全屏" placement="bottom">
         <span className="command" onClick={() => handle('zoom-full')}>
-          <span className="icon-lx-zoomFull" />
+          <IconFont type="icon-lx-zoomFull" style={iconStyle} />
         </span>
       </Tooltip>
       <Tooltip title="重置" placement="bottom">
         <span className="command" onClick={() => handle('zoom-reset')}>
-          <span className="icon-lx-zoomReset" />
+          <IconFont type="icon-lx-zoomReset" style={iconStyle} />
         </span>
       </Tooltip>
-      <span className="separator" />
     </div>
   );
 };
