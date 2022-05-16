@@ -1,15 +1,16 @@
-import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Modal, Space } from 'antd';
+import { Button, Space } from 'antd';
 import type { Key } from 'react';
 import React, { useRef, useState } from 'react';
 import { FormattedMessage, Link } from 'umi';
 import { addFlow, deleteFlow, getFlowList, updateFlow } from '@/services/api';
 import { useFormatMessage, useSubmit } from '@/hooks/index';
 import { generateUniqueID } from '@/utils/util';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const FlowList: React.FC = () => {
   const [modalFormVisible, handleModalFormVisible] = useState<boolean>(false);
@@ -19,24 +20,6 @@ const FlowList: React.FC = () => {
   const [selectedRowKeys, setSelectedRows] = useState<Key[]>([]);
   const { formatMsg } = useFormatMessage();
   const { submitRequest } = useSubmit();
-
-  /** 删除流程，二次确认 */
-  const showDeleteConfirm = async (selectedRows: Key[] | string[]) => {
-    Modal.confirm({
-      title: formatMsg('component.modalForm.confirm.title'),
-      icon: <ExclamationCircleOutlined />,
-      okType: 'danger',
-      okText: formatMsg('component.modalForm.confirm'),
-      cancelText: formatMsg('component.modalForm.cancel'),
-      async onOk() {
-        const success = await submitRequest(deleteFlow, selectedRows);
-        if (success) {
-          setSelectedRows([]);
-          actionRef.current?.reloadAndRest?.();
-        }
-      },
-    });
-  };
 
   const columns: ProColumns<API.Flow>[] = [
     {
@@ -112,17 +95,24 @@ const FlowList: React.FC = () => {
         <a key="logs" onClick={() => {}}>
           <FormattedMessage id="pages.flowList.flows.logs" defaultMessage="日志" />
         </a>,
-        <a
+        <ConfirmModal
           key="delete"
-          style={{ color: 'red' }}
-          onClick={async () => {
+          title={formatMsg('component.modalForm.confirm.title')}
+          danger={true}
+          onConfirm={async () => {
             if (record?.id) {
-              await showDeleteConfirm([record.id]);
+              const success = await submitRequest(deleteFlow, [record.id]);
+              if (success) {
+                setSelectedRows([]);
+                actionRef.current?.reloadAndRest?.();
+              }
             }
           }}
         >
-          <FormattedMessage id="component.option.delete" defaultMessage="删除" />
-        </a>,
+          <a key="delete" style={{ color: 'red' }}>
+            <FormattedMessage id="component.option.delete" defaultMessage="删除" />
+          </a>
+        </ConfirmModal>,
       ],
     },
   ];
@@ -173,13 +163,22 @@ const FlowList: React.FC = () => {
               <a onClick={() => setSelectedRows([])}>
                 <FormattedMessage id="component.option.clear" defaultMessage="取消选择" />
               </a>
-              <a
-                onClick={async () => {
-                  await showDeleteConfirm(selectedRowKeys);
+              <ConfirmModal
+                key="batchDel"
+                title={formatMsg('component.modalForm.confirm.title')}
+                danger={true}
+                onConfirm={async () => {
+                  const success = await submitRequest(deleteFlow, selectedRowKeys);
+                  if (success) {
+                    setSelectedRows([]);
+                    actionRef.current?.reloadAndRest?.();
+                  }
                 }}
               >
-                <FormattedMessage id="component.option.batchDeletion" defaultMessage="批量删除" />
-              </a>
+                <a key="batchDel">
+                  <FormattedMessage id="component.option.batchDeletion" defaultMessage="批量删除" />
+                </a>
+              </ConfirmModal>
             </Space>
           );
         }}
