@@ -55,6 +55,8 @@
     "@umijs/route-utils": "^2.0.0",
     "antd": "^4.19.0",
     "jsplumb": "^2.15.6",
+    "panzoom": "^9.4.2",
+    "react-onclickoutside": "^6.12.1",
     "classnames": "^2.3.0",
     "lodash": "^4.17.0",
     "moment": "^2.29.0",
