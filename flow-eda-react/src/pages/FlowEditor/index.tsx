@@ -90,11 +90,11 @@ const FlowEditor: React.FC = () => {
     });
   };
 
-  /** 添加节点 */
-  const addNode = (node: API.Node) => {
-    setNodeList([...nodeList, node]);
+  /** 动态注册节点到面板上 */
+  const reloadNode = (node: API.Node) => {
     jsPlumbInstance.makeSource(node.id, makeOptions);
     jsPlumbInstance.makeTarget(node.id, makeOptions);
+    draggableNode(node.id);
   };
 
   /** 给面板上的节点连线 */
@@ -305,8 +305,8 @@ const FlowEditor: React.FC = () => {
       // 粘贴的节点向右下方向各移动15px,30px
       temp.left = parseFloat(temp.left.slice(0, temp.left.length - 2)) + 30 + 'px';
       temp.top = parseFloat(temp.top.slice(0, temp.top.length - 2)) + 15 + 'px';
-      addNode(temp);
       setSelectedNode(temp);
+      setNodeList([...nodeList, temp]);
     }
   };
 
@@ -332,10 +332,11 @@ const FlowEditor: React.FC = () => {
     }
   };
 
+  /** 拖拽左侧功能节点 */
   const drag = (item: API.NodeType) => {
     setCurrentItem(item);
   };
-
+  /** 释放拖拽的功能节点 */
   const drop = (event: any) => {
     const containerRect = jsPlumbInstance.getContainer().getBoundingClientRect();
     const scale = jsPlumbInstance.getZoom();
@@ -349,7 +350,8 @@ const FlowEditor: React.FC = () => {
       left: Math.round(left / 20) * 20 + 'px',
       nodeType: currentItem,
     };
-    addNode(temp);
+    // 添加节点
+    setNodeList([...nodeList, temp]);
   };
 
   /** 展示左侧节点类型的描述 */
@@ -486,8 +488,9 @@ const FlowEditor: React.FC = () => {
     initPanel();
   }, []);
 
+  /** 当面板上的节点变化时，重新加载绘制节点 */
   useEffect(() => {
-    nodeList.forEach((node) => draggableNode(node.id));
+    nodeList.forEach((node) => reloadNode(node));
   }, [nodeList]);
 
   return (
