@@ -54,6 +54,8 @@ const FlowEditor: React.FC = () => {
   const alignForLine = (nodeId: string, position: number[]) => {
     let showXLine = false;
     let showYLine = false;
+    let autoX = undefined;
+    let autoY = undefined;
     let xPos = auxiliaryLinePos.x;
     let yPos = auxiliaryLinePos.y;
     nodeList.forEach((n) => {
@@ -61,28 +63,36 @@ const FlowEditor: React.FC = () => {
       if (Math.abs(Number(n.left?.split('px')[0]) - position[0]) < 5) {
         xPos = position[0] + 60;
         showYLine = true;
+        autoX = n.left;
       }
       if (Math.abs(Number(n.top?.split('px')[0]) - position[1]) < 5) {
         yPos = position[1] + 20;
         showXLine = true;
+        autoY = n.top;
       }
     });
     setAuxiliaryLinePos({ x: xPos, y: yPos });
     setAuxiliaryLine({ showXLine: showXLine, showYLine: showYLine });
+    // 返回节点拖动至5px内自动吸附的坐标
+    return [autoX, autoY];
   };
 
   /** 注册节点拖动节点事件 */
   const draggableNode = (nodeId: string) => {
+    let autoPos: string | undefined[] = [undefined, undefined];
     jsPlumbInstance.draggable(nodeId, {
       drag: (params) => {
-        alignForLine(nodeId, params.pos);
+        autoPos = alignForLine(nodeId, params.pos);
       },
       stop: (params) => {
+        console.log(autoPos);
+        console.log(params.pos);
         setAuxiliaryLine({ showXLine: false, showYLine: false });
         nodeList.forEach((v) => {
           if (nodeId === v.id) {
-            v.left = params.pos[0] + 'px';
-            v.top = params.pos[1] + 'px';
+            v.left = autoPos[0] ? autoPos[0] : params.pos[0] + 'px';
+            v.top = autoPos[1] ? autoPos[1] : params.pos[1] + 'px';
+            console.log(v);
             return;
           }
         });
