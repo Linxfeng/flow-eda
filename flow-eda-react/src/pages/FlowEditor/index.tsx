@@ -22,10 +22,8 @@ const FlowEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { formatMsg } = useFormatMessage();
   const [jsPlumbInstance] = useState(jsPlumb.getInstance());
-  const [data] = useState<{ nodeList: API.Node[]; lineList: API.Node[] }>({
-    nodeList: [],
-    lineList: [],
-  });
+  const [nodeList, setNodeList] = useState<API.Node[]>([]);
+  const [lineList, setLineList] = useState<API.Node[]>([]);
   const [auxiliaryLine, setAuxiliaryLine] = useState<{ showXLine: boolean; showYLine: boolean }>({
     showXLine: false,
     showYLine: false,
@@ -52,34 +50,18 @@ const FlowEditor: React.FC = () => {
   const [clipboard, setClipboard] = useState<API.Node>();
   const [currentItem, setCurrentItem] = useState<API.NodeType>();
 
-  /** 初始化节点数据 */
-  const initFlowData = async () => {
-    const res = await getFlowData(id);
-    res?.result?.map((d: API.Node) => {
-      if (d.nodeName) {
-        data.nodeList.push(d);
-      } else {
-        data.lineList.push(d);
-      }
-      setFlowStatus('FINISHED');
-    });
-  };
-
   /** 初始化节点类型 */
-  const initNodeType = async () => {
-    const res = await getNodeTypes();
-    if (res) {
-      setNodeTypes(res);
-    }
+  const initNodeType = () => {
+    getNodeTypes().then((res) => setNodeTypes(res));
   };
 
-  /** 移动节点时，动态显示对齐线 */
+  /** 移动节点时，动态显示对齐辅助线 */
   const alignForLine = (nodeId: string, position: number[]) => {
     let showXLine = false;
     let showYLine = false;
     let xPos = auxiliaryLinePos.x;
     let yPos = auxiliaryLinePos.y;
-    data.nodeList.some((el) => {
+    nodeList.forEach((el) => {
       if (el.id !== nodeId && el.left === position[0] + 'px') {
         xPos = position[0] + 60;
         showYLine = true;
@@ -95,41 +77,36 @@ const FlowEditor: React.FC = () => {
 
   /** 注册节点拖动节点事件 */
   const draggableNode = (nodeId: string) => {
-    console.log('draggableNode:' + nodeId);
     jsPlumbInstance.draggable(nodeId, {
       drag: (params) => {
         alignForLine(nodeId, params.pos);
       },
-      start: () => {},
       stop: (params) => {
         setAuxiliaryLine({ showXLine: false, showYLine: false });
-        data.nodeList.forEach((v) => {
+        nodeList.forEach((v) => {
           if (nodeId === v.id) {
             v.left = params.pos[0] + 'px';
             v.top = params.pos[1] + 'px';
+            return;
           }
         });
       },
     });
   };
 
-  /** 加载流程图 */
-  const loadEasyFlow = () => {
-    console.log('loadEasyFlow');
-    for (let i = 0; i < data.nodeList.length; i++) {
-      const node = data.nodeList[i];
-      console.log(node);
-      // 设置源点，可以拖出线连接其他节点
-      jsPlumbInstance.makeSource(node.id, jsplumbSourceOptions);
-      // 设置目标点，其他源点拖出的线可以连接该节点
-      jsPlumbInstance.makeTarget(node.id, jsplumbTargetOptions);
-      // 注册节点拖动事件
-      draggableNode(node.id);
-    }
+  /** 添加节点 */
+  const addNode = (node: API.Node) => {
+    jsPlumbInstance.makeSource(node.id, jsplumbSourceOptions);
+    jsPlumbInstance.makeTarget(node.id, jsplumbTargetOptions);
+    draggableNode(node.id);
+  };
+
+  /** 给面板上的节点连线 */
+  const connectLines = (lines: API.Node[]) => {
     //取消连接事件
     jsPlumbInstance.unbind('connection');
-    for (let i = 0; i < data.lineList.length; i++) {
-      const line = data.lineList[i];
+    // 绘制连接线
+    lines.forEach((line) => {
       jsPlumbInstance.connect(
         {
           source: line.from,
@@ -137,11 +114,10 @@ const FlowEditor: React.FC = () => {
         },
         jsplumbConnectOptions,
       );
-    }
+    });
     //注册连接事件
     jsPlumbInstance.bind('connection', (evt) => {
-      console.log('connection');
-      data.lineList.push({
+      lineList.push({
         id: generateUniqueID(8),
         flowId: id,
         from: evt.source.id,
@@ -150,9 +126,33 @@ const FlowEditor: React.FC = () => {
     });
   };
 
+  /** 初始化节点数据 */
+  const loadFlowData = () => {
+    getFlowData(id).then((res) => {
+      if (res?.result) {
+        const nodes: API.Node[] = [];
+        const lines: API.Node[] = [];
+        res.result.forEach((d: API.Node) => {
+          if (d.nodeName) {
+            nodes.push(d);
+          } else {
+            lines.push(d);
+          }
+        });
+        setNodeList(nodes);
+        // 加载流程数据节点
+        nodes.forEach((node) => addNode(node));
+
+        setLineList(lines);
+        connectLines(lines);
+
+        setFlowStatus('FINISHED');
+      }
+    });
+  };
+
   /** 设置面板缩放 */
   const initPanZoom = () => {
-    console.log('initPanZoom');
     const mainContainer = jsPlumbInstance.getContainer();
     const mainContainerWrap = mainContainer.parentNode;
     // @ts-ignore
@@ -206,10 +206,9 @@ const FlowEditor: React.FC = () => {
 
   /** 初始化编辑器面板 */
   const initPanel = () => {
-    console.log('ready');
     jsPlumbInstance.ready(() => {
       // @ts-ignore
-      jsPlumbInstance.setContainer(document.getElementById('flow'));
+      jsPlumbInstance.setContainer('flow');
       // 导入默认配置
       jsPlumbInstance.importDefaults(jsplumbSetting);
       // 连线创建成功后，维护本地数据
@@ -220,27 +219,26 @@ const FlowEditor: React.FC = () => {
           from: evt.source.id,
           to: evt.target.id,
         };
-        if (data.lineList) {
-          data.lineList.push(line);
+        if (lineList) {
+          lineList.push(line);
         }
       });
       //连线双击删除事件
       jsPlumbInstance.bind('dblclick', (line) => {
-        console.log(line);
         // confirmDeleteLine(line);
       });
       //断开连线后，维护本地数据
       jsPlumbInstance.bind('connectionDetached', (evt) => {
-        if (data.lineList) {
-          data.lineList.forEach((item, index) => {
+        if (lineList) {
+          lineList.forEach((item, index) => {
             if (item.from === evt.sourceId && item.to === evt.targetId) {
-              data.lineList.splice(index, 1);
+              lineList.splice(index, 1);
             }
           });
         }
       });
-      // 加载流程图
-      loadEasyFlow();
+      // 加载流程数据
+      loadFlowData();
       // 面板重绘
       jsPlumbInstance.setSuspendDrawing(false, true);
     });
@@ -250,7 +248,6 @@ const FlowEditor: React.FC = () => {
 
   /** 界面缩放，以绘制面板原点为基准，每次缩放25% */
   const zoomNode = (e: string) => {
-    console.log(e);
     // const scale = jsPlumbInstance.getZoom();
     // const max = jsPlumbInstance.pan.getMaxZoom();
     // const min = jsPlumbInstance.pan.getMinZoom();
@@ -285,16 +282,6 @@ const FlowEditor: React.FC = () => {
     // document.getElementById("flow")?.style?.transform = "scale(" + temp + ")";
   };
 
-  /** 添加节点 */
-  const addNode = (temp: API.Node) => {
-    console.log('addNode: ');
-    console.log(temp);
-    data.nodeList.push(temp);
-    jsPlumbInstance.makeSource(temp.id, jsplumbSourceOptions);
-    jsPlumbInstance.makeTarget(temp.id, jsplumbTargetOptions);
-    draggableNode(temp.id);
-  };
-
   /** 复制节点 */
   const copyNode = () => {
     setClipboard(selectedNode);
@@ -323,9 +310,9 @@ const FlowEditor: React.FC = () => {
         okText: formatMsg('component.modalForm.confirm'),
         cancelText: formatMsg('component.modalForm.cancel'),
         onOk() {
-          data.nodeList.map((v: API.Node, index: number) => {
+          nodeList.map((v: API.Node, index: number) => {
             if (v.id === selectedNode.id) {
-              data.nodeList.splice(index, 1);
+              nodeList.splice(index, 1);
               jsPlumbInstance.remove(v.id);
             }
           });
@@ -385,8 +372,7 @@ const FlowEditor: React.FC = () => {
 
   /** 更改连线状态 */
   const changeLineState = (nodeId: string, show: boolean) => {
-    const lines = jsPlumbInstance.getAllConnections();
-    lines.forEach((line) => {
+    jsPlumbInstance.getAllConnections()?.forEach((line) => {
       if (line.targetId === nodeId || line.sourceId === nodeId) {
         // @ts-ignore
         const canvas = line.canvas;
@@ -414,7 +400,6 @@ const FlowEditor: React.FC = () => {
 
   /** 展示运行日志 */
   const showLogs = (show: boolean) => {
-    console.log(show);
     // if (show) {
     //   logVisible.value = true;
     //   onOpenLogs(props.flowId, (s) => {
@@ -427,13 +412,13 @@ const FlowEditor: React.FC = () => {
 
   /** 保存流程图所有节点数据 */
   const saveData = async () => {
-    if (data.nodeList.length === 0) {
+    if (nodeList.length === 0) {
       message.error('请先绘制流程图');
       return;
     }
     // 封装节点数据参数
     // let body = [];
-    // data.nodeList.forEach(d => {
+    // nodeList.forEach(d => {
     //   const node = {
     //     id: d.id,
     //     nodeName: d.nodeName,
@@ -447,7 +432,7 @@ const FlowEditor: React.FC = () => {
     //   };
     //   body.push(node);
     // });
-    // data.lineList.forEach(l => {
+    // lineList.forEach(l => {
     //   const line = {
     //     id: l.id,
     //     flowId: id,
@@ -462,7 +447,7 @@ const FlowEditor: React.FC = () => {
 
   /** 运行本流程 */
   const executeFlow = async () => {
-    // data.nodeList.forEach(v => {
+    // nodeList.forEach(v => {
     //   v.status = undefined;
     //   v.error = undefined;
     //   v.output = undefined;
@@ -487,11 +472,8 @@ const FlowEditor: React.FC = () => {
   };
 
   useEffect(() => {
-    const res1 = initNodeType();
-    const res2 = initFlowData();
-    Promise.all([res1, res2]).then(() => {
-      initPanel();
-    });
+    initNodeType();
+    initPanel();
   }, []);
 
   return (
@@ -564,7 +546,7 @@ const FlowEditor: React.FC = () => {
                   className="auxiliary-line-y"
                 />
               )}
-              {data.nodeList.map((n) => {
+              {nodeList.map((n) => {
                 return (
                   <FlowNode
                     key={n.id}
