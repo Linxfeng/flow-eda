@@ -38,7 +38,7 @@ const FlowEditor: React.FC = () => {
     data: string | undefined;
     left: string;
     top: string;
-  }>({ show: false, data: '', left: '0px', top: '0px' });
+  }>({ show: false, data: undefined, left: '0px', top: '0px' });
   const [nodeTypes, setNodeTypes] = useState<API.NodeType[]>([]);
   const [flowStatus, setFlowStatus] = useState<string>('');
   const [selectedNode, setSelectedNode] = useState<API.Node>();
@@ -56,12 +56,13 @@ const FlowEditor: React.FC = () => {
     let showYLine = false;
     let xPos = auxiliaryLinePos.x;
     let yPos = auxiliaryLinePos.y;
-    nodeList.forEach((el) => {
-      if (el.id !== nodeId && el.left === position[0] + 'px') {
+    nodeList.forEach((n) => {
+      // 当前拖动的位置与其他节点小于5px时显示辅助线
+      if (Math.abs(Number(n.left?.split('px')[0]) - position[0]) < 5) {
         xPos = position[0] + 60;
         showYLine = true;
       }
-      if (el.id !== nodeId && el.top === position[1] + 'px') {
+      if (Math.abs(Number(n.top?.split('px')[0]) - position[1]) < 5) {
         yPos = position[1] + 20;
         showXLine = true;
       }
@@ -91,9 +92,9 @@ const FlowEditor: React.FC = () => {
 
   /** 添加节点 */
   const addNode = (node: API.Node) => {
+    setNodeList([...nodeList, node]);
     jsPlumbInstance.makeSource(node.id, makeOptions);
     jsPlumbInstance.makeTarget(node.id, makeOptions);
-    draggableNode(node.id);
   };
 
   /** 给面板上的节点连线 */
@@ -134,14 +135,15 @@ const FlowEditor: React.FC = () => {
             lines.push(d);
           }
         });
-        setNodeList(nodes);
         // 加载流程数据节点
-        nodes.forEach((node) => addNode(node));
-
+        setNodeList(nodes);
+        nodes.forEach((node) => {
+          jsPlumbInstance.makeSource(node.id, makeOptions);
+          jsPlumbInstance.makeTarget(node.id, makeOptions);
+        });
+        // 连接节点之间的连线
         setLineList(lines);
         connectLines(lines);
-
-        setFlowStatus('FINISHED');
       }
     });
   };
@@ -484,6 +486,10 @@ const FlowEditor: React.FC = () => {
     initPanel();
   }, []);
 
+  useEffect(() => {
+    nodeList.forEach((node) => draggableNode(node.id));
+  }, [nodeList]);
+
   return (
     <PageContainer>
       <Card>
@@ -543,7 +549,6 @@ const FlowEditor: React.FC = () => {
                   className="auxiliary-line-x"
                 />
               )}
-
               {auxiliaryLine.showYLine && (
                 <div
                   style={{
