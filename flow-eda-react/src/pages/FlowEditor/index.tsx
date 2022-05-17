@@ -3,12 +3,7 @@ import { useParams } from 'umi';
 import { jsPlumb } from 'jsplumb';
 import panzoom from 'panzoom';
 import { getFlowData, getNodeTypes } from '@/services/api';
-import {
-  jsplumbConnectOptions,
-  jsplumbSetting,
-  jsplumbSourceOptions,
-  jsplumbTargetOptions,
-} from '@/pages/FlowEditor/jsplumb/jsplumbConfig';
+import { defaultSetting, connectOptions, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
 import { generateUniqueID } from '@/utils/util';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, message, Modal } from 'antd';
@@ -96,8 +91,8 @@ const FlowEditor: React.FC = () => {
 
   /** 添加节点 */
   const addNode = (node: API.Node) => {
-    jsPlumbInstance.makeSource(node.id, jsplumbSourceOptions);
-    jsPlumbInstance.makeTarget(node.id, jsplumbTargetOptions);
+    jsPlumbInstance.makeSource(node.id, makeOptions);
+    jsPlumbInstance.makeTarget(node.id, makeOptions);
     draggableNode(node.id);
   };
 
@@ -112,7 +107,7 @@ const FlowEditor: React.FC = () => {
           source: line.from,
           target: line.to,
         },
-        jsplumbConnectOptions,
+        connectOptions,
       );
     });
     //注册连接事件
@@ -204,13 +199,26 @@ const FlowEditor: React.FC = () => {
     });
   };
 
+  const confirmDeleteLine = (line: any) => {
+    Modal.confirm({
+      title: '确认删除该连线？',
+      icon: <ExclamationCircleOutlined />,
+      okType: 'primary',
+      okText: formatMsg('component.modalForm.confirm'),
+      cancelText: formatMsg('component.modalForm.cancel'),
+      onOk() {
+        jsPlumbInstance.deleteConnection(line);
+      },
+    });
+  };
+
   /** 初始化编辑器面板 */
   const initPanel = () => {
     jsPlumbInstance.ready(() => {
       // @ts-ignore
       jsPlumbInstance.setContainer('flow');
       // 导入默认配置
-      jsPlumbInstance.importDefaults(jsplumbSetting);
+      jsPlumbInstance.importDefaults(defaultSetting);
       // 连线创建成功后，维护本地数据
       jsPlumbInstance.bind('connection', (evt) => {
         const line: API.Node = {
@@ -225,7 +233,7 @@ const FlowEditor: React.FC = () => {
       });
       //连线双击删除事件
       jsPlumbInstance.bind('dblclick', (line) => {
-        // confirmDeleteLine(line);
+        confirmDeleteLine(line);
       });
       //断开连线后，维护本地数据
       jsPlumbInstance.bind('connectionDetached', (evt) => {
@@ -306,7 +314,7 @@ const FlowEditor: React.FC = () => {
       Modal.confirm({
         title: '确认删除当前节点？',
         icon: <ExclamationCircleOutlined />,
-        okType: 'danger',
+        okType: 'primary',
         okText: formatMsg('component.modalForm.confirm'),
         cancelText: formatMsg('component.modalForm.cancel'),
         onOk() {
