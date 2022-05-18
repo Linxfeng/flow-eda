@@ -23,14 +23,14 @@ const ToolBar: React.FC<{
     if (command.startsWith('zoom')) {
       props.zoomNode(command.split('-')[1]);
     } else if (command === 'logs') {
-      setOpenLog(!openLog);
       if (openLog) {
-        props.showLogs(true);
-        setSeeLog('关闭日志');
-      } else {
         props.showLogs(false);
         setSeeLog('查看日志');
+      } else {
+        props.showLogs(true);
+        setSeeLog('关闭日志');
       }
+      setOpenLog(!openLog);
     } else if (command === 'save') {
       props.saveData();
       message.success('保存成功');
