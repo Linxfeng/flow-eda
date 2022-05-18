@@ -85,6 +85,20 @@ export async function setFlowData(body: any) {
   });
 }
 
+/** 运行流程 */
+export async function runFlow(id: string) {
+  return request<API.ApiResult>('/api/v1/node/data/run?flowId=' + id, {
+    method: 'POST',
+  });
+}
+
+/** 停止流程 */
+export async function stopFlow(id: string) {
+  return request<API.ApiResult>('/api/v1/node/data/stop?flowId=' + id, {
+    method: 'POST',
+  });
+}
+
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
   return request<{
