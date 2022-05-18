@@ -1,18 +1,29 @@
 import React from 'react';
-import CodeMirror from '@uiw/react-codemirror';
-import { javascript } from '@codemirror/lang-javascript';
+import ReactCodeMirror from 'react-cmirror';
+import 'codemirror/mode/javascript/javascript.js';
+import 'codemirror/theme/dracula.css';
 import './index.less';
 
 const FlowLog: React.FC<{ logContent: string }> = (props) => {
+  /** 内容更新时自动滚动到底部 */
+  const autoScroll = (cm: any) => {
+    const nowScrollInfo = cm.getScrollInfo();
+    cm.scrollTo(nowScrollInfo.left, nowScrollInfo.height);
+  };
+
   return (
     <div id="flow-log" className="flow-log">
       <div className="drag-box" />
-      <CodeMirror
+      <ReactCodeMirror
         value={props.logContent}
-        theme="dark"
-        height="314px"
-        readOnly={true}
-        extensions={[javascript({ jsx: true })]}
+        options={{
+          mode: 'javascript',
+          styleActiveLine: true,
+          theme: 'dracula',
+          readOnly: true,
+          lineNumbers: true,
+        }}
+        onChange={autoScroll}
       />
     </div>
   );
