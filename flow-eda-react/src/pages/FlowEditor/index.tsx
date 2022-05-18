@@ -435,6 +435,29 @@ const FlowEditor: React.FC = () => {
     }
   };
 
+  /** 建立websocket连接，实时获取节点状态信息 */
+  const getNodeWsInfo = async () => {
+    await onOpenNode(id, (s) => {
+      const res = JSON.parse(s);
+      nodeList.forEach((node) => {
+        if (node.id === res.nodeId) {
+          node.status = res.status;
+          if (res.output) {
+            node.output = res.output;
+          }
+          if (res.error) {
+            node.error = res.error;
+            message.error(res.error);
+          }
+          return;
+        }
+      });
+      if (res.flowStatus) {
+        setFlowStatus(res.flowStatus);
+      }
+    });
+  };
+
   /** 保存流程图所有节点数据 */
   const saveData = async () => {
     if (nodeList.length === 0) {
@@ -472,28 +495,30 @@ const FlowEditor: React.FC = () => {
 
   /** 运行本流程 */
   const executeFlow = async () => {
-    // nodeList.forEach(v => {
-    //   v.status = undefined;
-    //   v.error = undefined;
-    //   v.output = undefined;
-    // });
-    // await saveData();
-    // // 建立websocket连接
-    // await getNodeStatus();
-    // // 运行
-    // const res = await executeNodeData(id);
-    // if (res) {
-    //   message.success("操作成功");
-    // }
+    nodeList.forEach((n) => {
+      n.status = undefined;
+      n.error = undefined;
+      n.output = undefined;
+    });
+    // 保存当前流程数据
+    await saveData();
+    // 监听流程运行时节点信息
+    await getNodeWsInfo();
+    // 运行本流程
+    runFlow(id).then((res) => {
+      if (res) {
+        message.success('操作成功');
+      }
+    });
   };
 
   /** 停止流程 */
-  const stopFlow = async () => {
-    // stopNodeData(id).then(res => {
-    //   if (res) {
-    //     message.success("操作成功");
-    //   }
-    // });
+  const stopFlowData = async () => {
+    stopFlow(id).then((res) => {
+      if (res) {
+        message.success('操作成功');
+      }
+    });
   };
 
   useEffect(() => {
@@ -516,7 +541,7 @@ const FlowEditor: React.FC = () => {
           saveData={saveData}
           deleteNode={deleteNode}
           executeFlow={executeFlow}
-          stopFlow={stopFlow}
+          stopFlow={stopFlowData}
           zoomNode={zoomNode}
           showLogs={showLogs}
         />
