@@ -69,11 +69,19 @@ export async function getNodeTypes() {
   return result;
 }
 
-/** 获取流程数据 */
+/** 获取流程节点数据 */
 export async function getFlowData(id: string) {
   return request<API.ApiResult>('/api/v1/node/data', {
     method: 'GET',
     params: { flowId: id },
+  });
+}
+
+/** 更新流程节点数据 */
+export async function setFlowData(body: any) {
+  return request<API.ApiResult>('/api/v1/node/data', {
+    method: 'POST',
+    data: body,
   });
 }
 

@@ -3,7 +3,7 @@ import { useParams } from 'umi';
 import { jsPlumb } from 'jsplumb';
 import panzoom from 'panzoom';
 import screenfull from 'screenfull';
-import { getFlowData, getNodeTypes } from '@/services/api';
+import { getFlowData, getNodeTypes, setFlowData } from '@/services/api';
 import { defaultSetting, connectOptions, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
 import { generateUniqueID } from '@/utils/util';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -45,6 +45,8 @@ const FlowEditor: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<API.Node>();
   const [clipboard, setClipboard] = useState<API.Node>();
   const [currentItem, setCurrentItem] = useState<API.NodeType>();
+  const [logVisible, setLogVisible] = useState<boolean>(false);
+  const [logContent, setLogContent] = useState<string>('');
 
   /** 初始化节点类型 */
   const initNodeType = () => {
@@ -435,33 +437,33 @@ const FlowEditor: React.FC = () => {
       message.error('请先绘制流程图');
       return;
     }
-    // 封装节点数据参数
-    // let body = [];
-    // nodeList.forEach(d => {
-    //   const node = {
-    //     id: d.id,
-    //     nodeName: d.nodeName,
-    //     flowId: id,
-    //     typeId: d.nodeType.id,
-    //     top: d.top,
-    //     left: d.left,
-    //     remark: d.remark,
-    //     params: d.params,
-    //     payload: d.payload
-    //   };
-    //   body.push(node);
-    // });
-    // lineList.forEach(l => {
-    //   const line = {
-    //     id: l.id,
-    //     flowId: id,
-    //     from: l.from,
-    //     to: l.to
-    //   };
-    //   body.push(line);
-    // });
-    // // 保存流程数据
-    // await setNodeData(body);
+    // 流程节点数据参数
+    const body: API.Node[] = [];
+    nodeList.forEach((d) => {
+      const node: API.Node = {
+        id: d.id,
+        nodeName: d.nodeName,
+        flowId: id,
+        typeId: d.nodeType?.id,
+        top: d.top,
+        left: d.left,
+        remark: d.remark,
+        params: d.params,
+        payload: d.payload,
+      };
+      body.push(node);
+    });
+    lineList.forEach((l) => {
+      const line: API.Node = {
+        id: l.id,
+        flowId: id,
+        from: l.from,
+        to: l.to,
+      };
+      body.push(line);
+    });
+    // 保存/更新流程节点数据
+    await setFlowData(body);
   };
 
   /** 运行本流程 */
