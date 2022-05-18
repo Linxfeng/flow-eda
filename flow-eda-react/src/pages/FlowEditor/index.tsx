@@ -3,16 +3,18 @@ import { useParams } from 'umi';
 import { jsPlumb } from 'jsplumb';
 import panzoom from 'panzoom';
 import screenfull from 'screenfull';
-import { getFlowData, getNodeTypes, setFlowData } from '@/services/api';
+import { getFlowData, getNodeTypes, runFlow, setFlowData, stopFlow } from '@/services/api';
 import { defaultSetting, connectOptions, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
 import { generateUniqueID } from '@/utils/util';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, message, Modal } from 'antd';
 import './index.less';
-import ToolBar from '@/pages/FlowEditor/ToolBar/index';
-import FlowNode from '@/pages/FlowEditor/FlowNode/index';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useFormatMessage } from '@/hooks';
+import { onOpenLogs, onOpenNode } from '@/services/ws';
+import ToolBar from '@/pages/FlowEditor/ToolBar/index';
+import FlowNode from '@/pages/FlowEditor/FlowNode/index';
+import FlowLog from '@/pages/FlowEditor/FlowLog';
 
 const FlowEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,7 +48,7 @@ const FlowEditor: React.FC = () => {
   const [clipboard, setClipboard] = useState<API.Node>();
   const [currentItem, setCurrentItem] = useState<API.NodeType>();
   const [logVisible, setLogVisible] = useState<boolean>(false);
-  const [logContent, setLogContent] = useState<string>('');
+  const [logContent, setLogContent] = useState<string[]>([]);
 
   /** 初始化节点类型 */
   const initNodeType = () => {
@@ -119,12 +121,13 @@ const FlowEditor: React.FC = () => {
     });
     //注册连接事件
     jsPlumbInstance.bind('connection', (evt) => {
-      lineList.push({
+      const line = {
         id: generateUniqueID(8),
         flowId: id,
         from: evt.source.id,
         to: evt.target.id,
-      });
+      };
+      setLineList([...lineList, line]);
     });
   };
 
@@ -233,9 +236,7 @@ const FlowEditor: React.FC = () => {
           from: evt.source.id,
           to: evt.target.id,
         };
-        if (lineList) {
-          lineList.push(line);
-        }
+        setLineList([...lineList, line]);
       });
       //连线双击删除事件
       jsPlumbInstance.bind('dblclick', (line) => {
@@ -421,14 +422,17 @@ const FlowEditor: React.FC = () => {
 
   /** 展示运行日志 */
   const showLogs = (show: boolean) => {
-    // if (show) {
-    //   logVisible.value = true;
-    //   onOpenLogs(props.flowId, (s) => {
-    //     logContent.value = logContent.value.concat(s);
-    //   });
-    // } else {
-    //   logVisible.value = false;
-    // }
+    if (show) {
+      setLogVisible(true);
+      onOpenLogs(id, (s) => {
+        // 拼接日志内容
+        setLogContent((arr) => {
+          return [...arr, s];
+        });
+      });
+    } else {
+      setLogVisible(false);
+    }
   };
 
   /** 保存流程图所有节点数据 */
@@ -583,6 +587,7 @@ const FlowEditor: React.FC = () => {
               })}
             </div>
           </div>
+          {logVisible && <FlowLog logContent={logContent.join('')} />}
         </div>
       </Card>
     </PageContainer>
