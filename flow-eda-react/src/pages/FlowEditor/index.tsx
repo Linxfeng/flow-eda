@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'umi';
 import { jsPlumb } from 'jsplumb';
 import panzoom from 'panzoom';
+import screenfull from 'screenfull';
 import { getFlowData, getNodeTypes } from '@/services/api';
 import { defaultSetting, connectOptions, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
 import { generateUniqueID } from '@/utils/util';
@@ -258,39 +259,44 @@ const FlowEditor: React.FC = () => {
   };
 
   /** 界面缩放，以绘制面板原点为基准，每次缩放25% */
-  const zoomNode = (e: string) => {
-    // const scale = jsPlumbInstance.getZoom();
-    // const max = jsPlumbInstance.pan.getMaxZoom();
-    // const min = jsPlumbInstance.pan.getMinZoom();
-    // let temp;
-    // if (e === 'in') {
-    //   if (scale < max) {
-    //     temp = scale + (scale * 0.25);
-    //   }
-    // } else if (e === 'out') {
-    //   if (scale > min) {
-    //     temp = scale - (scale * 0.25);
-    //   }
-    // } else if (e === 'full') {
-    //   if (!screenfull.isEnabled) {
-    //     ElMessage.warning("您的浏览器不支持全屏");
-    //     return false;
-    //   }
-    //   screenfull.request(document.getElementById("flow-content"));
-    // } else if (e === 'reset') {
-    //   temp = 1;
-    // }
-    // if (!temp) {
-    //   return;
-    // }
-    // // 限制缩放范围
-    // if (temp > max) {
-    //   temp = max;
-    // } else if (temp < min) {
-    //   temp = min;
-    // }
-    // jsPlumbInstance.setZoom(temp);
-    // document.getElementById("flow")?.style?.transform = "scale(" + temp + ")";
+  const zoomNode = (command: string) => {
+    const scale = jsPlumbInstance.getZoom();
+    // @ts-ignore
+    const max = jsPlumbInstance.pan?.getMaxZoom();
+    // @ts-ignore
+    const min = jsPlumbInstance.pan?.getMinZoom();
+    let temp;
+    if (command === 'in') {
+      if (scale < max) {
+        temp = scale + scale * 0.25;
+      }
+    } else if (command === 'out') {
+      if (scale > min) {
+        temp = scale - scale * 0.25;
+      }
+    } else if (command === 'full') {
+      if (!screenfull.isEnabled) {
+        message.warn('您的浏览器不支持全屏');
+        return;
+      }
+      // @ts-ignore
+      screenfull.request(document.getElementById('flow-content'));
+    } else if (command === 'reset') {
+      temp = 1;
+    }
+    if (temp) {
+      // 限制缩放范围
+      if (temp > max) {
+        temp = max;
+      } else if (temp < min) {
+        temp = min;
+      }
+      jsPlumbInstance.setZoom(temp);
+      const flowDom = document.getElementById('flow');
+      if (flowDom?.style.transform) {
+        flowDom.style.transform = 'scale(' + temp + ')';
+      }
+    }
   };
 
   /** 复制节点 */
