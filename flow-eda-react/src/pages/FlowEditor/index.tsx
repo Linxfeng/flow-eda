@@ -54,45 +54,38 @@ const FlowEditor: React.FC = () => {
   const alignForLine = (nodeId: string, position: number[]) => {
     let showXLine = false;
     let showYLine = false;
-    let autoX = undefined;
-    let autoY = undefined;
     let xPos = auxiliaryLinePos.x;
     let yPos = auxiliaryLinePos.y;
     nodeList.forEach((n) => {
-      // 当前拖动的位置与其他节点小于5px时显示辅助线
-      if (Math.abs(Number(n.left?.split('px')[0]) - position[0]) < 5) {
-        xPos = position[0] + 60;
-        showYLine = true;
-        autoX = n.left;
-      }
-      if (Math.abs(Number(n.top?.split('px')[0]) - position[1]) < 5) {
-        yPos = position[1] + 20;
-        showXLine = true;
-        autoY = n.top;
+      if (n.id !== nodeId) {
+        if (n.left === position[0] + 'px') {
+          xPos = position[0] + 60;
+          showYLine = true;
+        }
+        if (n.top === position[1] + 'px') {
+          yPos = position[1] + 20;
+          showXLine = true;
+        }
       }
     });
     setAuxiliaryLinePos({ x: xPos, y: yPos });
     setAuxiliaryLine({ showXLine: showXLine, showYLine: showYLine });
-    // 返回节点拖动至5px内自动吸附的坐标
-    return [autoX, autoY];
   };
 
   /** 注册节点拖动节点事件 */
   const draggableNode = (nodeId: string) => {
-    let autoPos: string | undefined[] = [undefined, undefined];
     jsPlumbInstance.draggable(nodeId, {
+      // @ts-ignore // 设置拖动最小栅格为5px
+      grid: [5, 5],
       drag: (params) => {
-        autoPos = alignForLine(nodeId, params.pos);
+        alignForLine(nodeId, params.pos);
       },
       stop: (params) => {
-        console.log(autoPos);
-        console.log(params.pos);
         setAuxiliaryLine({ showXLine: false, showYLine: false });
         nodeList.forEach((v) => {
           if (nodeId === v.id) {
-            v.left = autoPos[0] ? autoPos[0] : params.pos[0] + 'px';
-            v.top = autoPos[1] ? autoPos[1] : params.pos[1] + 'px';
-            console.log(v);
+            v.left = params.pos[0] + 'px';
+            v.top = params.pos[1] + 'px';
             return;
           }
         });
@@ -227,8 +220,6 @@ const FlowEditor: React.FC = () => {
   /** 初始化编辑器面板 */
   const initPanel = () => {
     jsPlumbInstance.ready(() => {
-      // @ts-ignore
-      jsPlumbInstance.setContainer('flow');
       // 导入默认配置
       jsPlumbInstance.importDefaults(defaultSetting);
       // 连线创建成功后，维护本地数据
