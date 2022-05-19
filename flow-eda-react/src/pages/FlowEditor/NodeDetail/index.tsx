@@ -65,25 +65,36 @@ const FlowDetail: React.FC<{
         )}
 
         <Form form={form} className="row" layout="vertical" onFinish={onFinish}>
-          <Form.Item className="item" label="名称：" name="name">
+          <Form.Item className="item" label="名称：" name="name" rules={[{ required: true }]}>
             <Input className="input" />
           </Form.Item>
           {props.node.nodeType?.params?.map((p) => {
             return (
               <div key={p.key}>
                 {p.inType === 'input' && (
-                  <Form.Item label={p.name + '：'} className="item" name={p.key} key={p.key}>
+                  <Form.Item
+                    label={p.name + '：'}
+                    className="item"
+                    name={p.key}
+                    key={p.key}
+                    rules={[{ required: p.required }]}
+                  >
                     <Input placeholder={p.placeholder} className="input" />
                   </Form.Item>
                 )}
                 {p.inType === 'select' && p.placeholder && (
-                  <Form.Item label={p.name + '：'} key={p.key} className="item">
+                  <Form.Item
+                    label={p.name + '：'}
+                    key={p.key}
+                    className="item"
+                    required={p.required}
+                  >
                     <Input.Group compact>
-                      <Form.Item name={p.key} noStyle className="input-left">
-                        <Input placeholder={p.placeholder.split(',')[0]} />
+                      <Form.Item name={p.key} noStyle>
+                        <Input placeholder={p.placeholder.split(',')[0]} className="input-left" />
                       </Form.Item>
-                      <Form.Item name={p.key + '-o'} noStyle className="input-right">
-                        <Select>
+                      <Form.Item name={p.key + '-o'} noStyle>
+                        <Select className="input-right">
                           {p.option?.split(',')?.map((op: string) => {
                             return (
                               <Option value={op} key={op}>
@@ -97,7 +108,13 @@ const FlowDetail: React.FC<{
                   </Form.Item>
                 )}
                 {p.inType === 'select' && !p.placeholder && (
-                  <Form.Item label={p.name + '：'} className="item" name={p.key} key={p.key}>
+                  <Form.Item
+                    label={p.name + '：'}
+                    className="item"
+                    name={p.key}
+                    key={p.key}
+                    rules={[{ required: p.required }]}
+                  >
                     <Select className="input">
                       {p.option?.split(',')?.map((op: string) => {
                         return (
