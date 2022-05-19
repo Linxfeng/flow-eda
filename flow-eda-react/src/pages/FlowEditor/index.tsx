@@ -15,6 +15,7 @@ import { onOpenLogs, onOpenNode } from '@/services/ws';
 import ToolBar from '@/pages/FlowEditor/ToolBar/index';
 import FlowNode from '@/pages/FlowEditor/FlowNode/index';
 import FlowLog from '@/pages/FlowEditor/FlowLog';
+import FlowDetail from '@/pages/FlowEditor/NodeDetail';
 
 const FlowEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -392,6 +393,21 @@ const FlowEditor: React.FC = () => {
     }
   };
 
+  /** 更新节点属性信息 */
+  const updateNode = (node: API.Node, params: object) => {
+    setSelectedNode(node);
+    nodeList.forEach((n) => {
+      if (n.id === node.id) {
+        n.nodeName = node.nodeName;
+        n.remark = node.remark;
+        n.payload = node.payload;
+        n.params = params;
+        return;
+      }
+    });
+    message.success('操作成功');
+  };
+
   /** 更改连线状态 */
   const changeLineState = (nodeId: string, show: boolean) => {
     jsPlumbInstance.getAllConnections()?.forEach((line) => {
@@ -524,15 +540,15 @@ const FlowEditor: React.FC = () => {
   useEffect(() => {
     initNodeType();
     initPanel();
-  }, []);
+  });
 
   /** 当面板上的节点变化时，重新加载绘制节点 */
   useEffect(() => {
     nodeList.forEach((node) => reloadNode(node));
-  }, [nodeList]);
+  }, [nodeList]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <PageContainer>
+    <PageContainer title={false}>
       <Card>
         <ToolBar
           status={flowStatus}
@@ -579,7 +595,7 @@ const FlowEditor: React.FC = () => {
             onDrop={(e) => drop(e)}
             onKeyUp={(e) => keyupNode(e)}
           >
-            <div id="flow" onFocus={() => showNodeDetail(undefined)}>
+            <div id="flow" onMouseDown={() => showNodeDetail(undefined)}>
               {auxiliaryLine.showXLine && (
                 <div
                   style={{
@@ -612,6 +628,7 @@ const FlowEditor: React.FC = () => {
               })}
             </div>
           </div>
+          {selectedNode && <FlowDetail node={selectedNode} updateNode={updateNode} />}
           {logVisible && <FlowLog logContent={logContent.join('')} />}
         </div>
       </Card>
