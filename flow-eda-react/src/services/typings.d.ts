@@ -53,7 +53,7 @@ declare namespace API {
     payload?: object;
     status?: string;
     error?: string;
-    output?: string;
+    output?: object;
     nodeType?: API.NodeType;
   };
 

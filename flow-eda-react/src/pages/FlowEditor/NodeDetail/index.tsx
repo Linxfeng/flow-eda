@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import './index.less';
 import { Button, Form, Input, Select } from 'antd';
 const { Option } = Select;
+import ReactJson from 'react-json-view';
 
 const FlowDetail: React.FC<{
   node: API.Node;
@@ -35,7 +36,7 @@ const FlowDetail: React.FC<{
       });
     }
     form.setFieldsValue(detail);
-  });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   /** 提交表单，更新节点信息 */
   const onFinish = (values: any) => {
@@ -82,7 +83,15 @@ const FlowDetail: React.FC<{
       <div className="detail-body">
         {props.node.output && (
           <div className="item">
-            {/* <json-viewer :expand-depth=3 :value="node.output" copyable/> */}
+            {/* @ts-ignore */}
+            <ReactJson
+              src={props.node.output}
+              collapsed={3}
+              displayDataTypes={false}
+              displayObjectSize={false}
+              quotesOnKeys={false}
+              style={{ fontFamily: 'consolas', backgroundColor: '#ffffff' }}
+            />
             <hr />
           </div>
         )}

@@ -459,7 +459,7 @@ const FlowEditor: React.FC = () => {
         if (node.id === res.nodeId) {
           node.status = res.status;
           if (res.output) {
-            node.output = res.output;
+            node.output = JSON.parse(JSON.stringify(res.output));
           }
           if (res.error) {
             node.error = res.error;
@@ -540,7 +540,7 @@ const FlowEditor: React.FC = () => {
   useEffect(() => {
     initNodeType();
     initPanel();
-  });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   /** 当面板上的节点变化时，重新加载绘制节点 */
   useEffect(() => {
