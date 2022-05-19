@@ -5,11 +5,11 @@ const { Option } = Select;
 
 const FlowDetail: React.FC<{
   node: API.Node;
-  showNodeDetail: (node: API.Node) => void;
   updateNode: (node: API.Node, params: object) => void;
 }> = (props) => {
   const [form] = Form.useForm();
 
+  /** 根据节点信息初始化表单内容*/
   useEffect(() => {
     const detail = { name: props.node.nodeName, remark: props.node.remark };
     if (props.node.payload) {
@@ -34,12 +34,35 @@ const FlowDetail: React.FC<{
         }
       });
     }
-    console.log(detail);
     form.setFieldsValue(detail);
-  }, []);
+  });
 
+  /** 提交表单，更新节点信息 */
   const onFinish = (values: any) => {
-    console.log(values);
+    const newNode = JSON.parse(JSON.stringify(props.node));
+    newNode.nodeName = values.name;
+    if (values.remark) {
+      newNode.remark = values.remark;
+    }
+    if (values.payload) {
+      newNode.payload = JSON.parse(values.payload);
+    } else {
+      newNode.payload = null;
+    }
+    let params: any = {};
+    Object.keys(values).forEach((k) => {
+      if (k !== 'name' && k !== 'remark' && k !== 'payload' && values[k] !== null) {
+        if (values[k + '-o']) {
+          params[k] = values[k] + ',' + values[k + '-o'];
+        } else if (!k.endsWith('-o')) {
+          params[k] = values[k];
+        }
+      }
+    });
+    if (Object.keys(params).length === 0) {
+      params = undefined;
+    }
+    props.updateNode(newNode, params);
   };
 
   return (
