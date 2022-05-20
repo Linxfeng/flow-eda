@@ -1,3 +1,4 @@
+// @ts-ignore
 import { useIntl } from 'umi';
 import { message } from 'antd';
 

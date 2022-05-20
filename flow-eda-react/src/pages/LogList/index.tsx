@@ -1,3 +1,5 @@
+// @ts-ignore
+import { FormattedMessage } from 'umi';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -5,7 +7,6 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Modal, Space } from 'antd';
 import type { Key } from 'react';
 import React, { useRef, useState } from 'react';
-import { FormattedMessage } from 'umi';
 import { deleteLogs, getLogList } from '@/services/api';
 import { useFormatMessage, useSubmit } from '@/hooks/index';
 
