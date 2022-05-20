@@ -56,30 +56,34 @@ const ToolBar: React.FC<{
           <IconFont type="icon-lx-save" style={iconStyle} />
         </span>
       </Tooltip>
-      <ConfirmModal
-        key="run"
-        title="确认运行本流程？这将会保存本流程并覆盖之前的数据"
-        danger={false}
-        onConfirm={async () => await props.executeFlow()}
-      >
-        <Tooltip v-if="status!=='RUNNING'" title="运行" placement="bottom">
-          <span className="command">
-            <IconFont type="icon-lx-run" style={iconStyle} />
-          </span>
-        </Tooltip>
-      </ConfirmModal>
-      <ConfirmModal
-        key="stop"
-        title="确认停止运行？这将会立即停止本流程的运行"
-        danger={false}
-        onConfirm={async () => await props.stopFlow()}
-      >
-        <Tooltip v-if="status==='RUNNING'" title="停止" placement="bottom">
-          <span className="command">
-            <IconFont type="icon-lx-stop" style={iconStyle} />
-          </span>
-        </Tooltip>
-      </ConfirmModal>
+      {props.status !== 'RUNNING' && (
+        <ConfirmModal
+          key="run"
+          title="确认运行本流程？这将会保存本流程并覆盖之前的数据"
+          danger={false}
+          onConfirm={async () => await props.executeFlow()}
+        >
+          <Tooltip title="运行" placement="bottom">
+            <span className="command">
+              <IconFont type="icon-lx-run" style={iconStyle} />
+            </span>
+          </Tooltip>
+        </ConfirmModal>
+      )}
+      {props.status === 'RUNNING' && (
+        <ConfirmModal
+          key="stop"
+          title="确认停止运行？这将会立即停止本流程的运行"
+          danger={false}
+          onConfirm={async () => await props.stopFlow()}
+        >
+          <Tooltip title="停止" placement="bottom">
+            <span className="command">
+              <IconFont type="icon-lx-stop" style={iconStyle} />
+            </span>
+          </Tooltip>
+        </ConfirmModal>
+      )}
       <span className="separator" />
       <Tooltip title="复制" placement="bottom">
         <span className="command" onClick={() => handle('copy')}>
