@@ -19,8 +19,4 @@ export default {
   'component.flows.status.running': '运行中',
   'component.flows.status.finished': '运行完成',
   'component.flows.status.failed': '运行失败',
-
-  'component.tagSelect.expand': '展开',
-  'component.tagSelect.collapse': '收起',
-  'component.tagSelect.all': '全部',
 };

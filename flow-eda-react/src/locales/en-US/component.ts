@@ -19,8 +19,4 @@ export default {
   'component.flows.status.running': 'Running',
   'component.flows.status.finished': 'Finished',
   'component.flows.status.failed': 'Failed',
-
-  'component.tagSelect.expand': 'Expand',
-  'component.tagSelect.collapse': 'Collapse',
-  'component.tagSelect.all': 'All',
 };
