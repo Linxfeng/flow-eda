@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
-import './index.less';
 import { Button, Form, Input, Select } from 'antd';
 const { Option } = Select;
+import './index.less';
 import ReactJson from 'react-json-view';
+import { useFormatMessage } from '@/hooks';
+import { FormattedMessage } from '@@/plugin-locale/localeExports';
 
 const FlowDetail: React.FC<{
   node: API.Node;
   updateNode: (node: API.Node, params: object) => void;
 }> = (props) => {
+  const { formatMsg } = useFormatMessage();
   const [form] = Form.useForm();
 
   /** 根据节点信息初始化表单内容*/
@@ -47,7 +50,7 @@ const FlowDetail: React.FC<{
           callback();
         } catch (ignore) {}
       }
-      callback('Please input json format!');
+      callback(formatMsg('pages.flowList.editor.checkJson'));
     }
     callback();
   };
@@ -91,7 +94,7 @@ const FlowDetail: React.FC<{
           onClick={form.submit}
           htmlType="submit"
         >
-          保存
+          <FormattedMessage id="component.option.save" defaultMessage="保存" />
         </Button>
       </div>
       <div className="detail-body">
@@ -112,7 +115,12 @@ const FlowDetail: React.FC<{
         )}
 
         <Form form={form} className="row" layout="vertical" onFinish={onFinish}>
-          <Form.Item className="item" label="名称：" name="name" rules={[{ required: true }]}>
+          <Form.Item
+            className="item"
+            label={formatMsg('pages.flowList.flows.name', '名称')}
+            name="name"
+            rules={[{ required: true }]}
+          >
             <Input className="input" />
           </Form.Item>
           {props.node.nodeType?.params?.map((p) => {
@@ -120,7 +128,7 @@ const FlowDetail: React.FC<{
               <div key={p.key}>
                 {p.inType === 'input' && (
                   <Form.Item
-                    label={p.name + '：'}
+                    label={p.name}
                     className="item"
                     name={p.key}
                     key={p.key}
@@ -130,12 +138,7 @@ const FlowDetail: React.FC<{
                   </Form.Item>
                 )}
                 {p.inType === 'select' && p.placeholder && (
-                  <Form.Item
-                    label={p.name + '：'}
-                    key={p.key}
-                    className="item"
-                    required={p.required}
-                  >
+                  <Form.Item label={p.name} key={p.key} className="item" required={p.required}>
                     <Input.Group compact>
                       <Form.Item name={p.key} noStyle rules={[{ required: p.required }]}>
                         <Input placeholder={p.placeholder.split(',')[0]} className="input-left" />
@@ -156,7 +159,7 @@ const FlowDetail: React.FC<{
                 )}
                 {p.inType === 'select' && !p.placeholder && (
                   <Form.Item
-                    label={p.name + '：'}
+                    label={p.name}
                     className="item"
                     name={p.key}
                     key={p.key}
@@ -180,13 +183,17 @@ const FlowDetail: React.FC<{
           <Form.Item
             className="item"
             name="payload"
-            label="自定义参数："
-            tooltip="参数为json格式，可传递至下一节点，使用${xx}接收，例如${a,httpResult.$0.name}"
+            label={formatMsg('pages.flowList.editor.parameters', '自定义参数')}
+            tooltip={formatMsg('pages.flowList.editor.params.tooltip')}
             rules={[{ validator: checkJson }]}
           >
             <Input.TextArea autoSize={true} className="input" placeholder="{'a':'xx','b':'123'}" />
           </Form.Item>
-          <Form.Item className="item" label="备注：" name="remark">
+          <Form.Item
+            className="item"
+            label={formatMsg('pages.flowList.editor.remark', '备注')}
+            name="remark"
+          >
             <Input.TextArea autoSize={true} className="input" />
           </Form.Item>
         </Form>

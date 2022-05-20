@@ -80,7 +80,7 @@ export const zoomPan = async (command, jsPlumbInstance) => {
     }
   } else if (command === 'full') {
     if (!screenfull.isEnabled) {
-      message.warn('您的浏览器不支持全屏');
+      message.warn('Your browser does not support full screen');
       return;
     }
     await screenfull.request(document.getElementById('flow-content'));

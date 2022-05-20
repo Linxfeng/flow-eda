@@ -1,3 +1,5 @@
+// @ts-ignore
+import { FormattedMessage, Link } from 'umi';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -6,7 +8,6 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Space } from 'antd';
 import type { Key } from 'react';
 import React, { useRef, useState } from 'react';
-import { FormattedMessage, Link } from 'umi';
 import { addFlow, deleteFlow, getFlowList, updateFlow } from '@/services/api';
 import { useFormatMessage, useSubmit } from '@/hooks/index';
 import { generateUniqueID } from '@/utils/util';
@@ -29,7 +30,7 @@ const FlowList: React.FC = () => {
       ellipsis: true,
     },
     {
-      title: formatMsg('pages.flowList.flows.status', '状态'),
+      title: formatMsg('component.flows.status', '状态'),
       dataIndex: 'status',
       width: '8%',
       filters: true,
@@ -37,19 +38,19 @@ const FlowList: React.FC = () => {
       valueType: 'select',
       valueEnum: {
         INIT: {
-          text: formatMsg('pages.flowList.flows.status.init'),
+          text: formatMsg('component.flows.status.init'),
           status: 'Default',
         },
         RUNNING: {
-          text: formatMsg('pages.flowList.flows.status.running'),
+          text: formatMsg('component.flows.status.running'),
           status: 'Processing',
         },
         FINISHED: {
-          text: formatMsg('pages.flowList.flows.status.finished'),
+          text: formatMsg('component.flows.status.finished'),
           status: 'Success',
         },
         FAILED: {
-          text: formatMsg('pages.flowList.flows.status.failed'),
+          text: formatMsg('component.flows.status.failed'),
           status: 'Error',
         },
       },

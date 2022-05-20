@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ClickOutside from 'react-click-outsider';
 import './index.less';
+import { useFormatMessage } from '@/hooks';
 
 const FlowNode: React.FC<{
   node: API.Node;
@@ -8,6 +9,7 @@ const FlowNode: React.FC<{
   showNodeDetail: (node: API.Node) => void;
 }> = (props) => {
   const node = props.node;
+  const { formatMsg } = useFormatMessage();
   const [mouseEnter, setMouseEnter] = useState<boolean>(false);
   const [active, setActive] = useState<boolean>(false);
   const [selected, setSelected] = useState<boolean>(false);
@@ -52,17 +54,29 @@ const FlowNode: React.FC<{
         <div className="node-name">{node.nodeName}</div>
         {node.status === 'RUNNING' && (
           <div className="node-status">
-            <img alt="运行中" src="/svg/status/running.svg" title="运行中..." />
+            <img
+              alt={formatMsg('component.flows.status.running')}
+              src="/svg/status/running.svg"
+              title={formatMsg('component.flows.status.running') + '...'}
+            />
           </div>
         )}
         {node.status === 'FINISHED' && (
           <div className="node-status">
-            <img alt="运行完成" src="/svg/status/finished.svg" title="运行完成" />
+            <img
+              alt={formatMsg('component.flows.status.finished')}
+              src="/svg/status/finished.svg"
+              title={formatMsg('component.flows.status.finished')}
+            />
           </div>
         )}
         {node.status === 'FAILED' && (
           <div className="node-status">
-            <img alt="运行失败" src="/svg/status/failed.svg" title={node.error} />
+            <img
+              alt={formatMsg('component.flows.status.finished')}
+              src="/svg/status/failed.svg"
+              title={node.error}
+            />
           </div>
         )}
         {mouseEnter && <div className="node-anchor anchor-top" />}

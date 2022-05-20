@@ -157,7 +157,7 @@ const FlowEditor: React.FC = () => {
   /** 删除节点间连线 */
   const confirmDeleteLine = (line: any) => {
     Modal.confirm({
-      title: '确认删除该连线？',
+      title: formatMsg('pages.flowList.editor.delLine'),
       icon: <ExclamationCircleOutlined />,
       okType: 'primary',
       okText: formatMsg('component.modalForm.confirm'),
@@ -223,7 +223,7 @@ const FlowEditor: React.FC = () => {
   const deleteNode = () => {
     if (selectedNode) {
       Modal.confirm({
-        title: '确认删除当前节点？',
+        title: formatMsg('pages.flowList.editor.delNode'),
         icon: <ExclamationCircleOutlined />,
         okType: 'primary',
         okText: formatMsg('component.modalForm.confirm'),
@@ -292,7 +292,7 @@ const FlowEditor: React.FC = () => {
   };
 
   /** 更新节点属性信息 */
-  const updateNode = (node: API.Node, params: object) => {
+  const updateNode = async (node: API.Node, params: object) => {
     setSelectedNode(node);
     nodeList.forEach((n) => {
       if (n.id === node.id) {
@@ -303,7 +303,7 @@ const FlowEditor: React.FC = () => {
         return;
       }
     });
-    message.success('操作成功');
+    message.success(formatMsg('component.message.success'));
   };
 
   /** 键盘事件操作节点 */
@@ -333,7 +333,7 @@ const FlowEditor: React.FC = () => {
   };
 
   /** 建立websocket连接，实时获取节点状态信息 */
-  const getNodeWsInfo = () => {
+  const getNodeWsInfo = async () => {
     onOpenNode(id, (s) => {
       const res = JSON.parse(s);
       nodeList.forEach((node) => {
@@ -358,7 +358,7 @@ const FlowEditor: React.FC = () => {
   /** 保存流程图所有节点数据 */
   const saveData = async () => {
     if (nodeList.length === 0) {
-      message.error('请先绘制流程图');
+      message.error(formatMsg('pages.flowList.editor.checkFlow'));
       return;
     }
     // 流程节点数据参数
@@ -400,11 +400,11 @@ const FlowEditor: React.FC = () => {
     // 保存当前流程数据
     await saveData();
     // 监听流程运行时节点信息
-    getNodeWsInfo();
+    await getNodeWsInfo();
     // 运行本流程
     runFlow(id).then((res) => {
       if (res) {
-        message.success('操作成功');
+        message.success(formatMsg('component.message.success'));
       }
     });
   };
@@ -413,7 +413,7 @@ const FlowEditor: React.FC = () => {
   const stopFlowData = async () => {
     stopFlow(id).then((res) => {
       if (res) {
-        message.success('操作成功');
+        message.success(formatMsg('component.message.success'));
       }
     });
   };
