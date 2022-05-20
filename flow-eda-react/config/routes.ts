@@ -23,6 +23,13 @@ export default [
     component: './LogList',
   },
   {
+    name: 'list.log-detail',
+    icon: 'icon-lx-logs',
+    path: '/logs/detail',
+    hideInMenu: true,
+    component: './LogDetail',
+  },
+  {
     component: './404',
   },
 ];

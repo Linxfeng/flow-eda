@@ -54,6 +54,6 @@ export function onCloseLogs(id: string) {
 }
 
 /** 关闭 logContentWs 连接 */
-export function onCloseLogDetail(path: string) {
+export function onCloseLogContent(path: string) {
   closeWs(logContentWs, path);
 }

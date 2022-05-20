@@ -1,5 +1,5 @@
 // @ts-ignore
-import { FormattedMessage } from 'umi';
+import { FormattedMessage, history } from 'umi';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -69,7 +69,17 @@ const LogList: React.FC = () => {
       valueType: 'option',
       width: '20%',
       render: (text, record) => [
-        <a key="show" onClick={() => {}}>
+        <a
+          key="show"
+          onClick={() => {
+            history.push({
+              pathname: '/logs/detail',
+              state: {
+                path: record.path,
+              },
+            });
+          }}
+        >
           <FormattedMessage id="component.option.show" defaultMessage="查看" />
         </a>,
         <a
