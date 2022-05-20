@@ -11,8 +11,14 @@ export default {
   'component.option.item': '项',
   'component.option.clear': '取消选择',
   'component.option.batchDeletion': '批量删除',
+  'component.option.save': '保存',
 
-
+  // 流程状态
+  'component.flows.status': '状态',
+  'component.flows.status.init': '未运行',
+  'component.flows.status.running': '运行中',
+  'component.flows.status.finished': '运行完成',
+  'component.flows.status.failed': '运行失败',
 
   'component.tagSelect.expand': '展开',
   'component.tagSelect.collapse': '收起',

@@ -11,8 +11,14 @@ export default {
   'component.option.item': 'Item',
   'component.option.clear': 'Clear selection',
   'component.option.batchDeletion': 'Batch deletion',
+  'component.option.save': 'Save',
 
-
+  // Flow Status
+  'component.flows.status': 'Status',
+  'component.flows.status.init': 'Init',
+  'component.flows.status.running': 'Running',
+  'component.flows.status.finished': 'Finished',
+  'component.flows.status.failed': 'Failed',
 
   'component.tagSelect.expand': 'Expand',
   'component.tagSelect.collapse': 'Collapse',
