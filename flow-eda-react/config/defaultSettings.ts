@@ -14,7 +14,7 @@ const Settings: LayoutSettings & {
   title: '流程管理系统',
   pwa: false,
   logo: '/logo.svg',
-  iconfontUrl: '',
+  iconfontUrl: '//at.alicdn.com/t/font_3309897_kldx42pzbc.js',
 };
 
 export default Settings;

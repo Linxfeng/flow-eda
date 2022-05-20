@@ -5,20 +5,20 @@ export default [
   },
   {
     name: 'list.flow-list',
-    icon: 'table',
+    icon: 'icon-lx-flow',
     path: '/flows',
     component: './FlowList',
   },
   {
     name: 'list.flow-editor',
-    icon: 'table',
+    icon: 'icon-lx-flow',
     path: '/flows/editor/:id',
     hideInMenu: true,
     component: './FlowEditor',
   },
   {
     name: 'list.log-list',
-    icon: 'table',
+    icon: 'icon-lx-logs',
     path: '/logs',
     component: './LogList',
   },
