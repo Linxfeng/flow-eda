@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'umi';
 import { jsPlumb } from 'jsplumb';
-import panzoom from 'panzoom';
-import screenfull from 'screenfull';
 import { getFlowData, getNodeTypes, runFlow, setFlowData, stopFlow } from '@/services/api';
 import { defaultSetting, connectOptions, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
 import { generateUniqueID } from '@/utils/util';
@@ -16,6 +14,7 @@ import ToolBar from '@/pages/FlowEditor/ToolBar/index';
 import FlowNode from '@/pages/FlowEditor/FlowNode/index';
 import FlowLog from '@/pages/FlowEditor/FlowLog';
 import FlowDetail from '@/pages/FlowEditor/NodeDetail';
+import { changeLineState, setPanZoom, zoomPan } from '@/pages/FlowEditor/js/editor';
 
 const FlowEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,11 +49,6 @@ const FlowEditor: React.FC = () => {
   const [currentItem, setCurrentItem] = useState<API.NodeType>();
   const [logVisible, setLogVisible] = useState<boolean>(false);
   const [logContent, setLogContent] = useState<string[]>([]);
-
-  /** 初始化节点类型 */
-  const initNodeType = () => {
-    getNodeTypes().then((res) => setNodeTypes(res));
-  };
 
   /** 移动节点时，动态显示对齐辅助线 */
   const alignForLine = (nodeId: string, position: number[]) => {
@@ -160,59 +154,6 @@ const FlowEditor: React.FC = () => {
     });
   };
 
-  /** 设置面板缩放 */
-  const initPanZoom = () => {
-    const mainContainer = jsPlumbInstance.getContainer();
-    const mainContainerWrap = mainContainer.parentNode;
-    // @ts-ignore
-    const pan = panzoom(mainContainer, {
-      smoothScroll: false,
-      bounds: true,
-      zoomDoubleClickSpeed: 1,
-      minZoom: 0.5,
-      maxZoom: 2,
-    });
-    // @ts-ignore
-    jsPlumbInstance.mainContainerWrap = mainContainerWrap;
-    // @ts-ignore
-    jsPlumbInstance.pan = pan;
-    pan.on('zoom', (e: any) => {
-      const { x, y, scale } = e.getTransform();
-      jsPlumbInstance.setZoom(scale);
-      //根据缩放比例，缩放对齐辅助线长度和位置
-      setAuxiliaryLineStyle({
-        width: (1 / scale) * 100 + '%',
-        height: (1 / scale) * 100 + '%',
-        offsetX: -(x / scale),
-        offsetY: -(y / scale),
-      });
-    });
-    pan.on('panend', (e: any) => {
-      const { x, y, scale } = e.getTransform();
-      setAuxiliaryLineStyle({
-        width: (1 / scale) * 100 + '%',
-        height: (1 / scale) * 100 + '%',
-        offsetX: -(x / scale),
-        offsetY: -(y / scale),
-      });
-    });
-    // 设置平移时鼠标样式
-    // @ts-ignore
-    mainContainerWrap.style.cursor = 'grab';
-    mainContainerWrap?.addEventListener('mousedown', function wrapMousedown(style) {
-      // @ts-ignore
-      style.cursor = 'grabbing';
-      mainContainerWrap?.addEventListener('mouseout', function wrapMouseout(e) {
-        // @ts-ignore
-        e.cursor = 'grab';
-      });
-    });
-    mainContainerWrap?.addEventListener('mouseup', function wrapMouseup(style) {
-      // @ts-ignore
-      style.cursor = 'grab';
-    });
-  };
-
   /** 删除节点间连线 */
   const confirmDeleteLine = (line: any) => {
     Modal.confirm({
@@ -227,8 +168,11 @@ const FlowEditor: React.FC = () => {
     });
   };
 
-  /** 初始化编辑器面板 */
-  const initPanel = () => {
+  /** 初始化编辑器 */
+  const init = () => {
+    // 初始化节点类型
+    getNodeTypes().then((res) => setNodeTypes(res));
+    // 初始化编辑器面板
     jsPlumbInstance.ready(() => {
       // 导入默认配置
       jsPlumbInstance.importDefaults(defaultSetting);
@@ -253,49 +197,8 @@ const FlowEditor: React.FC = () => {
       // 面板重绘
       jsPlumbInstance.setSuspendDrawing(false, true);
     });
-    // 面板缩放
-    initPanZoom();
-  };
-
-  /** 界面缩放，以绘制面板原点为基准，每次缩放25% */
-  const zoomNode = (command: string) => {
-    const scale = jsPlumbInstance.getZoom();
-    // @ts-ignore
-    const max = jsPlumbInstance.pan?.getMaxZoom();
-    // @ts-ignore
-    const min = jsPlumbInstance.pan?.getMinZoom();
-    let temp;
-    if (command === 'in') {
-      if (scale < max) {
-        temp = scale + scale * 0.25;
-      }
-    } else if (command === 'out') {
-      if (scale > min) {
-        temp = scale - scale * 0.25;
-      }
-    } else if (command === 'full') {
-      if (!screenfull.isEnabled) {
-        message.warn('您的浏览器不支持全屏');
-        return;
-      }
-      // @ts-ignore
-      screenfull.request(document.getElementById('flow-content'));
-    } else if (command === 'reset') {
-      temp = 1;
-    }
-    if (temp) {
-      // 限制缩放范围
-      if (temp > max) {
-        temp = max;
-      } else if (temp < min) {
-        temp = min;
-      }
-      jsPlumbInstance.setZoom(temp);
-      const flowDom = document.getElementById('flow');
-      if (flowDom?.style.transform) {
-        flowDom.style.transform = 'scale(' + temp + ')';
-      }
-    }
+    // 设置面板缩放
+    setPanZoom(jsPlumbInstance, (style: any) => setAuxiliaryLineStyle(style));
   };
 
   /** 复制节点 */
@@ -401,23 +304,6 @@ const FlowEditor: React.FC = () => {
       }
     });
     message.success('操作成功');
-  };
-
-  /** 更改连线状态 */
-  const changeLineState = (nodeId: string, show: boolean) => {
-    jsPlumbInstance.getAllConnections()?.forEach((line) => {
-      if (line.targetId === nodeId || line.sourceId === nodeId) {
-        // @ts-ignore
-        const canvas = line.canvas;
-        if (canvas) {
-          if (show) {
-            canvas.classList?.add('active');
-          } else {
-            canvas.classList?.remove('active');
-          }
-        }
-      }
-    });
   };
 
   /** 键盘事件操作节点 */
@@ -533,8 +419,8 @@ const FlowEditor: React.FC = () => {
   };
 
   useEffect(() => {
-    initNodeType();
-    initPanel();
+    // 初始化
+    init();
 
     // 销毁组件时关闭ws连接
     return () => {
@@ -559,7 +445,9 @@ const FlowEditor: React.FC = () => {
           deleteNode={deleteNode}
           executeFlow={executeFlow}
           stopFlow={stopFlowData}
-          zoomNode={zoomNode}
+          zoomNode={async (command) => {
+            await zoomPan(command, jsPlumbInstance);
+          }}
           showLogs={showLogs}
         />
         <div id="flow-content" className="flow-content">
@@ -622,7 +510,9 @@ const FlowEditor: React.FC = () => {
                   <FlowNode
                     key={n.id}
                     node={n}
-                    changeLineState={changeLineState}
+                    changeLineState={(nodeId, show) =>
+                      changeLineState(nodeId, show, jsPlumbInstance)
+                    }
                     showNodeDetail={showNodeDetail}
                   />
                 );
