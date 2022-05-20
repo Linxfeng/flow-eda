@@ -1,8 +1,9 @@
 // @ts-ignore
-import { FormattedMessage, Link } from 'umi';
+import { FormattedMessage, Link, history } from 'umi';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
+import moment from 'moment';
 import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Space } from 'antd';
@@ -93,7 +94,19 @@ const FlowList: React.FC = () => {
         >
           <FormattedMessage id="pages.flowList.flows.edit" defaultMessage="编辑" />
         </a>,
-        <a key="logs" onClick={() => {}}>
+        <a
+          key="logs"
+          onClick={() => {
+            const date = moment().format('YYYY-MM-DD');
+            const path = `/logs/running/${record.id}/${date}.log`;
+            history.push({
+              pathname: '/logs/detail',
+              state: {
+                path: path,
+              },
+            });
+          }}
+        >
           <FormattedMessage id="pages.flowList.flows.logs" defaultMessage="日志" />
         </a>,
         <ConfirmModal
