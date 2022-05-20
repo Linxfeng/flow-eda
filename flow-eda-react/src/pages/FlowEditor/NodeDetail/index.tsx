@@ -38,6 +38,20 @@ const FlowDetail: React.FC<{
     form.setFieldsValue(detail);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  /** 校验json格式 */
+  const checkJson = (rule: any, value: string, callback: (error?: string) => void) => {
+    if (value) {
+      if (value.startsWith('{') && value.endsWith('}')) {
+        try {
+          JSON.parse(value);
+          callback();
+        } catch (ignore) {}
+      }
+      callback('Please input json format!');
+    }
+    callback();
+  };
+
   /** 提交表单，更新节点信息 */
   const onFinish = (values: any) => {
     const newNode = JSON.parse(JSON.stringify(props.node));
@@ -87,6 +101,7 @@ const FlowDetail: React.FC<{
             <ReactJson
               src={props.node.output}
               collapsed={3}
+              name={false}
               displayDataTypes={false}
               displayObjectSize={false}
               quotesOnKeys={false}
@@ -122,10 +137,10 @@ const FlowDetail: React.FC<{
                     required={p.required}
                   >
                     <Input.Group compact>
-                      <Form.Item name={p.key} noStyle>
+                      <Form.Item name={p.key} noStyle rules={[{ required: p.required }]}>
                         <Input placeholder={p.placeholder.split(',')[0]} className="input-left" />
                       </Form.Item>
-                      <Form.Item name={p.key + '-o'} noStyle>
+                      <Form.Item name={p.key + '-o'} noStyle rules={[{ required: p.required }]}>
                         <Select className="input-right">
                           {p.option?.split(',')?.map((op: string) => {
                             return (
@@ -167,6 +182,7 @@ const FlowDetail: React.FC<{
             name="payload"
             label="自定义参数："
             tooltip="参数为json格式，可传递至下一节点，使用${xx}接收，例如${a,httpResult.$0.name}"
+            rules={[{ validator: checkJson }]}
           >
             <Input.TextArea autoSize={true} className="input" placeholder="{'a':'xx','b':'123'}" />
           </Form.Item>
