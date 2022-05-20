@@ -78,8 +78,23 @@ const FlowEditor: React.FC = () => {
     setAuxiliaryLine({ showXLine: showXLine, showYLine: showYLine });
   };
 
-  /** 注册节点拖动节点事件 */
-  const draggableNode = (nodeId: string) => {
+  /** 添加连线 */
+  const addLine = (evt: any) => {
+    const line = {
+      id: generateUniqueID(8),
+      flowId: id,
+      from: evt.source.id,
+      to: evt.target.id,
+    };
+    setLineList([...lineList, line]);
+  };
+
+  /** 动态注册节点到面板上 */
+  const reloadNode = (node: API.Node) => {
+    const nodeId = node.id;
+    jsPlumbInstance.makeSource(nodeId, makeOptions);
+    jsPlumbInstance.makeTarget(nodeId, makeOptions);
+    // 注册节点拖动节点事件
     jsPlumbInstance.draggable(nodeId, {
       // @ts-ignore // 设置拖动最小栅格为5px
       grid: [5, 5],
@@ -99,13 +114,6 @@ const FlowEditor: React.FC = () => {
     });
   };
 
-  /** 动态注册节点到面板上 */
-  const reloadNode = (node: API.Node) => {
-    jsPlumbInstance.makeSource(node.id, makeOptions);
-    jsPlumbInstance.makeTarget(node.id, makeOptions);
-    draggableNode(node.id);
-  };
-
   /** 给面板上的节点连线 */
   const connectLines = (lines: API.Node[]) => {
     //取消连接事件
@@ -122,13 +130,7 @@ const FlowEditor: React.FC = () => {
     });
     //注册连接事件
     jsPlumbInstance.bind('connection', (evt) => {
-      const line = {
-        id: generateUniqueID(8),
-        flowId: id,
-        from: evt.source.id,
-        to: evt.target.id,
-      };
-      setLineList([...lineList, line]);
+      addLine(evt);
     });
   };
 
@@ -194,7 +196,7 @@ const FlowEditor: React.FC = () => {
         offsetY: -(y / scale),
       });
     });
-    // 平移时设置鼠标样式
+    // 设置平移时鼠标样式
     // @ts-ignore
     mainContainerWrap.style.cursor = 'grab';
     mainContainerWrap?.addEventListener('mousedown', function wrapMousedown(style) {
@@ -211,6 +213,7 @@ const FlowEditor: React.FC = () => {
     });
   };
 
+  /** 删除节点间连线 */
   const confirmDeleteLine = (line: any) => {
     Modal.confirm({
       title: '确认删除该连线？',
@@ -231,13 +234,7 @@ const FlowEditor: React.FC = () => {
       jsPlumbInstance.importDefaults(defaultSetting);
       // 连线创建成功后，维护本地数据
       jsPlumbInstance.bind('connection', (evt) => {
-        const line: API.Node = {
-          id: generateUniqueID(8),
-          flowId: id,
-          from: evt.source.id,
-          to: evt.target.id,
-        };
-        setLineList([...lineList, line]);
+        addLine(evt);
       });
       //连线双击删除事件
       jsPlumbInstance.bind('dblclick', (line) => {
@@ -245,13 +242,11 @@ const FlowEditor: React.FC = () => {
       });
       //断开连线后，维护本地数据
       jsPlumbInstance.bind('connectionDetached', (evt) => {
-        if (lineList) {
-          lineList.forEach((item, index) => {
-            if (item.from === evt.sourceId && item.to === evt.targetId) {
-              lineList.splice(index, 1);
-            }
-          });
-        }
+        lineList.forEach((item, index) => {
+          if (item.from === evt.sourceId && item.to === evt.targetId) {
+            lineList.splice(index, 1);
+          }
+        });
       });
       // 加载流程数据
       loadFlowData();
@@ -347,7 +342,7 @@ const FlowEditor: React.FC = () => {
   const drag = (item: API.NodeType) => {
     setCurrentItem(item);
   };
-  /** 释放拖拽的功能节点 */
+  /** 释放左侧功能节点 */
   const drop = (event: any) => {
     const containerRect = jsPlumbInstance.getContainer().getBoundingClientRect();
     const scale = jsPlumbInstance.getZoom();
@@ -365,7 +360,7 @@ const FlowEditor: React.FC = () => {
     setNodeList([...nodeList, temp]);
   };
 
-  /** 展示左侧节点类型的描述 */
+  /** 展示左侧功能节点类型的描述 */
   const moveDes = (e: any, type: API.NodeType) => {
     setShowDesc({
       show: true,

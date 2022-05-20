@@ -1,5 +1,6 @@
-import React from 'react';
+// @ts-ignore
 import ReactCodeMirror from 'react-cmirror';
+import React from 'react';
 import 'codemirror/mode/javascript/javascript.js';
 import 'codemirror/theme/dracula.css';
 import './index.less';
