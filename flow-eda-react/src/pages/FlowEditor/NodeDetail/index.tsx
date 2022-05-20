@@ -184,7 +184,7 @@ const FlowDetail: React.FC<{
             className="item"
             name="payload"
             label={formatMsg('pages.flowList.editor.parameters', '自定义参数')}
-            tooltip={formatMsg('pages.flowList.editor.params.tooltip')}
+            tooltip="参数为json格式，可传递至下一节点，使用${xx}接收，例如${a,httpResult.$0.name}"
             rules={[{ validator: checkJson }]}
           >
             <Input.TextArea autoSize={true} className="input" placeholder="{'a':'xx','b':'123'}" />

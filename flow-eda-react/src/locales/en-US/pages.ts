@@ -26,8 +26,6 @@ export default {
   'pages.flowList.editor.delNode': 'Confirm delete this node?',
   'pages.flowList.editor.checkFlow': 'Please draw some node first',
   'pages.flowList.editor.parameters': 'Custom params',
-  'pages.flowList.editor.params.tooltip':
-    'Parameters is json format,it could be passed value to the next node,you can use ${xx} receive value, eg: ${a,httpResult.$0.name}',
   'pages.flowList.editor.checkJson': 'Please input json format',
   'pages.flowList.editor.remark': '备注',
 

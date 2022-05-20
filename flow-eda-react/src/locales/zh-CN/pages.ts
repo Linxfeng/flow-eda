@@ -26,8 +26,6 @@ export default {
   'pages.flowList.editor.delNode': '确认删除当前节点？',
   'pages.flowList.editor.checkFlow': '请先绘制流程图',
   'pages.flowList.editor.parameters': '自定义参数',
-  'pages.flowList.editor.params.tooltip':
-    '参数为json格式，可传递至下一节点，使用${xx}接收，例如${a,httpResult.$0.name}',
   'pages.flowList.editor.checkJson': '请输入正确的json格式',
   'pages.flowList.editor.remark': '备注',
 
