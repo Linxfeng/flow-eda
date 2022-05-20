@@ -11,7 +11,7 @@ import { Card, message, Modal } from 'antd';
 import './index.less';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useFormatMessage } from '@/hooks';
-import { onOpenLogs, onOpenNode } from '@/services/ws';
+import { onCloseLogs, onCloseNode, onOpenLogs, onOpenNode } from '@/services/ws';
 import ToolBar from '@/pages/FlowEditor/ToolBar/index';
 import FlowNode from '@/pages/FlowEditor/FlowNode/index';
 import FlowLog from '@/pages/FlowEditor/FlowLog';
@@ -452,8 +452,8 @@ const FlowEditor: React.FC = () => {
   };
 
   /** 建立websocket连接，实时获取节点状态信息 */
-  const getNodeWsInfo = async () => {
-    await onOpenNode(id, (s) => {
+  const getNodeWsInfo = () => {
+    onOpenNode(id, (s) => {
       const res = JSON.parse(s);
       nodeList.forEach((node) => {
         if (node.id === res.nodeId) {
@@ -519,7 +519,7 @@ const FlowEditor: React.FC = () => {
     // 保存当前流程数据
     await saveData();
     // 监听流程运行时节点信息
-    await getNodeWsInfo();
+    getNodeWsInfo();
     // 运行本流程
     runFlow(id).then((res) => {
       if (res) {
@@ -540,6 +540,12 @@ const FlowEditor: React.FC = () => {
   useEffect(() => {
     initNodeType();
     initPanel();
+
+    // 销毁组件时关闭ws连接
+    return () => {
+      onCloseNode(id);
+      onCloseLogs(id);
+    };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   /** 当面板上的节点变化时，重新加载绘制节点 */
