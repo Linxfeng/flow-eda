@@ -472,24 +472,25 @@ export default {
 
     // 建立websocket连接，获取节点状态信息
     const flowStatus = ref("");
-    // 建立websocket连接，获取节点状态信息
     const getNodeStatus = async () => {
       await onOpen(props.flowId, (s) => {
         const res = JSON.parse(s);
-        data.nodeList.forEach(node => {
-          if (node.id === res.nodeId) {
-            node.status = res.status;
-            if (res.output) {
-              node.output = res.output;
-            }
-            if (res.error) {
-              node.error = res.error;
-              ElMessage.error(res.error);
-            }
-          }
-        });
         if (res.flowStatus) {
           flowStatus.value = res.flowStatus;
+        }
+        if (res.nodeId) {
+          data.nodeList.forEach((node) => {
+            if (node.id === res.nodeId) {
+              node.status = res.status;
+              if (res.output) {
+                node.output = res.output;
+              }
+              if (res.error) {
+                node.error = res.error;
+                ElMessage.error(res.error);
+              }
+            }
+          });
         }
       });
     };
@@ -537,8 +538,6 @@ export default {
         v.output = undefined;
       });
       await saveData();
-      // 建立websocket连接
-      await getNodeStatus();
       // 运行
       const res = await executeNodeData(props.flowId);
       if (res) {
@@ -562,6 +561,8 @@ export default {
       await nextTick(() => {
         init();
       });
+      // 建立websocket连接
+      await getNodeStatus();
     });
 
     // 组件被销毁之前，关闭socket连接
