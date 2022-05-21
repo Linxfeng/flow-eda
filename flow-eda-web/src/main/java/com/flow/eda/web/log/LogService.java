@@ -30,11 +30,27 @@ public class LogService {
                     .target(flows, Flow::getId)
                     .mergeS((log, flow) -> log.setFlowName(flow.getName()));
         }
+        // 根据日志的日期排序，降序
+        list.sort((o1, o2) -> comparingDate(o1.getDate(), o2.getDate()));
         return list;
     }
 
     /** 删除日志文件 */
     public void deleteLogs(List<String> path) {
         logsService.deleteLogFiles(path);
+    }
+
+    private int comparingDate(String date1, String date2) {
+        String[] split1 = date1.split("-");
+        String[] split2 = date2.split("-");
+        if (Integer.parseInt(split1[0]) == Integer.parseInt(split2[0])) {
+            int i1 = Integer.parseInt(split1[1] + split1[2]);
+            int i2 = Integer.parseInt(split2[1] + split2[2]);
+            if (i1 == i2) {
+                return 0;
+            }
+            return i1 > i2 ? -1 : 1;
+        }
+        return Integer.parseInt(split1[0]) > Integer.parseInt(split2[0]) ? -1 : 1;
     }
 }
