@@ -4,9 +4,7 @@ import com.flow.eda.common.dubbo.model.FlowData;
 
 import java.util.List;
 
-/***
- * 流数据接口
- */
+/** 流数据接口 */
 public interface FlowDataService {
     /**
      * 运行当前流程
