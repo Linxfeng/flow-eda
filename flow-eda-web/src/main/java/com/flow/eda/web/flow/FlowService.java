@@ -1,6 +1,7 @@
 package com.flow.eda.web.flow;
 
 import com.flow.eda.common.exception.ResourceNotFoundException;
+import com.flow.eda.web.flow.node.data.NodeDataMapper;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.util.List;
 @Service
 public class FlowService {
     @Autowired private FlowMapper flowMapper;
+    @Autowired private NodeDataMapper nodeDataMapper;
 
     public List<Flow> listFlowByPage(FlowRequest request) {
         PageHelper.startPage(request.getPage(), request.getLimit());
@@ -40,5 +42,6 @@ public class FlowService {
 
     public void deleteFlow(List<String> ids) {
         flowMapper.deleteByIds(ids);
+        ids.forEach(nodeDataMapper::deleteByFlowId);
     }
 }
