@@ -39,10 +39,10 @@ public class FlowStatusService {
 
     /** 实时计算流程状态 */
     public String getFlowStatus(String flowId, Document message) {
-        if (!nodeMap.containsKey(flowId)) {
+        String nodeId = message.getString("nodeId");
+        if (!nodeMap.containsKey(flowId) || nodeId == null) {
             return flowInfoService.getFlowStatus(flowId);
         }
-        String nodeId = message.getString("nodeId");
         String status = message.getString("status");
         if (Node.Status.FAILED.name().equals(status)) {
             nodeMap.get(flowId).remove(nodeId);

@@ -30,6 +30,15 @@ public class FlowNodeWebsocket {
     public void onOpen(Session session, @PathParam("id") String id) {
         SESSION_POOL.put(id, session);
         log.info("New client connected, flow id:{}", id);
+        // 立即推送一次当前流程状态
+        Document message = new Document();
+        String flowStatus = flowStatusService.getFlowStatus(id, message);
+        message.append("flowStatus", flowStatus);
+        try {
+            session.getBasicRemote().sendText(message.toJson());
+        } catch (Exception e) {
+            log.error("Send websocket message failed:{}", e.getMessage());
+        }
     }
 
     @OnClose
