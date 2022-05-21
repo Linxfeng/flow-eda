@@ -49,6 +49,7 @@ const FlowEditor: React.FC = () => {
   const [currentItem, setCurrentItem] = useState<API.NodeType>();
   const [logVisible, setLogVisible] = useState<boolean>(false);
   const [logContent, setLogContent] = useState<string[]>([]);
+  const [hasRun, setHasRun] = useState<boolean>(false);
 
   /** 移动节点时，动态显示对齐辅助线 */
   const alignForLine = (nodeId: string, position: number[]) => {
@@ -333,24 +334,26 @@ const FlowEditor: React.FC = () => {
   };
 
   /** 建立websocket连接，实时获取节点状态信息 */
-  const getNodeWsInfo = async () => {
+  const getNodeWsInfo = () => {
     onOpenNode(id, (s) => {
       const res = JSON.parse(s);
-      nodeList.forEach((node) => {
-        if (node.id === res.nodeId) {
-          node.status = res.status;
-          if (res.output) {
-            node.output = JSON.parse(JSON.stringify(res.output));
-          }
-          if (res.error) {
-            node.error = res.error;
-            message.error(res.error);
-          }
-          return;
-        }
-      });
       if (res.flowStatus) {
         setFlowStatus(res.flowStatus);
+      }
+      if (res.nodeId) {
+        nodeList.map((node) => {
+          if (node.id === res.nodeId) {
+            node.status = res.status;
+            if (res.output) {
+              node.output = JSON.parse(JSON.stringify(res.output));
+            }
+            if (res.error) {
+              node.error = res.error;
+              message.error(res.error);
+            }
+            return;
+          }
+        });
       }
     });
   };
@@ -400,7 +403,11 @@ const FlowEditor: React.FC = () => {
     // 保存当前流程数据
     await saveData();
     // 监听流程运行时节点信息
-    await getNodeWsInfo();
+    if (!hasRun) {
+      onCloseNode(id);
+      setHasRun(true);
+    }
+    getNodeWsInfo();
     // 运行本流程
     runFlow(id).then((res) => {
       if (res) {
@@ -421,6 +428,8 @@ const FlowEditor: React.FC = () => {
   useEffect(() => {
     // 初始化
     init();
+    // 实时获取流程状态
+    getNodeWsInfo();
 
     // 销毁组件时关闭ws连接
     return () => {
