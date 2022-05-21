@@ -472,8 +472,8 @@ export default {
 
     // 建立websocket连接，获取节点状态信息
     const flowStatus = ref("");
-    const getNodeStatus = async () => {
-      await onOpen(props.flowId, (s) => {
+    const getNodeStatus = () => {
+      onOpen(props.flowId, (s) => {
         const res = JSON.parse(s);
         if (res.flowStatus) {
           flowStatus.value = res.flowStatus;
@@ -562,7 +562,7 @@ export default {
         init();
       });
       // 建立websocket连接
-      await getNodeStatus();
+      getNodeStatus();
     });
 
     // 组件被销毁之前，关闭socket连接
