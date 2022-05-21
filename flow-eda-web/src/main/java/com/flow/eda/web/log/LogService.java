@@ -26,9 +26,10 @@ public class LogService {
         if (CollectionUtil.isNotEmpty(ids)) {
             // 聚合流程名称
             List<Flow> flows = flowMapper.findByIds(ids);
-            return MergeBuilder.source(list, Logs::getFlow)
-                    .target(flows, Flow::getId)
-                    .mergeS((log, flow) -> log.setFlowName(flow.getName()));
+            list =
+                    MergeBuilder.source(list, Logs::getFlow)
+                            .target(flows, Flow::getId)
+                            .mergeS((log, flow) -> log.setFlowName(flow.getName()));
         }
         // 根据日志的日期排序，降序
         list.sort((o1, o2) -> comparingDate(o1.getDate(), o2.getDate()));
