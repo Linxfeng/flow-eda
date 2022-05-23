@@ -81,7 +81,9 @@ const FlowEditor: React.FC = () => {
       from: evt.source.id,
       to: evt.target.id,
     };
-    setLineList([...lineList, line]);
+    setLineList((lines) => {
+      return [...lines, line];
+    });
   };
 
   /** 动态注册节点到面板上 */
