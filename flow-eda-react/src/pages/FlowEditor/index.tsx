@@ -338,13 +338,6 @@ const FlowEditor: React.FC = () => {
     }
   };
 
-  /** 建立websocket连接，实时获取节点状态信息 */
-  const getNodeWsInfo = () => {
-    onOpenNode(id, (s) => {
-      setWsMessage(s);
-    });
-  };
-
   /** 保存流程图所有节点数据 */
   const saveData = async () => {
     if (nodeList.length === 0) {
@@ -409,8 +402,8 @@ const FlowEditor: React.FC = () => {
   useEffect(() => {
     // 初始化
     init();
-    // 实时获取流程状态
-    getNodeWsInfo();
+    // 建立ws连接，实时获取流程状态和节点状态信息
+    onOpenNode(id, (s) => setWsMessage(s));
 
     // 销毁组件时关闭ws连接
     return () => {
@@ -432,7 +425,7 @@ const FlowEditor: React.FC = () => {
         setFlowStatus(res.flowStatus);
       }
       if (res.nodeId) {
-        nodeList.map((node) => {
+        nodeList.forEach((node) => {
           if (node.id === res.nodeId) {
             node.status = res.status;
             if (res.output) {
@@ -495,6 +488,10 @@ const FlowEditor: React.FC = () => {
           <div
             id="flowWrap"
             className="flow-wrap"
+            onClick={() => {
+              // 点击事件冒泡，聚焦一下面板使快捷键生效
+              document.getElementById('flowWrap')?.focus();
+            }}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => drop(e)}
             onKeyUp={(e) => keyupNode(e)}
