@@ -75,14 +75,24 @@ const FlowEditor: React.FC = () => {
 
   /** 添加连线 */
   const addLine = (evt: any) => {
-    const line = {
-      id: generateUniqueID(8),
-      flowId: id,
-      from: evt.source.id,
-      to: evt.target.id,
-    };
+    const from = evt.source.id;
+    const to = evt.target.id;
     setLineList((lines) => {
-      return [...lines, line];
+      // 防止重复连线
+      const has = lines.some((l) => {
+        return l.from === from && l.to === to;
+      });
+      if (has) {
+        return lines;
+      } else {
+        const line = {
+          id: generateUniqueID(8),
+          flowId: id,
+          from: evt.source.id,
+          to: evt.target.id,
+        };
+        return [...lines, line];
+      }
     });
   };
 
@@ -113,9 +123,6 @@ const FlowEditor: React.FC = () => {
 
   /** 给面板上的节点连线 */
   const connectLines = (lines: API.Node[]) => {
-    //取消连接事件
-    jsPlumbInstance.unbind('connection');
-    // 绘制连接线
     lines.forEach((line) => {
       jsPlumbInstance.connect(
         {
@@ -124,10 +131,6 @@ const FlowEditor: React.FC = () => {
         },
         connectOptions,
       );
-    });
-    //注册连接事件
-    jsPlumbInstance.bind('connection', (evt) => {
-      addLine(evt);
     });
   };
 
