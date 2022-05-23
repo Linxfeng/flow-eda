@@ -1,11 +1,13 @@
 // @ts-ignore
 import ReactCodeMirror from 'react-cmirror';
-import React from 'react';
+import React, { useRef } from 'react';
 import 'codemirror/mode/javascript/javascript.js';
 import 'codemirror/theme/dracula.css';
 import './index.less';
 
 const FlowLog: React.FC<{ logContent: string }> = (props) => {
+  const flowLogRef = useRef(null);
+
   /** 内容更新时自动滚动到底部 */
   const autoScroll = (cm: any) => {
     const nowScrollInfo = cm.getScrollInfo();
@@ -13,8 +15,25 @@ const FlowLog: React.FC<{ logContent: string }> = (props) => {
   };
 
   return (
-    <div id="flow-log" className="flow-log">
-      <div className="drag-box" />
+    <div id="flow-log" ref={flowLogRef} className="flow-log">
+      <div
+        className="drag-box"
+        onMouseDown={() => {
+          document.onmousemove = function (e) {
+            let th = document.body.clientHeight - e.clientY;
+            if (th < 100) {
+              th = 100;
+            }
+            // @ts-ignore
+            const style = flowLogRef.current?.style;
+            style.height = th + 'px';
+          };
+          document.onmouseup = function () {
+            document.onmousemove = null;
+            document.onmouseup = null;
+          };
+        }}
+      />
       <ReactCodeMirror
         value={props.logContent}
         options={{
