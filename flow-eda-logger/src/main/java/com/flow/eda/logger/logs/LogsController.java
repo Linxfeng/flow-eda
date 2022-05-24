@@ -1,7 +1,7 @@
 package com.flow.eda.logger.logs;
 
-import com.flow.eda.common.dubbo.model.Logs;
 import com.flow.eda.common.http.Result;
+import com.flow.eda.common.model.Logs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,9 +37,8 @@ public class LogsController {
      * @param path 日志文件路径
      */
     @DeleteMapping("/logs")
-    public Result<String> deleteLogs(@RequestBody List<String> path) {
+    public void deleteLogs(@RequestBody List<String> path) {
         path.forEach(this::deleteLogFile);
-        return Result.ok();
     }
 
     /** 获取操作日志信息列表 */
