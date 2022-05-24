@@ -1,8 +1,8 @@
 package com.flow.eda.web.log;
 
-import com.flow.eda.common.dubbo.model.Logs;
 import com.flow.eda.common.exception.MissingRequestParameterException;
 import com.flow.eda.common.http.Result;
+import com.flow.eda.common.model.Logs;
 import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.web.http.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
