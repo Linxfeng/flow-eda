@@ -8,19 +8,6 @@ spring:
     port: 5672
     username: guest
     password: guest
-dubbo:
-  application:
-    name: flow-eda-logger
-    qos-enable: false
-    qos-accept-foreign-ip: false
-  registry:
-    protocol: dubbo
-    address: nacos://localhost:8848
-    username: nacos
-    password: nacos
-  protocol:
-    name: dubbo
-    port: 20883
 logging:
   level:
     com.alibaba.nacos.common.remote.client: warn
