@@ -1,13 +1,11 @@
 package com.flow.eda.web.flow.node.data;
 
-import com.flow.eda.common.dubbo.api.FlowDataService;
-import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InvalidStateException;
+import com.flow.eda.common.model.FlowData;
 import com.flow.eda.common.utils.MergeBuilder;
 import com.flow.eda.web.flow.FlowService;
 import com.flow.eda.web.flow.node.type.NodeType;
 import com.flow.eda.web.flow.node.type.NodeTypeService;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +18,7 @@ import static com.flow.eda.common.utils.CollectionUtil.isEmpty;
 
 @Service
 public class NodeDataService {
-    @DubboReference private FlowDataService flowDataService;
+    @Autowired private FlowDataClient flowDataClient;
     @Autowired private NodeDataMapper nodeDataMapper;
     @Autowired private NodeTypeService nodeTypeService;
     @Autowired private FlowService flowService;
@@ -51,14 +49,14 @@ public class NodeDataService {
         // 调用远程接口，运行当前流数据
         List<FlowData> data = new ArrayList<>();
         list.forEach(n -> data.add(convert(n)));
-        flowDataService.runFlowData(data);
+        flowDataClient.runFlowData(data);
     }
 
     /** 停止运行当前流程 */
     public void stopNodeData(String flowId) {
         flowService.findById(flowId);
         // 调用远程接口，停止运行当前流程
-        flowDataService.stopFlowData(flowId);
+        flowDataClient.stopFlowData(flowId);
     }
 
     private FlowData convert(NodeData nodeData) {
