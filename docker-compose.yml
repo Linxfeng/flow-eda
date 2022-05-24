@@ -58,11 +58,11 @@ services:
     network_mode: host
     volumes:
       - /root/app/springboot/logger/logs:/logs
-    runner:
-      image: flow-eda-runner
-      container_name: runner
-      network_mode: host
-    web:
-      image: flow-eda-web
-      container_name: web
-      network_mode: host
+  runner:
+    image: flow-eda-runner
+    container_name: runner
+    network_mode: host
+  web:
+    image: flow-eda-web
+    container_name: web
+    network_mode: host
