@@ -1,10 +1,9 @@
 package com.flow.eda.runner.status;
 
-import com.flow.eda.common.dubbo.api.FlowInfoService;
-import com.flow.eda.common.dubbo.model.FlowData;
+import com.flow.eda.common.model.FlowData;
 import com.flow.eda.runner.node.Node;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,7 +20,7 @@ public class FlowStatusService {
     /** 临时存储流数据 */
     private final Map<String, List<FlowData>> dataMap = new HashMap<>();
 
-    @DubboReference private FlowInfoService flowInfoService;
+    @Autowired private FlowStatusClient flowStatusClient;
 
     public void startRun(
             String flowId, List<FlowData> data, List<FlowData> starts, List<FlowData> timer) {
@@ -41,7 +40,7 @@ public class FlowStatusService {
     public String getFlowStatus(String flowId, Document message) {
         String nodeId = message.getString("nodeId");
         if (!nodeMap.containsKey(flowId) || nodeId == null) {
-            return flowInfoService.getFlowStatus(flowId);
+            return flowStatusClient.getFlowStatus(flowId).getResult();
         }
         String status = message.getString("status");
         if (Node.Status.FAILED.name().equals(status)) {
