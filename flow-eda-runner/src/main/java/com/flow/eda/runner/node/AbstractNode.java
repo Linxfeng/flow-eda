@@ -5,6 +5,8 @@ import org.bson.Document;
 
 import java.util.Optional;
 
+import static com.flow.eda.runner.utils.PlaceholderUtil.OBJECT_MAPPER;
+
 /** 节点抽象类 */
 public abstract class AbstractNode implements Node {
     /** 节点自定义参数，可传递至下个节点 */
@@ -21,8 +23,14 @@ public abstract class AbstractNode implements Node {
      */
     public AbstractNode(Document params) {
         if (params != null) {
-            this.payload = params.get("payload", Document.class);
-            this.input = params.get("input", Document.class);
+            Object p = params.get("payload");
+            if (p != null) {
+                this.payload = OBJECT_MAPPER.convertValue(p, Document.class);
+            }
+            Object i = params.get("input");
+            if (i != null) {
+                this.input = OBJECT_MAPPER.convertValue(i, Document.class);
+            }
         }
         // 解析${}占位符
         params = this.parsePlaceholder(params);
