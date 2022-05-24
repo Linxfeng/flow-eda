@@ -1,15 +1,15 @@
 package com.flow.eda.runner;
 
 import com.flow.eda.runner.status.FlowNodeWebsocket;
-import org.apache.dubbo.config.spring.context.annotation.DubboComponentScan;
-import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
-@EnableDubbo
-@DubboComponentScan(basePackages = "com.flow.eda.runner.data")
+@EnableFeignClients
 @SpringBootApplication
+@ComponentScan(basePackages = {"com.flow.eda.runner", "com.flow.eda.common.config"})
 public class FlowEdaRunnerApplication {
 
     public static void main(String[] args) {
