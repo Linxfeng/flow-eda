@@ -48,18 +48,12 @@ public class HttpRequestNode extends AbstractNode {
             String url = params.getString("url");
             NodeVerify.notBlank(url, "url");
             if (url.startsWith("/")) {
-                url += "http://localhost:8088";
+                url = "http://localhost:8088" + url;
             } else {
                 NodeVerify.isTrue(url.startsWith("http"), "url");
             }
             this.url = url;
-
-            this.method = params.getString("method");
-            NodeVerify.notBlank(method, "method");
-            List<String> list =
-                    Arrays.asList(
-                            "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH");
-            NodeVerify.isTrue(list.contains(method), "method");
+            this.method = verifyMethod(params);
 
             String param = params.getString("params");
             if (StringUtils.hasLength(param)) {
@@ -117,5 +111,14 @@ public class HttpRequestNode extends AbstractNode {
                             + response.getStatusLine().getStatusCode());
         }
         throw new InternalException("The http request has no response.");
+    }
+
+    public static String verifyMethod(Document params) {
+        String method = params.getString("method");
+        NodeVerify.notBlank(method, "method");
+        List<String> list =
+                Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH");
+        NodeVerify.isTrue(list.contains(method), "method");
+        return method;
     }
 }
