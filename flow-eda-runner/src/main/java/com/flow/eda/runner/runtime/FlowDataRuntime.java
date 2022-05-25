@@ -48,10 +48,15 @@ public class FlowDataRuntime {
         FlowThreadPool.shutdownSchedulerPool(flowId);
         // 获取运行中的节点id，推送中断信息
         List<String> nodes = flowStatusService.getRunningNodes(flowId);
-        Document status =
-                new Document("status", Node.Status.FAILED.name())
-                        .append("error", "node interrupted");
-        forEach(nodes, nodeId -> ws.sendMessage(flowId, status.append("nodeId", nodeId)));
+        if (nodes != null) {
+            Document status =
+                    new Document("status", Node.Status.FAILED.name())
+                            .append("error", "node interrupted");
+            forEach(nodes, nodeId -> ws.sendMessage(flowId, status.append("nodeId", nodeId)));
+        } else {
+            // 无中断信息时，推送流程完成状态
+            ws.sendMessage(flowId, new Document("flowStatus", Node.Status.FINISHED.name()));
+        }
     }
 
     /** 清理流程运行的缓存数据 */

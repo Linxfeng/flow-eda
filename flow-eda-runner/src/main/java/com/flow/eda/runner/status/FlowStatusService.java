@@ -2,6 +2,7 @@ package com.flow.eda.runner.status;
 
 import com.flow.eda.common.dubbo.api.FlowInfoService;
 import com.flow.eda.common.dubbo.model.FlowData;
+import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.runner.node.Node;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
@@ -63,7 +64,7 @@ public class FlowStatusService {
     /** 获取运行中的节点id */
     public List<String> getRunningNodes(String flowId) {
         Set<String> nodes = this.runMap.get(flowId);
-        if (!nodes.isEmpty()) {
+        if (CollectionUtil.isNotEmpty(nodes)) {
             return new ArrayList<>(nodes);
         }
         return null;

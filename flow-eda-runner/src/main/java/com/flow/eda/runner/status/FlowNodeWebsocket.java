@@ -65,9 +65,14 @@ public class FlowNodeWebsocket {
     /** 推送节点状态和输出信息 */
     public void sendMessage(String flowId, Document message) {
         // 获取流程实时状态信息一起推送
-        String flowStatus =
-                applicationContext.getBean(FlowStatusService.class).getFlowStatus(flowId, message);
-        message.append("flowStatus", flowStatus);
+        String flowStatus = message.getString("flowStatus");
+        if (flowStatus == null) {
+            flowStatus =
+                    applicationContext
+                            .getBean(FlowStatusService.class)
+                            .getFlowStatus(flowId, message);
+            message.append("flowStatus", flowStatus);
+        }
         if (SESSION_POOL.get(flowId) != null) {
             try {
                 synchronized (SESSION_POOL.get(flowId)) {
