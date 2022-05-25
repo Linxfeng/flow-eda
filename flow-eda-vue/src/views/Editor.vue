@@ -6,17 +6,22 @@
              @showLogs="showLogs" @stopFlow="stopFlow" @zoomNode="zoomNode"/>
     <div id="flow-content" class="flow-content">
       <div class="nodes-wrap">
-        <div v-for="item in data.nodeTypeList" :key="item.type" :style="{background: item.background}" class="node"
-             draggable="true" @dragstart="drag(item)" @mousemove="moveDes($event,item)" @mouseout="hideDes(item)">
-          <div class="svg">
-            <img :src="item.svg" alt="" style="padding: 4px">
-          </div>
-          <div class="name">{{ item.typeName }}</div>
-          <div v-show="showDescription.show" :style="{left: showDescription.left,top: showDescription.top}"
-               class="description">
-            {{ showDescription.data }}
-          </div>
-        </div>
+        <el-collapse v-for="menu in Object.keys(data.nodeTypeList)">
+          <el-collapse-item :title="menu" :name="menu">
+            <div v-for="item in data.nodeTypeList[menu]" :key="item.type" :style="{background: item.background}"
+                 class="node"
+                 draggable="true" @dragstart="drag(item)" @mousemove="moveDes($event,item)" @mouseout="hideDes(item)">
+              <div class="svg">
+                <img :src="item.svg" alt="" style="padding: 4px">
+              </div>
+              <div class="name">{{ item.typeName }}</div>
+              <div v-show="showDescription.show" :style="{left: showDescription.left,top: showDescription.top}"
+                   class="description">
+                {{ showDescription.data }}
+              </div>
+            </div>
+          </el-collapse-item>
+        </el-collapse>
       </div>
       <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop" @drop="drop"
            @keyup="keyupNode($event,data.selectedNode)">
@@ -71,7 +76,7 @@ export default {
     const jsPlumbInstance = jsPlumb.getInstance();
     // 面板上的节点数据
     const data = reactive({
-      nodeTypeList: [],
+      nodeTypeList: {},
       nodeList: [],
       lineList: [],
       selectedNode: null
@@ -609,14 +614,15 @@ export default {
   border: 1px solid #ccc;
 
   .nodes-wrap {
-    width: 150px;
+    width: 160px;
     height: 100%;
+    overflow-y: auto;
     border-right: 1px solid #ccc;
 
     .node {
       display: flex;
       height: 40px;
-      width: 80%;
+      width: 120px;
       margin: 5px auto;
       border: 1px solid #ccc;
       line-height: 40px;
@@ -687,6 +693,17 @@ export default {
 </style>
 
 <style lang="less">
+.el-collapse-item__wrap .el-collapse-item__content {
+  background: #f0f0f0;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.el-collapse-item .el-collapse-item__header {
+  padding-left: 40px;
+  font-size: 14px;
+}
+
 .jtk-connector.active {
   z-index: 9999;
 
