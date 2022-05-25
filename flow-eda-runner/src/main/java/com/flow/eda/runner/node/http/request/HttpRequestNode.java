@@ -45,8 +45,14 @@ public class HttpRequestNode extends AbstractNode {
     protected void verify(Document params) {
         try {
             NodeVerify.notNull(params, "url");
-            this.url = params.getString("url");
+            String url = params.getString("url");
             NodeVerify.notBlank(url, "url");
+            if (url.startsWith("/")) {
+                url += "http://localhost:8088";
+            } else {
+                NodeVerify.isTrue(url.startsWith("http"), "url");
+            }
+            this.url = url;
 
             this.method = params.getString("method");
             NodeVerify.notBlank(method, "method");
