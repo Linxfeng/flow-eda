@@ -433,7 +433,7 @@ export default {
     const moveDes = (e, type) => {
       showDescription.show = true;
       showDescription.data = type.description;
-      showDescription.left = (e.pageX - 246) + 'px';
+      showDescription.left = (e.pageX - 165) + 'px';
       showDescription.top = (e.pageY - 114) + 'px';
     };
     const hideDes = () => {
