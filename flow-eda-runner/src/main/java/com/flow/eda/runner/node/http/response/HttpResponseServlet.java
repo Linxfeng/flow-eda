@@ -12,7 +12,7 @@ import java.util.Map;
 /** 自定义DispatcherServlet */
 @Slf4j
 public class HttpResponseServlet extends DispatcherServlet {
-    /** 用于存储HttpResponseNode节点的URI和对应的处理器 */
+    /** 用于存储mapping和对应的HttpResponseNode节点处理器 */
     private static final Map<String, HttpResponseNode> HANDLER_MAPPINGS = new HashMap<>();
 
     public static void addHandlerMapping(HttpResponseNode node) {
@@ -20,6 +20,10 @@ public class HttpResponseServlet extends DispatcherServlet {
             throw new FlowException("The same params 'uri' and 'method' node already exists");
         }
         HANDLER_MAPPINGS.put(node.getMapping(), node);
+    }
+
+    public static void removeHandlerMapping(HttpResponseNode node) {
+        HANDLER_MAPPINGS.remove(node.getMapping());
     }
 
     @Override
