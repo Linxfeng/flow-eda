@@ -1,19 +1,3 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : my-vps
- Source Server Type    : MySQL
- Source Server Version : 80028
- Source Host           : 124.221.84.22:3306
- Source Schema         : flow-eda
-
- Target Server Type    : MySQL
- Target Server Version : 80028
- File Encoding         : 65001
-
- Date: 21/05/2022 09:47:39
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
