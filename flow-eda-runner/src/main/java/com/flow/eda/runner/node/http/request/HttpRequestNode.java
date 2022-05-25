@@ -1,4 +1,4 @@
-package com.flow.eda.runner.node.http;
+package com.flow.eda.runner.node.http.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flow.eda.common.exception.FlowException;
@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class HttpNode extends AbstractNode {
+public class HttpRequestNode extends AbstractNode {
     private String url;
     private String method;
     private String body;
     private List<String[]> headers;
 
-    public HttpNode(Document params) {
+    public HttpRequestNode(Document params) {
         super(params);
     }
 
