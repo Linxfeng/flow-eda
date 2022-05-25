@@ -46,6 +46,7 @@ public class FlowDataRuntime {
         FlowLogs.info(flowId, "stop flow {}", flowId);
         FlowThreadPool.shutdownThreadPool(flowId);
         FlowThreadPool.shutdownSchedulerPool(flowId);
+        FlowBlockNodePool.shutdownBlockNode(flowId);
         // 获取运行中的节点id，推送中断信息
         List<String> nodes = flowStatusService.getRunningNodes(flowId);
         if (nodes != null) {
@@ -64,6 +65,7 @@ public class FlowDataRuntime {
         FlowLogs.info(flowId, "clean flow {} cached data", flowId);
         FlowThreadPool.shutdownThreadPool(flowId);
         FlowThreadPool.shutdownSchedulerPool(flowId);
+        FlowBlockNodePool.shutdownBlockNode(flowId);
         flowStatusService.clear(flowId);
     }
 
