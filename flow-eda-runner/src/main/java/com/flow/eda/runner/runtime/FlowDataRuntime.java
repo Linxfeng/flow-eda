@@ -1,6 +1,7 @@
 package com.flow.eda.runner.runtime;
 
 import com.flow.eda.common.dubbo.model.FlowData;
+import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.runner.node.Node;
 import com.flow.eda.runner.node.NodeTypeEnum;
 import com.flow.eda.runner.status.FlowNodeWebsocket;
@@ -49,7 +50,7 @@ public class FlowDataRuntime {
         FlowBlockNodePool.shutdownBlockNode(flowId);
         // 获取运行中的节点id，推送中断信息
         List<String> nodes = flowStatusService.getRunningNodes(flowId);
-        if (nodes != null) {
+        if (CollectionUtil.isNotEmpty(nodes)) {
             Document status =
                     new Document("status", Node.Status.FAILED.name())
                             .append("error", "node interrupted");
