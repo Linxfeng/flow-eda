@@ -6,7 +6,7 @@
              @showLogs="showLogs" @stopFlow="stopFlow" @zoomNode="zoomNode"/>
     <div id="flow-content" class="flow-content">
       <div class="nodes-wrap">
-        <el-collapse v-for="menu in data.activeNames" v-model="data.activeNames">
+        <el-collapse v-for="menu in Object.keys(data.nodeTypeList)" :model-value="menu">
           <el-collapse-item :title="menu" :name="menu">
             <div v-for="item in data.nodeTypeList[menu]" :key="item.type" :style="{background: item.background}"
                  class="node"
@@ -79,8 +79,7 @@ export default {
       nodeTypeList: {},
       nodeList: [],
       lineList: [],
-      selectedNode: null,
-      activeNames: []
+      selectedNode: null
     });
     // 对齐辅助线
     const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
@@ -93,8 +92,6 @@ export default {
       const res = await getNodeTypes({limit: 1000});
       if (res) {
         data.nodeTypeList = res.result;
-        // 默认全部展开
-        data.activeNames = Object.keys(data.nodeTypeList);
       }
     };
 
