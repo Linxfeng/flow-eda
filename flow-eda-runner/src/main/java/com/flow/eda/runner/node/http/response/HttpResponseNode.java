@@ -72,12 +72,7 @@ public class HttpResponseNode extends AbstractNode implements FlowBlockNodePool.
     @Override
     protected void verify(Document params) {
         try {
-            NodeVerify.notNull(params, "uri");
-            String uri = params.getString("uri");
-            NodeVerify.notBlank(uri, "uri");
-            NodeVerify.isTrue(uri.startsWith("/"), "uri");
-            this.uri = uri;
-
+            this.uri = NodeVerify.requiredUrl(params, "uri");
             this.method = HttpRequestNode.verifyMethod(params);
 
             String q = params.getString("query");
