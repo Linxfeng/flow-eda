@@ -1,5 +1,6 @@
 package com.flow.eda.runner.node.ws.server;
 
+import com.flow.eda.common.exception.FlowException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -21,9 +22,23 @@ public class WsHandshakeInterceptor extends HttpSessionHandshakeInterceptor {
      * @param node ws服务端节点
      */
     public static void addEndpoint(WsServerNode node) {
+        String path = node.getPath();
+        if (PATH_MAP.containsKey(path)) {
+            throw new FlowException("The path '" + path + "' same node already exists");
+        }
         PATH_MAP.put(node.getPath(), node);
     }
 
+    /**
+     * 移除一个ws Endpoint
+     *
+     * @param path ws服务端节点的路径
+     */
+    public static void removeEndpoint(String path) {
+        PATH_MAP.remove(path);
+    }
+
+    /** 拦截请求，请求路径不在PATH_MAP内的拒绝连接 */
     @Override
     public boolean beforeHandshake(
             ServerHttpRequest request,
@@ -32,13 +47,10 @@ public class WsHandshakeInterceptor extends HttpSessionHandshakeInterceptor {
             Map<String, Object> attributes)
             throws Exception {
         if (request instanceof ServletServerHttpRequest) {
-            ServletServerHttpRequest serverHttpRequest = (ServletServerHttpRequest) request;
-            String path = serverHttpRequest.getURI().getPath();
-            log.info("WebSocketInterceptor path: {}", path);
-            if (PATH_MAP.containsKey(path)) {
-                return true;
-            }
+            ServletServerHttpRequest httpRequest = (ServletServerHttpRequest) request;
+            String path = httpRequest.getURI().getPath();
+            return PATH_MAP.containsKey(path);
         }
-        return super.beforeHandshake(request, response, wsHandler, attributes);
+        return false;
     }
 }
