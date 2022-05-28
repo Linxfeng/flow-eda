@@ -9,6 +9,8 @@ import com.flow.eda.runner.node.output.OutputNode;
 import com.flow.eda.runner.node.parser.ParserNode;
 import com.flow.eda.runner.node.start.StartNode;
 import com.flow.eda.runner.node.timer.TimerNode;
+import com.flow.eda.runner.node.ws.client.WsClientNode;
+import com.flow.eda.runner.node.ws.server.WsServerNode;
 import lombok.Getter;
 
 /***
@@ -26,6 +28,8 @@ public enum NodeTypeEnum {
     /** 网络节点 */
     HTTP_REQUEST("http_request", HttpRequestNode.class),
     HTTP_RESPONSE("http_response", HttpResponseNode.class),
+    WS_SERVER("ws_server", WsServerNode.class),
+    WS_CLIENT("ws_client", WsClientNode.class),
     ;
     private final String type;
     private final Class<? extends Node> clazz;
