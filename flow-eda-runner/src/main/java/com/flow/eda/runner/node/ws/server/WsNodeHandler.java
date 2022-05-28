@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /** 自定义WebSocketHandler，用于处理ws_server节点 */
 @Slf4j
 public class WsNodeHandler extends AbstractWebSocketHandler {
+
     /** 管理path路径和session的对应关系 */
     private static final Map<String, List<WebSocketSession>> SESSION_MAP =
             new ConcurrentHashMap<>();
@@ -40,6 +41,22 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
     public static void sendMessage(String path, String message) {
         if (SESSION_MAP.containsKey(path)) {
             SESSION_MAP.get(path).forEach(s -> sendMessage(s, message));
+        }
+    }
+
+    /** 关闭指定path路径的所有连接 */
+    public static void onClose(String path) {
+        if (SESSION_MAP.containsKey(path)) {
+            SESSION_MAP
+                    .get(path)
+                    .forEach(
+                            s -> {
+                                try {
+                                    s.close();
+                                } catch (Exception ignored) {
+                                }
+                            });
+            SESSION_MAP.remove(path);
         }
     }
 
