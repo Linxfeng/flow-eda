@@ -47,15 +47,16 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
     /** 关闭指定path路径的所有连接 */
     public static void onClose(String path) {
         if (SESSION_MAP.containsKey(path)) {
-            SESSION_MAP
-                    .get(path)
-                    .forEach(
-                            s -> {
-                                try {
-                                    s.close();
-                                } catch (Exception ignored) {
-                                }
-                            });
+            List<WebSocketSession> list = SESSION_MAP.get(path);
+            if (CollectionUtil.isNotEmpty(list)) {
+                Iterator<WebSocketSession> iterator = list.iterator();
+                while (iterator.hasNext()) {
+                    try {
+                        iterator.next().close();
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
             SESSION_MAP.remove(path);
         }
     }
