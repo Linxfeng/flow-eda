@@ -33,6 +33,8 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
     public void run(NodeFunction callback) {
         setStatus(Status.RUNNING);
         this.callback = callback;
+
+        // 添加ws服务端点，若存在同一节点，则进行更新替换
         WsServerNodeManager.addEndpoint(this);
 
         // 上游节点输出参数发送
@@ -89,5 +91,15 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
         WsServerNodeManager.removeEndpoint(this);
         // 关闭ws连接
         WsNodeHandler.onClose(this.path);
+    }
+
+    @Override
+    public boolean eq(FlowBlockNodePool.BlockNode blockNode) {
+        // 根据path路径判断两个节点是否相同
+        if (blockNode instanceof WsServerNode) {
+            WsServerNode node = (WsServerNode) blockNode;
+            return this.path.equals(node.getPath());
+        }
+        return false;
     }
 }
