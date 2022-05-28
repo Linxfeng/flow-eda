@@ -49,8 +49,9 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
         if (SESSION_MAP.containsKey(path)) {
             List<WebSocketSession> list = SESSION_MAP.get(path);
             if (CollectionUtil.isNotEmpty(list)) {
+                // session.close()会使元素从list中移除
                 Iterator<WebSocketSession> iterator = list.iterator();
-                while (iterator.hasNext()) {
+                while (list.size() > 0 && iterator.hasNext()) {
                     try {
                         iterator.next().close();
                     } catch (Exception ignored) {
