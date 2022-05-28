@@ -41,6 +41,7 @@ dubbo:
   consumer:
     check: false
     timeout: 5000
+    retries: 0
 logging:
   level:
     com.alibaba.nacos.common.remote.client: warn
