@@ -4,7 +4,6 @@ import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.Node;
 import com.flow.eda.runner.node.NodeTypeEnum;
-import com.flow.eda.runner.node.http.response.HttpResponseNode;
 import com.flow.eda.runner.status.FlowNodeWebsocket;
 import com.flow.eda.runner.utils.FlowLogs;
 import org.bson.Document;
@@ -58,8 +57,8 @@ public class FlowExecutor {
                         runNext(currentNode, nodeInstance, p);
                     });
             // 处理阻塞节点
-            if (NodeTypeEnum.HTTP_RESPONSE.getType().equals(type)) {
-                FlowBlockNodePool.addBlockNode(flowId, (HttpResponseNode) nodeInstance);
+            if (nodeInstance instanceof FlowBlockNodePool.BlockNode) {
+                FlowBlockNodePool.addBlockNode(flowId, (FlowBlockNodePool.BlockNode) nodeInstance);
             }
         } catch (Exception e) {
             String message;
