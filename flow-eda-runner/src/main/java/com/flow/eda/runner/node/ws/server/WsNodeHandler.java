@@ -24,19 +24,71 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
         super();
     }
 
+    /** 获取ws请求路径 */
+    private String getPath(WebSocketSession session) {
+        return Objects.requireNonNull(session.getUri()).getPath();
+    }
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        String path = Objects.requireNonNull(session.getUri()).getPath();
+        String path = getPath(session);
         log.info("WsNodeHandler: Client connected, path: {}", path);
 
         // 建立连接后发送消息
         WsServerNode node = WsServerNodeManager.getNodeInstance(path);
-        String sendAfterConnected = node.getSendAfterConnected();
+        Map<String, Object> kv = this.parseQuery(session, node.getQuery());
+        sendMessageReplacePlaceholder(session, node.getSendAfterConnected(), kv);
+    }
 
-        if (StringUtils.hasText(sendAfterConnected)) {
-            Document message = new Document("k", sendAfterConnected);
-            // 获取ws请求参数，解析并填充占位符
+    @Override
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
+        if (message instanceof TextMessage) {
+            String payload = ((TextMessage) message).getPayload();
+            log.info("WsNodeHandler: Received client message:{}", payload);
+
+            // 收到消息后输出，向下游节点传递
+            WsServerNode node = WsServerNodeManager.getNodeInstance(getPath(session));
+            node.callback(payload);
+
+            // 收到消息后发送消息
             Map<String, Object> kv = this.parseQuery(session, node.getQuery());
+            sendMessageReplacePlaceholder(session, node.getSendAfterReceived(), kv);
+        } else {
+            throw new IllegalStateException("Unexpected WebSocket message type: " + message);
+        }
+    }
+
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception)
+            throws Exception {
+        log.error("websocket session {} onError:{}", session.getId(), exception.getMessage());
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status)
+            throws Exception {
+        log.info(
+                "Client disconnected, session id:{}, CloseStatus:{}",
+                session.getId(),
+                status.getCode());
+    }
+
+    /** 向指定客户端session发送消息 */
+    public void sendMessage(WebSocketSession session, String message) {
+        if (session != null) {
+            try {
+                session.sendMessage(new TextMessage(message));
+            } catch (Exception e) {
+                log.error("WsNodeHandler: Send websocket message failed:{}", e.getMessage());
+            }
+        }
+    }
+
+    /** 发送指定消息，解析并替换占位符 */
+    private void sendMessageReplacePlaceholder(
+            WebSocketSession session, String payload, Map<String, Object> kv) {
+        if (StringUtils.hasText(payload)) {
+            Document message = new Document("k", payload);
             if (!kv.isEmpty()) {
                 message = PlaceholderUtil.replacePlaceholder(message, new Document(kv));
             }
@@ -62,36 +114,5 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
             }
         }
         return kv;
-    }
-
-    @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message)
-            throws Exception {
-        super.handleMessage(session, message);
-    }
-
-    @Override
-    public void handleTransportError(WebSocketSession session, Throwable exception)
-            throws Exception {
-        log.error("websocket session {} onError:{}", session.getId(), exception.getMessage());
-    }
-
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status)
-            throws Exception {
-        log.info(
-                "Client disconnected, session id:{}, CloseStatus:{}",
-                session.getId(),
-                status.getCode());
-    }
-
-    public void sendMessage(WebSocketSession session, String message) {
-        if (session != null) {
-            try {
-                session.sendMessage(new TextMessage(message));
-            } catch (Exception e) {
-                log.error("WsNodeHandler: Send websocket message failed:{}", e.getMessage());
-            }
-        }
     }
 }
