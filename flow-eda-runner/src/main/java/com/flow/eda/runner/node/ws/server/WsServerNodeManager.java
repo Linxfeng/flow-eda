@@ -1,6 +1,7 @@
 package com.flow.eda.runner.node.ws.server;
 
 import com.flow.eda.common.exception.FlowException;
+import org.springframework.lang.NonNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +49,12 @@ public class WsServerNodeManager {
     }
 
     /** 根据path获取节点实例 */
+    @NonNull
     public static WsServerNode getNodeInstance(String path) {
-        return PATH_NODE.get(path);
+        WsServerNode node = PATH_NODE.get(path);
+        if (node == null) {
+            throw new FlowException("The path '" + path + "' ws_server node not found");
+        }
+        return node;
     }
 }
