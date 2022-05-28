@@ -4,6 +4,7 @@ import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
+import com.flow.eda.runner.runtime.FlowBlockNodePool;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
@@ -12,9 +13,10 @@ import org.springframework.util.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 
+/** WebSocket服务端节点 */
 @Slf4j
 @Getter
-public class WsServerNode extends AbstractNode {
+public class WsServerNode extends AbstractNode implements FlowBlockNodePool.BlockNode {
     private String path;
     private List<String> query;
     private String sendAfterConnect;
@@ -41,6 +43,7 @@ public class WsServerNode extends AbstractNode {
         output.putAll(output());
         output.remove("input");
         output.remove("payload");
+        // 根据path路径广播发送
         WsNodeHandler.sendMessage(path, output.toJson());
     }
 
@@ -75,7 +78,16 @@ public class WsServerNode extends AbstractNode {
         this.output.remove("fanout");
     }
 
+    /** 回调，收到消息后向下游节点输出 */
     public void callback(String message) {
         this.callback.callback(output().append("message", message));
+    }
+
+    @Override
+    public void destroy() {
+        // 移除ws端点
+        WsServerNodeManager.removeEndpoint(this);
+        // 关闭ws连接
+        WsNodeHandler.onClose(this.path);
     }
 }
