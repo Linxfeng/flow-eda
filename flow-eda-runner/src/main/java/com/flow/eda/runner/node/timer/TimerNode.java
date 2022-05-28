@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 /** 定时器节点：作为起始节点时，将会定时触发执行 */
 @Getter
 public class TimerNode extends AbstractNode {
-    private String flowId;
     private Long period;
     private TimeUnit unit;
     private Integer times;
@@ -29,10 +28,6 @@ public class TimerNode extends AbstractNode {
 
     public TimerNode(Document params) {
         super(params);
-        String name = Thread.currentThread().getName();
-        if (name.startsWith("flowId:")) {
-            this.flowId = name.split(":")[1];
-        }
     }
 
     @Override

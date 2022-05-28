@@ -7,10 +7,14 @@ import java.util.Optional;
 
 /** 节点抽象类 */
 public abstract class AbstractNode implements Node {
+    /** 输入参数，由上个节点传递至此 */
+    private final Document input;
+
+    private final String flowId;
+    private final String nodeId;
+
     /** 节点自定义参数，可传递至下个节点 */
     private Document payload;
-    /** 输入参数，由上个节点传递至此 */
-    private Document input;
     /** 节点当前的运行状态 */
     private Status status = Status.RUNNING;
 
@@ -20,10 +24,13 @@ public abstract class AbstractNode implements Node {
      * @param params 节点的输入参数，由上一个节点传递至此
      */
     public AbstractNode(Document params) {
-        if (params != null) {
-            this.payload = params.get("payload", Document.class);
-            this.input = params.get("input", Document.class);
-        }
+        NodeVerify.notNull(params, "params");
+        this.flowId = params.getString("flowId");
+        this.nodeId = params.getString("nodeId");
+        this.payload = params.get("payload", Document.class);
+        this.input = params.get("input", Document.class);
+        params.remove("flowId");
+        params.remove("nodeId");
         // 解析${}占位符
         params = this.parsePlaceholder(params);
         // 校验节点参数
@@ -64,5 +71,13 @@ public abstract class AbstractNode implements Node {
     public Document output() {
         Optional<Document> optional = Optional.ofNullable(this.payload);
         return optional.map(p -> new Document("input", p)).orElseGet(Document::new);
+    }
+
+    public String getFlowId() {
+        return flowId;
+    }
+
+    public String getNodeId() {
+        return nodeId;
     }
 }
