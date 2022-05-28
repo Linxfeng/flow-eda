@@ -6,7 +6,6 @@ import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
 import com.flow.eda.runner.runtime.FlowBlockNodePool;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.util.StringUtils;
 
@@ -14,7 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 
 /** WebSocket服务端节点 */
-@Slf4j
 @Getter
 public class WsServerNode extends AbstractNode implements FlowBlockNodePool.BlockNode {
     private String path;
