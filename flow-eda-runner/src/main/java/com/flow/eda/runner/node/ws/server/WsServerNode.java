@@ -36,15 +36,17 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
         WsServerNodeManager.addEndpoint(this);
 
         // 上游节点输出参数发送
-        Document input = getInput();
-        if (!input.isEmpty()) {
-            output.append("params", input);
+        if (this.fanout) {
+            Document input = getInput();
+            if (!input.isEmpty()) {
+                output.append("params", input);
+            }
+            output.putAll(output());
+            output.remove("input");
+            output.remove("payload");
+            // 根据path路径广播发送
+            WsServerNodeHandler.sendMessage(path, output.toJson());
         }
-        output.putAll(output());
-        output.remove("input");
-        output.remove("payload");
-        // 根据path路径广播发送
-        WsNodeHandler.sendMessage(path, output.toJson());
     }
 
     @Override
@@ -54,28 +56,30 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
         if (path.contains("{") || path.contains("}")) {
             throw new FlowException("The parameter 'path' can not contains symbols '{' or '}'");
         }
-        // set output
-        this.output = new Document();
-        this.output.putAll(params);
-        this.output.remove("path");
 
         String q = params.getString("query");
         if (StringUtils.hasLength(q)) {
             this.query = Arrays.asList(q.split(","));
         }
-        this.output.remove("query");
 
         this.sendAfterConnect = params.getString("sendAfterConnect");
-        this.output.remove("sendAfterConnect");
-
         this.sendAfterReceive = params.getString("sendAfterReceive");
-        this.output.remove("sendAfterReceive");
 
         String isSend = params.getString("fanout");
         if ("Send".equals(isSend)) {
             this.fanout = true;
         }
-        this.output.remove("fanout");
+
+        // set output
+        if (this.fanout) {
+            this.output = new Document();
+            this.output.putAll(params);
+            this.output.remove("path");
+            this.output.remove("query");
+            this.output.remove("sendAfterConnect");
+            this.output.remove("sendAfterReceive");
+            this.output.remove("fanout");
+        }
     }
 
     /** 回调，收到消息后向下游节点输出 */
@@ -88,7 +92,7 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
         // 移除ws端点
         WsServerNodeManager.removeEndpoint(this);
         // 关闭ws连接
-        WsNodeHandler.onClose(this.path);
+        WsServerNodeHandler.onClose(this.path);
     }
 
     @Override
