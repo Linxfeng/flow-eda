@@ -8,8 +8,6 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
-import java.util.Objects;
-
 /** 自定义WebSocketHandler，用于处理ws_client节点 */
 @Slf4j
 public class WsClientNodeHandler extends AbstractWebSocketHandler {
@@ -23,8 +21,7 @@ public class WsClientNodeHandler extends AbstractWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        String path = getPath(session);
-        log.info("WsClientNodeHandler: websocket connected, path: {}", path);
+        log.info("WsClientNodeHandler: websocket connected, path: {}", node.getPath());
 
         // 建立连接后发送消息
         String sendAfterConnect = node.getSendAfterConnect();
@@ -50,21 +47,13 @@ public class WsClientNodeHandler extends AbstractWebSocketHandler {
     public void handleTransportError(WebSocketSession session, Throwable exception) {
         log.error(
                 "WsClientNodeHandler: Websocket path: {} onError: {}",
-                getPath(session),
+                node.getPath(),
                 exception.getMessage());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        log.info(
-                "WsClientNodeHandler: Websocket disconnected, path: {}, Reason: {}",
-                getPath(session),
-                status.getReason());
-    }
-
-    /** 获取ws请求路径 */
-    private String getPath(WebSocketSession session) {
-        return Objects.requireNonNull(session.getUri()).getPath();
+        log.info("WsClientNodeHandler: Websocket disconnected, path: {}", node.getPath());
     }
 
     /** 发送消息 */
