@@ -1,7 +1,7 @@
 package com.flow.eda.runner.node.ws;
 
 import com.flow.eda.runner.node.ws.server.WsHandshakeInterceptor;
-import com.flow.eda.runner.node.ws.server.WsNodeHandler;
+import com.flow.eda.runner.node.ws.server.WsServerNodeHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -22,7 +22,7 @@ public class WebsocketConfig implements WebSocketConfigurer {
     /** 注册ws处理器和拦截器，默认path全匹配，由自定义拦截器过滤非法请求 */
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new WsNodeHandler(), "/*")
+        registry.addHandler(new WsServerNodeHandler(), "/*")
                 .addInterceptors(new WsHandshakeInterceptor())
                 .setAllowedOrigins("*");
     }

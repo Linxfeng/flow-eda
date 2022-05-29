@@ -16,13 +16,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** 自定义WebSocketHandler，用于处理ws_server节点 */
 @Slf4j
-public class WsNodeHandler extends AbstractWebSocketHandler {
+public class WsServerNodeHandler extends AbstractWebSocketHandler {
 
     /** 管理path路径和session的对应关系 */
     private static final Map<String, List<WebSocketSession>> SESSION_MAP =
             new ConcurrentHashMap<>();
 
-    public WsNodeHandler() {
+    public WsServerNodeHandler() {
         super();
     }
 
@@ -32,7 +32,7 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
             try {
                 session.sendMessage(new TextMessage(message));
             } catch (Exception e) {
-                log.error("WsNodeHandler: Send websocket message failed:{}", e.getMessage());
+                log.error("WsServerNodeHandler: Send websocket message failed:{}", e.getMessage());
             }
         }
     }
@@ -71,7 +71,7 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) {
         String path = getPath(session);
         this.addSession(session);
-        log.info("WsNodeHandler: Client connected, path: {}", path);
+        log.info("WsServerNodeHandler: Client connected, path: {}", path);
 
         // 建立连接后发送消息
         WsServerNode node = WsServerNodeManager.getNodeInstance(path);
@@ -83,7 +83,7 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
         if (message instanceof TextMessage) {
             String payload = ((TextMessage) message).getPayload();
-            log.info("WsNodeHandler: Received client message:{}", payload);
+            log.info("WsServerNodeHandler: Received client message:{}", payload);
 
             // 收到消息后输出，向下游节点传递
             WsServerNode node = WsServerNodeManager.getNodeInstance(getPath(session));
@@ -100,7 +100,7 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
         log.error(
-                "WsNodeHandler: Websocket path: {} onError: {}",
+                "WsServerNodeHandler: Websocket path: {} onError: {}",
                 getPath(session),
                 exception.getMessage());
     }
@@ -109,7 +109,7 @@ public class WsNodeHandler extends AbstractWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         this.removeSession(session);
         log.info(
-                "WsNodeHandler: Client disconnected, path: {}, Reason: {}",
+                "WsServerNodeHandler: Client disconnected, path: {}, Reason: {}",
                 getPath(session),
                 status.getReason());
     }
