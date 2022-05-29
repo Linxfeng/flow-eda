@@ -4,13 +4,14 @@ import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
+import com.flow.eda.runner.runtime.FlowBlockNodePool;
 import lombok.Getter;
 import org.bson.Document;
 import org.springframework.util.StringUtils;
 
 /** WebSocket客户端节点 */
 @Getter
-public class WsClientNode extends AbstractNode {
+public class WsClientNode extends AbstractNode implements FlowBlockNodePool.BlockNode {
     private String path;
     private String query;
     private String sendAfterConnect;
@@ -55,9 +56,16 @@ public class WsClientNode extends AbstractNode {
     }
 
     public String getUri() {
+        String uri = "ws://localhost:8088" + path;
         if (query != null) {
-            return path + "?" + query;
+            return uri + "?" + query;
         }
-        return path;
+        return uri;
+    }
+
+    @Override
+    public void destroy() {
+        // 关闭ws连接
+        WsClientNodeManager.closeWebSocketClient(this);
     }
 }
