@@ -107,11 +107,8 @@ public class WsServerNodeHandler extends AbstractWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+        log.info("WsServerNodeHandler: Client disconnected, path: {}", getPath(session));
         this.removeSession(session);
-        log.info(
-                "WsServerNodeHandler: Client disconnected, path: {}, Reason: {}",
-                getPath(session),
-                status.getReason());
     }
 
     /** 发送指定消息，解析并替换占位符 */
