@@ -55,6 +55,7 @@ public class WsClientNodeHandler extends AbstractWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         log.info("WsClientNodeHandler: Websocket disconnected, path: {}", node.getPath());
+        node.setConnected(false);
     }
 
     /** 发送消息 */
