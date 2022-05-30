@@ -7,13 +7,11 @@ import com.flow.eda.runner.node.NodeVerify;
 import com.flow.eda.runner.runtime.FlowBlockNodePool;
 import lombok.Getter;
 import org.bson.Document;
-import org.springframework.util.StringUtils;
 
 /** WebSocket客户端节点 */
 @Getter
 public class WsClientNode extends AbstractNode implements FlowBlockNodePool.BlockNode {
     private String path;
-    private String query;
     private String sendAfterConnect;
     private NodeFunction callback;
 
@@ -36,15 +34,14 @@ public class WsClientNode extends AbstractNode implements FlowBlockNodePool.Bloc
 
     @Override
     protected void verify(Document params) {
-        String uri = NodeVerify.requiredUrl(params, "path");
-        if (uri.contains("?")) {
-            this.path = uri.split("\\?")[0];
-            String q = uri.split("\\?")[1];
-            if (StringUtils.hasText(q) && q.contains("=")) {
-                this.query = q;
-            }
-        } else {
+        String uri = params.getString("path");
+        NodeVerify.notBlank(uri, "path");
+
+        // 兼容自定义ws路径
+        if (uri.startsWith("ws")) {
             this.path = uri;
+        } else {
+            this.path = NodeVerify.requiredUrl(params, "path");
         }
 
         this.sendAfterConnect = params.getString("sendAfterConnect");
@@ -56,11 +53,10 @@ public class WsClientNode extends AbstractNode implements FlowBlockNodePool.Bloc
     }
 
     public String getUri() {
-        String uri = "ws://localhost:8088" + path;
-        if (query != null) {
-            return uri + "?" + query;
+        if (path.startsWith("/")) {
+            return "ws://localhost:8088" + path;
         }
-        return uri;
+        return path;
     }
 
     @Override
