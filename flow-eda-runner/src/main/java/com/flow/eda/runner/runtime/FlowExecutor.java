@@ -50,16 +50,17 @@ public class FlowExecutor {
             Node nodeInstance = getInstance(currentNode);
             sendNodeStatus(
                     currentNode.getId(), new Document("status", nodeInstance.status().name()));
+            // 处理阻塞节点
+            if (nodeInstance instanceof FlowBlockNodePool.BlockNode) {
+                FlowBlockNodePool.addBlockNode(flowId, (FlowBlockNodePool.BlockNode) nodeInstance);
+            }
+            // 运行节点
             info(flowId, "start running [{}] node. input:{}", type, input);
             nodeInstance.run(
                     (p) -> {
                         info(flowId, "run [{}] node finished. output:{}", type, p.toJson());
                         runNext(currentNode, nodeInstance, p);
                     });
-            // 处理阻塞节点
-            if (nodeInstance instanceof FlowBlockNodePool.BlockNode) {
-                FlowBlockNodePool.addBlockNode(flowId, (FlowBlockNodePool.BlockNode) nodeInstance);
-            }
         } catch (Exception e) {
             String message;
             if (e.getMessage() != null) {
