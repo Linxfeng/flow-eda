@@ -8,13 +8,15 @@ import com.flow.eda.runner.runtime.FlowBlockNodePool;
 import lombok.Getter;
 import org.bson.Document;
 
+import java.util.concurrent.TimeUnit;
+
 /** WebSocket客户端节点 */
 @Getter
 public class WsClientNode extends AbstractNode implements FlowBlockNodePool.BlockNode {
     private String path;
     private String sendAfterConnect;
     private NodeFunction callback;
-    private boolean connected = false;
+    private volatile boolean connected = false;
 
     public WsClientNode(Document params) {
         super(params);
@@ -32,15 +34,8 @@ public class WsClientNode extends AbstractNode implements FlowBlockNodePool.Bloc
         // 创建ws客户端连接
         WsClientNodeManager.createWebSocketClient(this);
 
-        // 等待连接，2秒后判断连接状态，若依然未连接，则抛出异常
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ignored) {
-        }
-        if (!this.connected) {
-            WsClientNodeManager.closeWebSocketClient(this);
-            throw new FlowException("WebSocket connection to '" + path + "' failed");
-        }
+        // 阻塞当前线程，监听ws的连接状态
+        this.monitorConnection();
     }
 
     @Override
@@ -56,6 +51,20 @@ public class WsClientNode extends AbstractNode implements FlowBlockNodePool.Bloc
         }
 
         this.sendAfterConnect = params.getString("sendAfterConnect");
+    }
+
+    /** 监听ws的连接状态，每2秒判断一次，若断开连接，则抛出异常 */
+    private void monitorConnection() {
+        do {
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException ignored) {
+            }
+        } while (connected);
+        // 断开连接时，抛出异常
+        if (!connected) {
+            throw new FlowException("Websocket connection to '" + path + "' disconnected");
+        }
     }
 
     /** 回调，收到消息后向下游节点输出 */
