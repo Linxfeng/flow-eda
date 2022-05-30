@@ -19,7 +19,7 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
     private List<String> query;
     private String sendAfterConnect;
     private String sendAfterReceive;
-    private boolean fanout = false;
+    private Boolean fanout;
     private NodeFunction callback;
     private Document output;
 
@@ -66,9 +66,7 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
         this.sendAfterReceive = params.getString("sendAfterReceive");
 
         String isSend = params.getString("fanout");
-        if ("Send".equals(isSend)) {
-            this.fanout = true;
-        }
+        this.fanout = "Send".equals(isSend);
 
         // set output
         if (this.fanout) {
