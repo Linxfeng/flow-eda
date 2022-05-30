@@ -49,11 +49,10 @@ public class WsServerNodeHandler extends AbstractWebSocketHandler {
         if (SESSION_MAP.containsKey(path)) {
             List<WebSocketSession> list = SESSION_MAP.get(path);
             if (CollectionUtil.isNotEmpty(list)) {
-                // session.close()会使元素从list中移除
-                Iterator<WebSocketSession> iterator = list.iterator();
-                while (list.size() > 0 && iterator.hasNext()) {
+                // session.close()会调用afterConnectionClosed移除session元素
+                while (list.size() > 0) {
                     try {
-                        iterator.next().close();
+                        list.get(0).close();
                     } catch (Exception ignored) {
                     }
                 }
@@ -145,19 +144,23 @@ public class WsServerNodeHandler extends AbstractWebSocketHandler {
 
     private void addSession(WebSocketSession session) {
         String path = getPath(session);
-        if (SESSION_MAP.containsKey(path)) {
-            SESSION_MAP.get(path).add(session);
-        } else {
-            List<WebSocketSession> list = new ArrayList<>();
-            list.add(session);
-            SESSION_MAP.put(path, list);
+        synchronized (SESSION_MAP) {
+            if (SESSION_MAP.containsKey(path)) {
+                SESSION_MAP.get(path).add(session);
+            } else {
+                List<WebSocketSession> list = new ArrayList<>();
+                list.add(session);
+                SESSION_MAP.put(path, list);
+            }
         }
     }
 
     private void removeSession(WebSocketSession session) {
         String path = getPath(session);
-        if (SESSION_MAP.containsKey(path)) {
-            SESSION_MAP.get(path).remove(session);
+        synchronized (SESSION_MAP) {
+            if (SESSION_MAP.containsKey(path)) {
+                SESSION_MAP.get(path).remove(session);
+            }
         }
     }
 }
