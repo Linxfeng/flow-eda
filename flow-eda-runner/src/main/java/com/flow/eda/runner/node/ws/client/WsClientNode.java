@@ -14,6 +14,7 @@ public class WsClientNode extends AbstractNode implements FlowBlockNodePool.Bloc
     private String path;
     private String sendAfterConnect;
     private NodeFunction callback;
+    private boolean connected = false;
 
     public WsClientNode(Document params) {
         super(params);
@@ -30,6 +31,16 @@ public class WsClientNode extends AbstractNode implements FlowBlockNodePool.Bloc
 
         // 创建ws客户端连接
         WsClientNodeManager.createWebSocketClient(this);
+
+        // 等待连接，2秒后判断连接状态，若依然未连接，则抛出异常
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
+        if (!this.connected) {
+            WsClientNodeManager.closeWebSocketClient(this);
+            throw new FlowException("WebSocket connection to '" + path + "' failed");
+        }
     }
 
     @Override
@@ -57,6 +68,10 @@ public class WsClientNode extends AbstractNode implements FlowBlockNodePool.Bloc
             return "ws://localhost:8088" + path;
         }
         return path;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
     }
 
     @Override

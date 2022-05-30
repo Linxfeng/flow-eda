@@ -22,6 +22,7 @@ public class WsClientNodeHandler extends AbstractWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         log.info("WsClientNodeHandler: websocket connected, path: {}", node.getPath());
+        node.setConnected(true);
 
         // 建立连接后发送消息
         String sendAfterConnect = node.getSendAfterConnect();
