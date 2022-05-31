@@ -5,7 +5,8 @@ import { getFlowData, getNodeTypes, runFlow, setFlowData, stopFlow } from '@/ser
 import { defaultSetting, connectOptions, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
 import { generateUniqueID } from '@/utils/util';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, message, Modal } from 'antd';
+import { Card, Collapse, message, Modal } from 'antd';
+const { Panel } = Collapse;
 import './index.less';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useFormatMessage } from '@/hooks';
@@ -42,7 +43,7 @@ const FlowEditor: React.FC = () => {
     left: string;
     top: string;
   }>({ show: false, data: undefined, left: '0px', top: '0px' });
-  const [nodeTypes, setNodeTypes] = useState<API.NodeType[]>([]);
+  const [nodeTypes, setNodeTypes] = useState<object>({});
   const [flowStatus, setFlowStatus] = useState<string>('');
   const [selectedNode, setSelectedNode] = useState<API.Node>();
   const [clipboard, setClipboard] = useState<API.Node>();
@@ -274,8 +275,8 @@ const FlowEditor: React.FC = () => {
     setShowDesc({
       show: true,
       data: type.description,
-      left: e.pageX - 246 + 'px',
-      top: e.pageY - 114 + 'px',
+      left: e.pageX - 168 + 'px',
+      top: e.pageY - 168 + 'px',
     });
   };
   const hideDes = () => {
@@ -460,29 +461,44 @@ const FlowEditor: React.FC = () => {
         />
         <div id="flow-content" className="flow-content">
           <div className="nodes-wrap">
-            {nodeTypes.map((t) => {
-              return (
-                <div
-                  key={t.type}
-                  style={{ background: t.background }}
-                  className="node"
-                  draggable="true"
-                  onDragStart={() => drag(t)}
-                  onMouseMove={(e) => moveDes(e, t)}
-                  onMouseOut={hideDes}
-                >
-                  <div className="svg">
-                    <img src={t.svg} alt="" style={{ padding: '4px' }} />
-                  </div>
-                  <div className="name">{t.typeName}</div>
-                  {showDesc.show && (
-                    <div style={{ left: showDesc.left, top: showDesc.top }} className="description">
-                      {showDesc.data}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            <Collapse
+              expandIconPosition="right"
+              bordered={false}
+              activeKey={Object.keys(nodeTypes)}
+            >
+              {Object.keys(nodeTypes).map((k) => {
+                return (
+                  <Panel header={k} key={k}>
+                    {nodeTypes[k].map((t: any) => {
+                      return (
+                        <div
+                          key={t.type}
+                          style={{ background: t.background }}
+                          className="node"
+                          draggable="true"
+                          onDragStart={() => drag(t)}
+                          onMouseMove={(e) => moveDes(e, t)}
+                          onMouseOut={hideDes}
+                        >
+                          <div className="svg">
+                            <img src={t.svg} alt="" style={{ padding: '4px' }} />
+                          </div>
+                          <div className="name">{t.typeName}</div>
+                          {showDesc.show && (
+                            <div
+                              style={{ left: showDesc.left, top: showDesc.top }}
+                              className="description"
+                            >
+                              {showDesc.data}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </Panel>
+                );
+              })}
+            </Collapse>
           </div>
 
           <div
