@@ -65,7 +65,6 @@ export async function deleteLogs(body: Key[]) {
 export async function getNodeTypes() {
   const { result } = await request('/api/v1/node/type', {
     method: 'GET',
-    params: { limit: 1000 },
   });
   return result;
 }
