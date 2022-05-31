@@ -1,4 +1,4 @@
-package com.flow.eda.runner.node.http;
+package com.flow.eda.runner.node.http.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flow.eda.common.exception.FlowException;
@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class HttpNode extends AbstractNode {
+public class HttpRequestNode extends AbstractNode {
     private String url;
     private String method;
     private String body;
     private List<String[]> headers;
 
-    public HttpNode(Document params) {
+    public HttpRequestNode(Document params) {
         super(params);
     }
 
@@ -45,15 +45,15 @@ public class HttpNode extends AbstractNode {
     protected void verify(Document params) {
         try {
             NodeVerify.notNull(params, "url");
-            this.url = params.getString("url");
+            String url = params.getString("url");
             NodeVerify.notBlank(url, "url");
-
-            this.method = params.getString("method");
-            NodeVerify.notBlank(method, "method");
-            List<String> list =
-                    Arrays.asList(
-                            "GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH");
-            NodeVerify.isTrue(list.contains(method), "method");
+            if (url.startsWith("/")) {
+                url = "http://localhost:8088" + url;
+            } else {
+                NodeVerify.isTrue(url.startsWith("http"), "url");
+            }
+            this.url = url;
+            this.method = verifyMethod(params);
 
             String param = params.getString("params");
             if (StringUtils.hasLength(param)) {
@@ -111,5 +111,14 @@ public class HttpNode extends AbstractNode {
                             + response.getStatusLine().getStatusCode());
         }
         throw new InternalException("The http request has no response.");
+    }
+
+    public static String verifyMethod(Document params) {
+        String method = params.getString("method");
+        NodeVerify.notBlank(method, "method");
+        List<String> list =
+                Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH");
+        NodeVerify.isTrue(list.contains(method), "method");
+        return method;
     }
 }

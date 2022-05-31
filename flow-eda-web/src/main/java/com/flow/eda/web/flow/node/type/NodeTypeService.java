@@ -1,13 +1,14 @@
 package com.flow.eda.web.flow.node.type;
 
-import com.flow.eda.web.flow.node.data.NodeRequest;
 import com.flow.eda.web.flow.node.type.param.NodeTypeParam;
 import com.flow.eda.web.flow.node.type.param.NodeTypeParamMapper;
-import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.flow.eda.common.utils.CollectionUtil.*;
 
@@ -15,11 +16,16 @@ import static com.flow.eda.common.utils.CollectionUtil.*;
 public class NodeTypeService {
     @Autowired private NodeTypeMapper nodeTypeMapper;
     @Autowired private NodeTypeParamMapper nodeTypeParamMapper;
+    /** 定义节点类型的menu，并规定展示顺序 */
+    private static final List<String> TYPE_MENU = Arrays.asList("基础", "解析", "网络");
 
-    public List<NodeType> listByPage(NodeRequest request) {
-        PageHelper.startPage(request.getPage(), request.getLimit());
-        List<NodeType> list = nodeTypeMapper.findByName(request.getName());
-        return mergeNodeTypeParam(list);
+    public Map<String, List<NodeType>> getNodeTypes(String name) {
+        Map<String, List<NodeType>> map = new LinkedHashMap<>();
+        List<NodeType> list = nodeTypeMapper.findByName(name);
+        mergeNodeTypeParam(list);
+        // 分组，排序
+        TYPE_MENU.forEach(m -> map.put(m, filter(list, t -> m.equals(t.getMenu()))));
+        return map;
     }
 
     public List<NodeType> findByIds(List<Long> ids) {

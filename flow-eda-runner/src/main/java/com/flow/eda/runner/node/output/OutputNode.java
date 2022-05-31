@@ -16,10 +16,13 @@ public class OutputNode extends AbstractNode {
 
     @Override
     public void run(NodeFunction callback) {
-        Document payload = output.append("params", getInput());
-        payload.putAll(output());
+        Document input = getInput();
+        if (!input.isEmpty()) {
+            output.append("params", input);
+        }
+        output.putAll(output());
         setStatus(Status.FINISHED);
-        callback.callback(payload);
+        callback.callback(output);
     }
 
     @Override

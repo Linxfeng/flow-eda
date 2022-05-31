@@ -1,6 +1,7 @@
 package com.flow.eda.runner.status;
 
 import com.flow.eda.common.model.FlowData;
+import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.runner.node.Node;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class FlowStatusService {
     /** 获取运行中的节点id */
     public List<String> getRunningNodes(String flowId) {
         Set<String> nodes = this.runMap.get(flowId);
-        if (!nodes.isEmpty()) {
+        if (CollectionUtil.isNotEmpty(nodes)) {
             return new ArrayList<>(nodes);
         }
         return null;

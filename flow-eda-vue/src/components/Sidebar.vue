@@ -67,6 +67,6 @@ export default {
 }
 
 .sidebar-el-menu:not(.el-menu--collapse) {
-  width: 185px;
+  width: 160px;
 }
 </style>

@@ -39,16 +39,22 @@ public class FlowExecutor {
 
     /** 执行当前节点 */
     private void run(FlowData currentNode) {
-        Thread.currentThread().setName("flowId:" + flowId);
         String type = currentNode.getType();
-        String input = "{}";
-        if (currentNode.getParams() != null) {
-            input = currentNode.getParams().toJson();
+        // 处理节点参数，设置flowId和nodeId
+        if (currentNode.getParams() == null) {
+            currentNode.setParams(new Document());
         }
+        String input = currentNode.getParams().toJson();
+        currentNode.getParams().append("flowId", flowId).append("nodeId", currentNode.getId());
         try {
             Node nodeInstance = getInstance(currentNode);
             sendNodeStatus(
                     currentNode.getId(), new Document("status", nodeInstance.status().name()));
+            // 处理阻塞节点
+            if (nodeInstance instanceof FlowBlockNodePool.BlockNode) {
+                FlowBlockNodePool.addBlockNode(flowId, (FlowBlockNodePool.BlockNode) nodeInstance);
+            }
+            // 运行节点
             info(flowId, "start running [{}] node. input:{}", type, input);
             nodeInstance.run(
                     (p) -> {

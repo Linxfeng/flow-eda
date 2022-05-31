@@ -1,5 +1,6 @@
 package com.flow.eda.runner.status;
 
+import com.flow.eda.common.exception.ResourceNotFoundException;
 import com.flow.eda.runner.node.Node;
 import com.flow.eda.runner.utils.FlowLogs;
 import lombok.EqualsAndHashCode;
@@ -32,14 +33,20 @@ public class FlowNodeWebsocket {
 
     @OnOpen
     public void onOpen(Session session, @PathParam("id") String id) {
+        Document message = new Document();
+        try {
+            // 获取当前流程状态，校验id参数
+            String flowStatus =
+                    applicationContext.getBean(FlowStatusService.class).getFlowStatus(id, message);
+            message.append("flowStatus", flowStatus);
+        } catch (ResourceNotFoundException e) {
+            log.error("The client flow id {} is invalid", id);
+            throw new RuntimeException(e);
+        }
         SESSION_POOL.put(id, session);
         log.info("New client connected, flow id:{}", id);
-        // 立即推送一次当前流程状态
-        Document message = new Document();
-        String flowStatus =
-                applicationContext.getBean(FlowStatusService.class).getFlowStatus(id, message);
-        message.append("flowStatus", flowStatus);
         try {
+            // 立即推送一次当前流程状态
             session.getBasicRemote().sendText(message.toJson());
         } catch (Exception e) {
             log.error("Send websocket message failed:{}", e.getMessage());
@@ -65,9 +72,14 @@ public class FlowNodeWebsocket {
     /** 推送节点状态和输出信息 */
     public void sendMessage(String flowId, Document message) {
         // 获取流程实时状态信息一起推送
-        String flowStatus =
-                applicationContext.getBean(FlowStatusService.class).getFlowStatus(flowId, message);
-        message.append("flowStatus", flowStatus);
+        String flowStatus = message.getString("flowStatus");
+        if (flowStatus == null) {
+            flowStatus =
+                    applicationContext
+                            .getBean(FlowStatusService.class)
+                            .getFlowStatus(flowId, message);
+            message.append("flowStatus", flowStatus);
+        }
         if (SESSION_POOL.get(flowId) != null) {
             try {
                 synchronized (SESSION_POOL.get(flowId)) {

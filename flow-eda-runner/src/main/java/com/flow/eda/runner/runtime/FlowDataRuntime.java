@@ -1,6 +1,7 @@
 package com.flow.eda.runner.runtime;
 
 import com.flow.eda.common.model.FlowData;
+import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.runner.node.Node;
 import com.flow.eda.runner.node.NodeTypeEnum;
 import com.flow.eda.runner.status.FlowNodeWebsocket;
@@ -46,12 +47,18 @@ public class FlowDataRuntime {
         FlowLogs.info(flowId, "stop flow {}", flowId);
         FlowThreadPool.shutdownThreadPool(flowId);
         FlowThreadPool.shutdownSchedulerPool(flowId);
+        FlowBlockNodePool.shutdownBlockNode(flowId);
         // 获取运行中的节点id，推送中断信息
         List<String> nodes = flowStatusService.getRunningNodes(flowId);
-        Document status =
-                new Document("status", Node.Status.FAILED.name())
-                        .append("error", "node interrupted");
-        forEach(nodes, nodeId -> ws.sendMessage(flowId, status.append("nodeId", nodeId)));
+        if (CollectionUtil.isNotEmpty(nodes)) {
+            Document status =
+                    new Document("status", Node.Status.FAILED.name())
+                            .append("error", "node interrupted");
+            forEach(nodes, nodeId -> ws.sendMessage(flowId, status.append("nodeId", nodeId)));
+        } else {
+            // 无中断信息时，推送流程完成状态
+            ws.sendMessage(flowId, new Document("flowStatus", Node.Status.FINISHED.name()));
+        }
     }
 
     /** 清理流程运行的缓存数据 */
@@ -59,6 +66,7 @@ public class FlowDataRuntime {
         FlowLogs.info(flowId, "clean flow {} cached data", flowId);
         FlowThreadPool.shutdownThreadPool(flowId);
         FlowThreadPool.shutdownSchedulerPool(flowId);
+        FlowBlockNodePool.shutdownBlockNode(flowId);
         flowStatusService.clear(flowId);
     }
 
