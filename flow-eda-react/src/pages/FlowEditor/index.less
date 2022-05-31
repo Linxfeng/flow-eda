@@ -2,17 +2,27 @@
   display: flex;
   width: 100%;
   height: 95%;
-  border: 1px solid #ccc;
   background: #f0f0f0;
+  border: 1px solid #ccc;
 
   .nodes-wrap {
-    width: 150px;
+    width: 160px;
     height: 100%;
+    overflow-y: auto;
     border-right: 1px solid #ccc;
+
+    .ant-collapse-header {
+      padding-left: 40px;
+    }
+
+    .ant-collapse-content-box {
+      padding: 5px 0;
+      background: #f0f0f0;
+    }
 
     .node {
       display: flex;
-      width: 80%;
+      width: 120px;
       height: 40px;
       margin: 5px auto;
       line-height: 40px;
