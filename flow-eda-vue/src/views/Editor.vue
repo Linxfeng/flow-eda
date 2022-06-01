@@ -89,7 +89,7 @@ export default {
 
     // 初始化节点类型
     const initNodeType = async () => {
-      const res = await getNodeTypes({limit: 1000});
+      const res = await getNodeTypes();
       if (res) {
         data.nodeTypeList = res.result;
       }
