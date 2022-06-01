@@ -17,6 +17,7 @@ public abstract class MqttAbstractNode extends AbstractNode {
     private String topic;
     private String username;
     private String password;
+    private MqttClient client;
 
     public MqttAbstractNode(Document params) {
         super(params);
@@ -25,7 +26,7 @@ public abstract class MqttAbstractNode extends AbstractNode {
     /** 建立MQTT连接 */
     protected MqttClient createMqttClient() {
         try {
-            MqttClient client = new MqttClient(getBroker(), getClientId(), new MemoryPersistence());
+            this.client = new MqttClient(getBroker(), getClientId(), new MemoryPersistence());
             MqttConnectOptions options = new MqttConnectOptions();
             // 临时会话
             options.setCleanSession(true);
@@ -42,6 +43,16 @@ public abstract class MqttAbstractNode extends AbstractNode {
             return client;
         } catch (MqttException e) {
             throw new FlowException(e.getMessage());
+        }
+    }
+
+    protected void closeMqttClient() {
+        if (this.client != null) {
+            try {
+                this.client.disconnect();
+                this.client.close();
+            } catch (MqttException ignored) {
+            }
         }
     }
 
