@@ -4,6 +4,7 @@ import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
 import com.flow.eda.runner.node.mqtt.MqttAbstractNode;
+import com.flow.eda.runner.runtime.FlowBlockNodePool;
 import org.bson.Document;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -11,7 +12,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 
 /** MQTT发布节点 */
-public class MqttPubNode extends MqttAbstractNode {
+public class MqttPubNode extends MqttAbstractNode implements FlowBlockNodePool.BlockNode {
     private String message;
 
     public MqttPubNode(Document params) {
@@ -20,7 +21,6 @@ public class MqttPubNode extends MqttAbstractNode {
 
     @Override
     public void run(NodeFunction callback) {
-        setStatus(Status.RUNNING);
         try {
             // 建立MQTT连接
             MqttClient client = createMqttClient();
@@ -31,6 +31,7 @@ public class MqttPubNode extends MqttAbstractNode {
             client.publish(getTopic(), mqttMessage);
 
             // 输出发生的消息内容
+            setStatus(Status.FINISHED);
             callback.callback(output().append("message", message));
         } catch (MqttException e) {
             throw new FlowException(e.getMessage());
@@ -48,5 +49,11 @@ public class MqttPubNode extends MqttAbstractNode {
         }
         this.message = params.getString("message");
         NodeVerify.notBlank(message, "message");
+    }
+
+    @Override
+    public void destroy() {
+        // 断开MQTT连接，关闭会话
+        super.closeMqttClient();
     }
 }
