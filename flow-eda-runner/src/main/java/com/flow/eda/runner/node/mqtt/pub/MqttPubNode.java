@@ -4,9 +4,9 @@ import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
 import com.flow.eda.runner.node.mqtt.MqttAbstractNode;
+import com.flow.eda.runner.node.mqtt.MqttClientManager;
 import com.flow.eda.runner.runtime.FlowBlockNodePool;
 import org.bson.Document;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
@@ -23,12 +23,12 @@ public class MqttPubNode extends MqttAbstractNode implements FlowBlockNodePool.B
     public void run(NodeFunction callback) {
         try {
             // 建立MQTT连接
-            MqttClient client = createMqttClient();
+            MqttClientManager.createMqttClient(this);
 
             // 发布消息
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
             mqttMessage.setQos(0);
-            client.publish(getTopic(), mqttMessage);
+            getClient().publish(getTopic(), mqttMessage);
 
             // 输出发生的消息内容
             setStatus(Status.FINISHED);
@@ -54,6 +54,16 @@ public class MqttPubNode extends MqttAbstractNode implements FlowBlockNodePool.B
     @Override
     public void destroy() {
         // 断开MQTT连接，关闭会话
-        super.closeMqttClient();
+        MqttClientManager.closeMqttClient(this);
+    }
+
+    @Override
+    public boolean eq(FlowBlockNodePool.BlockNode blockNode) {
+        // MQTT发布节点可多次重复执行，复用MQTT连接，每次更新节点对象
+        if (blockNode instanceof MqttAbstractNode) {
+            MqttAbstractNode node = (MqttAbstractNode) blockNode;
+            return getNodeId().equals(node.getNodeId());
+        }
+        return false;
     }
 }
