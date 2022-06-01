@@ -24,7 +24,7 @@ public abstract class MqttAbstractNode extends AbstractNode {
     }
 
     /** 建立MQTT连接 */
-    protected MqttClient createMqttClient() {
+    protected void createMqttClient() {
         try {
             this.client = new MqttClient(getBroker(), getClientId(), new MemoryPersistence());
             MqttConnectOptions options = new MqttConnectOptions();
@@ -40,10 +40,13 @@ public abstract class MqttAbstractNode extends AbstractNode {
             }
             // 建立连接
             client.connect(options);
-            return client;
         } catch (MqttException e) {
             throw new FlowException(e.getMessage());
         }
+    }
+
+    protected void setClient(MqttClient client) {
+        this.client = client;
     }
 
     protected void closeMqttClient() {
