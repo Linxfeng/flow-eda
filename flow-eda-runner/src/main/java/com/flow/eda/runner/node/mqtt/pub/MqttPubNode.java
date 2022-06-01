@@ -6,6 +6,7 @@ import com.flow.eda.runner.node.NodeVerify;
 import com.flow.eda.runner.node.mqtt.MqttAbstractNode;
 import com.flow.eda.runner.node.mqtt.MqttClientManager;
 import com.flow.eda.runner.runtime.FlowBlockNodePool;
+import com.flow.eda.runner.utils.PlaceholderUtil;
 import org.bson.Document;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -30,7 +31,7 @@ public class MqttPubNode extends MqttAbstractNode implements FlowBlockNodePool.B
             mqttMessage.setQos(0);
             getClient().publish(getTopic(), mqttMessage);
 
-            // 输出发生的消息内容
+            // 输出发送的消息内容
             setStatus(Status.FINISHED);
             callback.callback(output().append("message", message));
         } catch (MqttException e) {
@@ -47,8 +48,11 @@ public class MqttPubNode extends MqttAbstractNode implements FlowBlockNodePool.B
         } catch (Exception e) {
             throw new FlowException(e.getMessage());
         }
-        this.message = params.getString("message");
+        String message = params.getString("message");
         NodeVerify.notBlank(message, "message");
+        // 替换占位符
+        Document k = PlaceholderUtil.replacePlaceholder(new Document("k", message), params);
+        this.message = k.getString("k");
     }
 
     @Override
