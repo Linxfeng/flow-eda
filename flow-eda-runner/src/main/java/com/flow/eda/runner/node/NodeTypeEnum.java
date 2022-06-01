@@ -5,6 +5,8 @@ import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.runner.node.delay.DelayNode;
 import com.flow.eda.runner.node.http.request.HttpRequestNode;
 import com.flow.eda.runner.node.http.response.HttpResponseNode;
+import com.flow.eda.runner.node.mqtt.pub.MqttPubNode;
+import com.flow.eda.runner.node.mqtt.sub.MqttSubNode;
 import com.flow.eda.runner.node.output.OutputNode;
 import com.flow.eda.runner.node.parser.ParserNode;
 import com.flow.eda.runner.node.start.StartNode;
@@ -30,6 +32,8 @@ public enum NodeTypeEnum {
     HTTP_RESPONSE("http_response", HttpResponseNode.class),
     WS_SERVER("ws_server", WsServerNode.class),
     WS_CLIENT("ws_client", WsClientNode.class),
+    MQTT_SUB("mqtt_sub", MqttSubNode.class),
+    MQTT_PUB("mqtt_pub", MqttPubNode.class),
     ;
     private final String type;
     private final Class<? extends Node> clazz;
