@@ -19,7 +19,7 @@ CREATE TABLE `eda_flow`  (
 -- ----------------------------
 -- Records of eda_flow
 -- ----------------------------
-INSERT INTO `eda_flow` VALUES ('10j5nc7cz5k000', 'WebSocket客户端示例', '使用WebSocket客户端节点连接WebSocket服务，接收消息', 'FAILED', '2022-05-30 16:40:58', '2022-05-30 16:40:58');
+INSERT INTO `eda_flow` VALUES ('10j5nc7cz5k000', 'WebSocket客户端示例', '使用WebSocket客户端节点连接WebSocket服务，接收消息。前置条件：需要先运行流程[自定义WebSocket服务端]', 'FAILED', '2022-05-30 16:40:58', '2022-06-04 18:13:10');
 INSERT INTO `eda_flow` VALUES ('13mwrf5znqv400', 'MQTT订阅消息示例', '订阅MQTT消息，输出接收到的消息内容', 'FAILED', '2022-06-01 18:01:21', '2022-06-01 18:01:21');
 INSERT INTO `eda_flow` VALUES ('18rwqz520iio00', '自定义WebSocket服务端', '创建自定义WebSocket服务端，提供WebSocket服务', 'FAILED', '2022-05-30 16:40:18', '2022-05-30 16:40:18');
 INSERT INTO `eda_flow` VALUES ('1p8nhh3c4aio00', '解析HTTP请求结果', '包含HTTP请求-解析器节点，解析请求结果并输出', 'FINISHED', '2022-05-09 16:03:39', '2022-05-09 16:03:39');
@@ -30,7 +30,8 @@ INSERT INTO `eda_flow` VALUES ('3osi3b97pa4000', '延时器示例', '包含开�
 INSERT INTO `eda_flow` VALUES ('3uldr6qij5o000', '流程运行状态示例', '可查看流程运行状态，鼠标悬停状态图标，可查看详细信息', 'FAILED', '2022-05-09 17:51:02', '2022-05-09 17:51:02');
 INSERT INTO `eda_flow` VALUES ('41as9fmikt8000', '中止运行示例', '可在流程运行过程中，点击停止运行按钮，中止运行', 'FAILED', '2022-05-09 17:47:20', '2022-05-09 17:47:20');
 INSERT INTO `eda_flow` VALUES ('48r380g6qc4000', '解析器示例', '包含开始-解析器-输出等节点', 'FINISHED', '2022-05-09 15:11:38', '2022-05-09 15:11:38');
-INSERT INTO `eda_flow` VALUES ('5epeyaoy9ac000', '请求自定义HTTP服务', '发起HTTP请求，用于检查自定义HTTP服务的结果', 'FINISHED', '2022-05-26 15:13:06', '2022-05-26 15:25:54');
+INSERT INTO `eda_flow` VALUES ('4ufazyee92c000', 'Mysql节点使用示例', '使用Mysql节点连接至指定的mysql数据库，并执行自定义sql语句，查看执行结果。前置条件：需要具备或已知mysql数据库地址，更新到节点URL属性上再运行流程', 'INIT', '2022-06-04 18:11:50', '2022-06-04 18:20:14');
+INSERT INTO `eda_flow` VALUES ('5epeyaoy9ac000', '请求自定义HTTP服务', '发起HTTP请求，用于检查自定义HTTP服务的结果。前置条件：需要先运行流程[HTTP响应示例]', 'FINISHED', '2022-05-26 15:13:06', '2022-06-04 18:13:58');
 INSERT INTO `eda_flow` VALUES ('6a088jl98eg00', '定时器示例', '仅包含定时器-输出两个节点', 'FINISHED', '2022-05-09 13:40:33', '2022-05-09 13:40:33');
 INSERT INTO `eda_flow` VALUES ('ihvivrh5j1k00', 'HTTP响应示例', '创建HTTP服务，自定义响应数据', 'FAILED', '2022-05-26 15:06:57', '2022-05-26 15:06:57');
 INSERT INTO `eda_flow` VALUES ('m6o3aghqfrk00', '并行运行示例', '同一流程内可多条线路并行运行', 'FINISHED', '2022-05-09 17:58:27', '2022-05-09 17:58:27');
@@ -68,6 +69,7 @@ INSERT INTO `eda_flow_node_data` VALUES ('19iwhrcrtxy800', '输出', '18rwqz520i
 INSERT INTO `eda_flow_node_data` VALUES ('1b12llyt5lgg00', NULL, '34224hnftcm000', NULL, NULL, NULL, NULL, NULL, NULL, '5apz8nnsgpc000', '2ikmbc80e58000');
 INSERT INTO `eda_flow_node_data` VALUES ('1f0d6j4txbb400', 'HTTP请求', '5epeyaoy9ac000', 9, '305px', '290px', NULL, '{\"url\": \"/${q}/test3\", \"method\": \"GET\", \"params\": \"a=test3\"}', NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('1f2mfwal1o2o00', '输出1', 'm6o3aghqfrk00', 4, '195px', '90px', NULL, NULL, '{\"a\": \"${a}\"}', NULL, NULL);
+INSERT INTO `eda_flow_node_data` VALUES ('1fukchv3s31c00', 'Mysql', '4ufazyee92c000', 15, '225px', '345px', NULL, '{\"sql\": \"SELECT id,type_name FROM eda_flow_node_type WHERE id=1\", \"url\": \"jdbc:mysql://127.0.0.1:3306/flow_eda\", \"password\": \"123456\", \"username\": \"root\"}', NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('1g5eivmtkbi800', '开始1', 'm6o3aghqfrk00', 1, '95px', '90px', NULL, NULL, '{\"a\": \"xxx-1\"}', NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('1gd04j0vgqg000', NULL, '3osi3b97pa4000', NULL, NULL, NULL, NULL, NULL, NULL, 'brjl0erogio00', 'zzlzi607jv400');
 INSERT INTO `eda_flow_node_data` VALUES ('1jlsdvqqle8w00', NULL, '10j5nc7cz5k000', NULL, NULL, NULL, NULL, NULL, NULL, '2m9tp4kwxka000', '5aamavmwhb4000');
@@ -87,6 +89,7 @@ INSERT INTO `eda_flow_node_data` VALUES ('1wgtbylvhf3400', NULL, '5epeyaoy9ac000
 INSERT INTO `eda_flow_node_data` VALUES ('1x87ug825pj400', NULL, 'mk3eo1ewkk000', NULL, NULL, NULL, NULL, NULL, NULL, '3m52bl5i5pc000', '69mzkmq9x4g00');
 INSERT INTO `eda_flow_node_data` VALUES ('1xb4qn68m0tc00', NULL, 'ihvivrh5j1k00', NULL, NULL, NULL, NULL, NULL, NULL, '1ld91r0t489s00', 'o0d0ag47vls00');
 INSERT INTO `eda_flow_node_data` VALUES ('1zf3801jf3cw00', '输出', '3gsaefsrjvc000', 4, '240px', '520px', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `eda_flow_node_data` VALUES ('25drumgr0eio00', '输出', '4ufazyee92c000', 4, '140px', '550px', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('25oxq4xoglq800', '延时1秒', '3gsaefsrjvc000', 3, '145px', '150px', NULL, '{\"delay\": \"1,SECONDS\"}', '{\"timestamp\": \"${timestamp}\"}', NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('27jwy17xpzr400', '输出', '2dzjjpdtijb400', 4, '250px', '645px', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('27k4z0xei05c00', '输出', '13mwrf5znqv400', 4, '120px', '375px', NULL, NULL, NULL, NULL, NULL);
@@ -119,6 +122,7 @@ INSERT INTO `eda_flow_node_data` VALUES ('2z6pgokgpoy000', NULL, '3gsaefsrjvc000
 INSERT INTO `eda_flow_node_data` VALUES ('305ivvon2pe000', NULL, '10j5nc7cz5k000', NULL, NULL, NULL, NULL, NULL, NULL, '5plrpukibww000', '32f3jhztrau000');
 INSERT INTO `eda_flow_node_data` VALUES ('313b3a0dn14000', '输出', '1p8nhh3c4aio00', 4, '105px', '560px', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('31roajzcjsm000', NULL, '3gsaefsrjvc000', NULL, NULL, NULL, NULL, NULL, NULL, '4grlw4cm5d6000', '4moatwj5x98000');
+INSERT INTO `eda_flow_node_data` VALUES ('325wnirydx6000', NULL, '4ufazyee92c000', NULL, NULL, NULL, NULL, NULL, NULL, '4wochfvng22000', '1fukchv3s31c00');
 INSERT INTO `eda_flow_node_data` VALUES ('32f3jhztrau000', '输出1', '10j5nc7cz5k000', 4, '80px', '370px', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('32f9ixt25ii000', '输出', 'xu7fsb4whw000', 4, '140px', '620px', '打印出上一节点传递的参数', NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('39z32j316d0000', NULL, '2dzjjpdtijb400', NULL, NULL, NULL, NULL, NULL, NULL, 'q7b6o1iy3cg00', '2uydhlhqpug000');
@@ -169,6 +173,7 @@ INSERT INTO `eda_flow_node_data` VALUES ('4tnr4rsnzdw000', 'HTTP请求', '3uldr6
 INSERT INTO `eda_flow_node_data` VALUES ('4v1wf1va5w6000', NULL, '48r380g6qc4000', NULL, NULL, NULL, NULL, NULL, NULL, '4ccnzr06zuo000', 'wvzmjwfdtuo00');
 INSERT INTO `eda_flow_node_data` VALUES ('4vf94lchs1s000', '开始', '1p8nhh3c4aio00', 1, '105px', '115px', NULL, NULL, '{\"a\": \"xxx\", \"q\": \"api/v1\"}', NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('4w1sp11wc42000', 'HTTP响应', 'ihvivrh5j1k00', 10, '170px', '345px', NULL, '{\"uri\": \"/${q}/test2\", \"query\": \"name\", \"method\": \"POST\", \"resData\": \"{\\\"name\\\": \\\"${name}\\\"}\"}', NULL, NULL, NULL);
+INSERT INTO `eda_flow_node_data` VALUES ('4wochfvng22000', '开始', '4ufazyee92c000', 1, '140px', '130px', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('4yj8cf9mgxg000', '定时器1', 'm6o3aghqfrk00', 2, '95px', '505px', NULL, '{\"times\": \"1\", \"period\": \"2,SECONDS\", \"timestamp\": \"HH:mm:ss\"}', '{\"a\": \"xxx-3\"}', NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('52y7k5m4788000', '总输出', 'm6o3aghqfrk00', 4, '515px', '405px', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5351auncrso000', 'HTTP请求', '5epeyaoy9ac000', 9, '75px', '290px', NULL, '{\"url\": \"http://localhost:8088/api/v1/test1\", \"method\": \"GET\"}', '{\"name\": \"http请求test1\"}', NULL, NULL);
@@ -186,6 +191,7 @@ INSERT INTO `eda_flow_node_data` VALUES ('5hzea2bl9lo000', '定时器', '2dzjjpd
 INSERT INTO `eda_flow_node_data` VALUES ('5kluo5odtl0000', '开始', '5epeyaoy9ac000', 1, '190px', '60px', NULL, NULL, '{\"q\": \"api/v1\"}', NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5mefz3prh1s000', '输出', '3osi3b97pa4000', 4, '205px', '620px', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5mlqqqj6l4k000', NULL, '2dzjjpdtijb400', NULL, NULL, NULL, NULL, NULL, NULL, '2uydhlhqpug000', '27jwy17xpzr400');
+INSERT INTO `eda_flow_node_data` VALUES ('5p0mz9na1ss000', NULL, '4ufazyee92c000', NULL, NULL, NULL, NULL, NULL, NULL, '1fukchv3s31c00', '25drumgr0eio00');
 INSERT INTO `eda_flow_node_data` VALUES ('5plrpukibww000', 'WS客户端1', '10j5nc7cz5k000', 12, '80px', '185px', NULL, '{\"path\": \"/ws/test?name=lin\", \"sendAfterConnect\": \"hello server! I am lin.\"}', NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5pxuhe3ufy8000', '延时3秒', 'm6o3aghqfrk00', 3, '310px', '505px', NULL, '{\"delay\": \"3,SECONDS\"}', '{\"a\": \"${a}\"}', NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5pyn5hp1o44000', '输出-c', 'mk3eo1ewkk000', 4, '175px', '770px', NULL, NULL, '{\"d\": \"${c}\"}', NULL, NULL);
@@ -239,6 +245,7 @@ INSERT INTO `eda_flow_node_type` VALUES (11, 'ws_server', 'WS服务端', '网络
 INSERT INTO `eda_flow_node_type` VALUES (12, 'ws_client', 'WS客户端', '网络', '/svg/ws_client.svg', 'rgb(215 140 40 / 50%)', 'WebSocket客户端节点，可连接指定路径的websocket服务，自定义发送消息内容和发送时机，收到服务端消息后会立即向下游输出');
 INSERT INTO `eda_flow_node_type` VALUES (13, 'mqtt_sub', 'MQTT订阅', '网络', '/svg/mqtt_sub.svg', 'rgb(140 180 40 / 50%)', 'MQTT订阅节点，可订阅指定topic中的消息，接收到消息后会向下游输出。本节点为阻塞节点，运行后需要手动停止');
 INSERT INTO `eda_flow_node_type` VALUES (14, 'mqtt_pub', 'MQTT发布', '网络', '/svg/mqtt_pub.svg', 'rgb(130 160 50 / 60%)', 'MQTT发布节点，可向指定topic中发送MQTT消息，发送的消息内容会向下游节点输出');
+INSERT INTO `eda_flow_node_type` VALUES (15, 'mysql', 'Mysql', '数据库', '/svg/mysql.svg', 'rgb(220 180 50 / 50%)', 'Mysql节点，可连接至mysql数据库，执行自定义sql语句，支持任意类型的多条sql语句，输出每条语句的执行结果和内容');
 
 -- ----------------------------
 -- Table structure for eda_flow_node_type_param
@@ -292,5 +299,9 @@ INSERT INTO `eda_flow_node_type_param` VALUES (29, 14, 'topic', 'Topic', 1, 'inp
 INSERT INTO `eda_flow_node_type_param` VALUES (30, 14, 'message', '发送消息', 1, 'input', NULL, NULL);
 INSERT INTO `eda_flow_node_type_param` VALUES (31, 14, 'username', '用户名', 0, 'input', NULL, NULL);
 INSERT INTO `eda_flow_node_type_param` VALUES (32, 14, 'password', '密码', 0, 'input', NULL, NULL);
+INSERT INTO `eda_flow_node_type_param` VALUES (33, 15, 'url', 'URL地址', 1, 'input', NULL, 'jdbc:mysql://127.0.0.1:3306/flow_eda');
+INSERT INTO `eda_flow_node_type_param` VALUES (34, 15, 'username', '用户名', 1, 'input', NULL, 'root');
+INSERT INTO `eda_flow_node_type_param` VALUES (35, 15, 'password', '密码', 1, 'input', NULL, NULL);
+INSERT INTO `eda_flow_node_type_param` VALUES (36, 15, 'sql', '执行SQL语句', 1, 'input', NULL, '支持单条或多条sql语句，多条语句之间使用分号相隔');
 
 SET FOREIGN_KEY_CHECKS = 1;
