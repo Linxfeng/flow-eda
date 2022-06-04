@@ -50,6 +50,7 @@ public class MysqlNode extends AbstractNode {
             connection.commit();
 
             // 输出结果
+            setStatus(Status.FINISHED);
             result.putAll(output());
             callback.callback(result);
         } catch (Exception e) {
