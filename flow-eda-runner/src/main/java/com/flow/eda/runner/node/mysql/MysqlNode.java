@@ -3,10 +3,12 @@ package com.flow.eda.runner.node.mysql;
 import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
+import com.flow.eda.runner.node.NodeVerify;
 import org.bson.Document;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MysqlNode extends AbstractNode {
@@ -14,6 +16,7 @@ public class MysqlNode extends AbstractNode {
     private String username;
     private String password;
     private String sql;
+    private List<String> batchSql;
 
     public MysqlNode(Document params) {
         super(params);
@@ -77,8 +80,37 @@ public class MysqlNode extends AbstractNode {
     @Override
     protected void verify(Document params) {
         this.url = params.getString("url");
+        NodeVerify.notBlank(url, "url");
+
+        // 关闭SSL，缩短建立连接所耗费的时间
+        if (!url.contains("useSSL")) {
+            if (url.contains("?")) {
+                this.url = url + "&useSSL=false";
+            } else {
+                this.url = url + "?useSSL=false";
+            }
+        }
+
         this.username = params.getString("username");
+        NodeVerify.notBlank(username, "username");
+
         this.password = params.getString("password");
-        this.sql = params.getString("sql");
+        NodeVerify.notBlank(password, "password");
+
+        String sql = params.getString("sql");
+        NodeVerify.notBlank(sql, "sql");
+
+        // 去除末尾分号
+        String semicolon = ";";
+        if (sql.endsWith(semicolon)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+
+        // 处理多条sql语句
+        if (sql.contains(semicolon)) {
+            this.batchSql = Arrays.asList(sql.split(semicolon));
+        } else {
+            this.sql = sql;
+        }
     }
 }
