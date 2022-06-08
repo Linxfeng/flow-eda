@@ -22,8 +22,8 @@ public class RedisNode extends AbstractNode {
 
     @Override
     public void run(NodeFunction callback) {
+        // 建立jedis连接
         try (Jedis jedis = new Jedis(host, port)) {
-
             // 设置auth认证
             if (password != null) {
                 if (username != null) {
@@ -36,18 +36,60 @@ public class RedisNode extends AbstractNode {
             if (database != null) {
                 jedis.select(database);
             }
+            // 调用jedis方法
+            Object result = this.invoke(jedis);
 
-            String test = jedis.set("test", "hello world!");
-            System.out.println(test);
-
-            String result = jedis.get("test");
-            System.out.println(result);
-
-            Long del = jedis.del("test");
-            System.out.println(del);
-
+            setStatus(Status.FINISHED);
+            callback.callback(output().append("result", result));
         } catch (Exception e) {
             throw new FlowException(e.getMessage());
+        }
+    }
+
+    /** 调用jedis对应的方法 */
+    private Object invoke(Jedis jedis) {
+        this.checkArgsLength(1);
+        /* set,get,del,exists,getSet,getDel,hset,hget,hdel,hgetAll,hexists */
+        switch (method) {
+            case "set":
+                this.checkArgsLength(2);
+                return jedis.set(args[0], args[1]);
+            case "get":
+                return jedis.get(args[0]);
+            case "del":
+                return jedis.del(args);
+            case "exists":
+                return jedis.exists(args);
+            case "getSet":
+                this.checkArgsLength(2);
+                return jedis.getSet(args[0], args[1]);
+            case "getDel":
+                return jedis.getDel(args[0]);
+            case "hset":
+                this.checkArgsLength(3);
+                return jedis.hsetnx(args[0], args[1], args[2]);
+            case "hget":
+                this.checkArgsLength(2);
+                return jedis.hget(args[0], args[1]);
+            case "hdel":
+                this.checkArgsLength(2);
+                String[] fields = new String[args.length - 1];
+                System.arraycopy(args, 1, fields, 0, args.length - 1);
+                return jedis.hdel(args[0], fields);
+            case "hgetAll":
+                return jedis.hgetAll(args[0]);
+            case "hexists":
+                this.checkArgsLength(2);
+                return jedis.hexists(args[0], args[1]);
+            default:
+                throw new FlowException("Method '" + method + "' is not supported yet");
+        }
+    }
+
+    /** 校验参数的长度 */
+    private void checkArgsLength(int length) {
+        if (args.length < length) {
+            throw new FlowException("The args for this method is invalid");
         }
     }
 
