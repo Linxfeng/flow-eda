@@ -5,8 +5,13 @@ import com.flow.eda.common.model.FlowData;
 import com.flow.eda.runner.node.delay.DelayNode;
 import com.flow.eda.runner.node.http.request.HttpRequestNode;
 import com.flow.eda.runner.node.http.response.HttpResponseNode;
+import com.flow.eda.runner.node.mongodb.MongodbNode;
+import com.flow.eda.runner.node.mqtt.pub.MqttPubNode;
+import com.flow.eda.runner.node.mqtt.sub.MqttSubNode;
+import com.flow.eda.runner.node.mysql.MysqlNode;
 import com.flow.eda.runner.node.output.OutputNode;
 import com.flow.eda.runner.node.parser.ParserNode;
+import com.flow.eda.runner.node.redis.RedisNode;
 import com.flow.eda.runner.node.start.StartNode;
 import com.flow.eda.runner.node.timer.TimerNode;
 import com.flow.eda.runner.node.ws.client.WsClientNode;
@@ -30,6 +35,12 @@ public enum NodeTypeEnum {
     HTTP_RESPONSE("http_response", HttpResponseNode.class),
     WS_SERVER("ws_server", WsServerNode.class),
     WS_CLIENT("ws_client", WsClientNode.class),
+    MQTT_SUB("mqtt_sub", MqttSubNode.class),
+    MQTT_PUB("mqtt_pub", MqttPubNode.class),
+    /** 数据库节点 */
+    MYSQL("mysql", MysqlNode.class),
+    MONGODB("mongodb", MongodbNode.class),
+    REDIS("redis", RedisNode.class),
     ;
     private final String type;
     private final Class<? extends Node> clazz;

@@ -10,22 +10,26 @@ public class FlowBlockNodePool {
     private static final Map<String, List<BlockNode>> POOL = new ConcurrentHashMap<>();
 
     public static void addBlockNode(String flowId, BlockNode blockNode) {
-        if (POOL.containsKey(flowId)) {
-            List<BlockNode> list = POOL.get(flowId);
-            // 若判断两个阻塞节点相同，需要进行替换更新
-            list.removeIf(node -> node.eq(blockNode));
-            list.add(blockNode);
-        } else {
-            List<BlockNode> list = new ArrayList<>();
-            list.add(blockNode);
-            POOL.put(flowId, list);
+        synchronized (POOL) {
+            if (POOL.containsKey(flowId)) {
+                List<BlockNode> list = POOL.get(flowId);
+                // 若判断两个阻塞节点相同，需要进行替换更新
+                list.removeIf(node -> node.eq(blockNode));
+                list.add(blockNode);
+            } else {
+                List<BlockNode> list = new ArrayList<>();
+                list.add(blockNode);
+                POOL.put(flowId, list);
+            }
         }
     }
 
     public static void shutdownBlockNode(String flowId) {
         if (POOL.containsKey(flowId)) {
-            POOL.get(flowId).forEach(BlockNode::destroy);
-            POOL.remove(flowId);
+            synchronized (POOL) {
+                POOL.get(flowId).forEach(BlockNode::destroy);
+                POOL.remove(flowId);
+            }
         }
     }
 

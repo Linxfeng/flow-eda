@@ -4,7 +4,7 @@
              class="sidebar-el-menu" router text-color="#bfcbd9" unique-opened>
       <template v-for="item in items">
         <el-menu-item :index="item.index" style="font-size: 16px">
-          <span :class="item.icon" style="margin-right: 4px"></span>
+          <span :class="item.icon" style="margin-right: 4px;height: auto;width: auto;visibility: visible;"></span>
           <template #title>{{ item.title }}</template>
         </el-menu-item>
       </template>
