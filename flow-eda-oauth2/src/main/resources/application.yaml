@@ -1,0 +1,47 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: flow-eda-oauth2
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/flow_eda_oauth2?useSSL=false&useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123456
+    hikari:
+      max-lifetime: 60000
+      connection-timeout: 10000
+      validation-timeout: 3000
+      maximum-pool-size: 10
+      minimum-idle: 5
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    log_exchange: flow.log
+    log_routing_key: flow.operation.log
+mybatis:
+  type-handlers-package: com.flow.eda.web.mybatis
+  configuration:
+    map-underscore-to-camel-case: true
+dubbo:
+  application:
+    name: flow-eda-oauth2
+    qos-enable: false
+    qos-accept-foreign-ip: false
+  registry:
+    protocol: dubbo
+    address: nacos://localhost:8848
+    username: nacos
+    password: nacos
+  protocol:
+    name: dubbo
+    port: 20886
+  consumer:
+    check: false
+    timeout: 5000
+    retries: 0
+logging:
+  level:
+    com.alibaba.nacos.common.remote.client: warn
