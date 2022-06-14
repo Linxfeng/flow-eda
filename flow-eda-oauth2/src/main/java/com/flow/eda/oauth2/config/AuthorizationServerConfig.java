@@ -11,23 +11,18 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.token.TokenEnhancer;
-import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
-import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/** 授权服务 */
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private UserDetailsService userDetailsService;
-    @Autowired private TokenStore tokenStore;
-    @Autowired private JwtAccessTokenConverter jwtAccessTokenConverter;
-    @Autowired private TokenEnhancer jwtTokenEnhancer;
     @Autowired private PasswordEncoder passwordEncoder;
+
+    @Autowired(required = false)
+    private InMemoryTokenStore tokenStore;
 
     @Value("${flow.oauth2.clientId}")
     private String clientId;
@@ -42,42 +37,28 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private String redirectUrl;
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints
-                .tokenStore(tokenStore)
-                .authenticationManager(authenticationManager)
-                .userDetailsService(userDetailsService);
-        // 扩展token返回结果
-        if (jwtAccessTokenConverter != null && jwtTokenEnhancer != null) {
-            TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-            List<TokenEnhancer> enhancerList = new ArrayList<>();
-            enhancerList.add(jwtTokenEnhancer);
-            enhancerList.add(jwtAccessTokenConverter);
-            tokenEnhancerChain.setTokenEnhancers(enhancerList);
-            // jwt
-            endpoints
-                    .tokenEnhancer(tokenEnhancerChain)
-                    .accessTokenConverter(jwtAccessTokenConverter);
-        }
-    }
-
-    @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient(clientId)
                 .secret(passwordEncoder.encode(clientSecret))
+                // OAuth2支持的验证模式："refresh_token", "password", "authorization_code"
+                .authorizedGrantTypes("authorization_code", "refresh_token")
+                // token过期时间
                 .accessTokenValiditySeconds(expired)
-                .refreshTokenValiditySeconds(60 * 60 * 24 * 15)
-                // OAuth2支持的验证模式
-                // .authorizedGrantTypes("refresh_token", "password", "authorization_code")
-                .authorizedGrantTypes("authorization_code")
                 .redirectUris(redirectUrl)
                 .scopes("all");
     }
 
     @Override
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
+        endpoints
+                .tokenStore(tokenStore)
+                .authenticationManager(authenticationManager)
+                .userDetailsService(userDetailsService);
+    }
+
+    @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) {
-        // 允许表单认证
         oauthServer.allowFormAuthenticationForClients();
         oauthServer.passwordEncoder(passwordEncoder);
     }
