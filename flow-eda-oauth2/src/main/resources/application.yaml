@@ -18,6 +18,26 @@ mybatis:
   type-handlers-package: com.flow.eda.web.mybatis
   configuration:
     map-underscore-to-camel-case: true
+dubbo:
+  application:
+    name: flow-eda-oauth2
+    qos-enable: false
+    qos-accept-foreign-ip: false
+  registry:
+    protocol: dubbo
+    address: nacos://localhost:8848
+    username: nacos
+    password: nacos
+  protocol:
+    name: dubbo
+    port: 20884
+  consumer:
+    check: false
+    timeout: 5000
+    retries: 0
+logging:
+  level:
+    com.alibaba.nacos.common.remote.client: warn
 flow:
   oauth2:
     jwtSigningKey: flow-eda
