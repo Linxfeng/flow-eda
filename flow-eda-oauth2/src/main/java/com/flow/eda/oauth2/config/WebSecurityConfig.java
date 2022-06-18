@@ -1,5 +1,8 @@
 package com.flow.eda.oauth2.config;
 
+import com.flow.eda.oauth2.handler.LoginFailureHandler;
+import com.flow.eda.oauth2.handler.LoginSuccessHandler;
+import com.flow.eda.oauth2.handler.LogoutSuccessHandler;
 import com.flow.eda.oauth2.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +14,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsUtils;
@@ -21,6 +23,9 @@ import org.springframework.web.cors.CorsUtils;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Lazy @Autowired private UserDetailsServiceImpl userDetailsService;
+    @Autowired private LoginSuccessHandler loginSuccessHandler;
+    @Autowired private LoginFailureHandler loginFailureHandler;
+    @Autowired private LogoutSuccessHandler logoutSuccessHandler;
 
     @Bean
     @Override
@@ -31,12 +36,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    @Override
-    protected UserDetailsService userDetailsService() {
-        return super.userDetailsService();
     }
 
     @Override
@@ -58,8 +57,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login")
                 .usernameParameter("username")
                 .passwordParameter("password")
+                .successHandler(loginSuccessHandler)
+                .failureHandler(loginFailureHandler)
                 .and()
                 .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessHandler(logoutSuccessHandler)
                 .deleteCookies("JSESSIONID")
                 .and()
                 .httpBasic();
