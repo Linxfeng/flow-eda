@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bson.Document;
 
 @Getter
 @Setter
@@ -41,5 +42,16 @@ public class Result<T> {
 
     public static <T> Result<T> of(T object) {
         return new Result<>(object);
+    }
+
+    public String toJson() {
+        Document document = new Document();
+        if (result != null) {
+            document.append("result", result);
+        }
+        if (error != null) {
+            document.append("error", error);
+        }
+        return document.toJson();
     }
 }
