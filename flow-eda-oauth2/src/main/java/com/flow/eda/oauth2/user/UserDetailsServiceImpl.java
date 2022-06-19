@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+/** 自定义UserDetailsService实现 */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final BasicAuthenticationConverter authenticationConverter =
-            new BasicAuthenticationConverter();
+    private final BasicAuthenticationConverter converter = new BasicAuthenticationConverter();
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private OauthUserMapper oauthUserMapper;
     @Autowired private JdbcClientDetailsService jdbcClientDetailsService;
@@ -51,14 +51,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     /** 从Request中获取并验证客户端信息 */
-    public String getClientIdByRequest() {
+    private String getClientIdByRequest() {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
             throw new UnsupportedOperationException();
         }
-        UsernamePasswordAuthenticationToken token =
-                authenticationConverter.convert(attributes.getRequest());
+        UsernamePasswordAuthenticationToken token = converter.convert(attributes.getRequest());
         if (token == null) {
             throw new UnauthorizedClientException("unauthorized client");
         }
