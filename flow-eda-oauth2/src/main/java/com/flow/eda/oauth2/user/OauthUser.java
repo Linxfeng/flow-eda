@@ -2,11 +2,12 @@ package com.flow.eda.oauth2.user;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /** 用户 */
 @Data
-public class OauthUser {
+public class OauthUser implements Serializable {
     private Long id;
     private String username;
     private String password;
