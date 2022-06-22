@@ -45,9 +45,8 @@
             提示：默认使用体验账号 test 登录，体验账号的数据会每日重置。
           </p>
           <p class="tips">
-            若需要永久保存用户所有数据，请先<a class="href" href="#/register"
-              >注册账号</a
-            >
+            若需要永久保存用户所有数据，请先
+            <router-link class="link" to="/register">注册账号</router-link>
           </p>
         </el-form-item>
       </el-form>
@@ -56,17 +55,14 @@
 </template>
 
 <script>
-import { ref, reactive, computed } from "vue";
+import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { useStore } from "vuex";
-import { getToken } from "../api/oauth2";
+import { userLogin } from "../api/oauth2";
 
 export default {
   name: "Login",
   setup() {
     const router = useRouter();
-    const store = useStore();
-
     const loginFormRef = ref(null);
     const loading = ref(false);
     const ruleForm = reactive({ username: "test", password: "test" });
@@ -78,28 +74,18 @@ export default {
         { required: "true", message: "密码不能为空", trigger: "blur" },
       ],
     };
-    const tagsList = computed(() => store.state.tagsList);
 
     // 用户登录
     const handleLogin = (formEl) => {
       formEl.validate((valid) => {
         if (valid) {
           loading.value = true;
-          getToken(ruleForm.username, ruleForm.password).then((res) => {
-            if (res) {
-              if (res.access_token) {
-                localStorage.setItem("access_token", res.access_token);
-              }
-              if (res.refresh_token) {
-                localStorage.setItem("refresh_token", res.refresh_token);
-              }
-              // 登陆成功，跳转首页
-              const item = tagsList.value[0];
-              store.commit("delTagsItem", { item });
-              router.push("/");
-            }
-            loading.value = false;
-          });
+          const success = userLogin(ruleForm.username, ruleForm.password);
+          if (success) {
+            // 登录成功，跳转首页
+            router.push("/flows");
+          }
+          loading.value = false;
         }
       });
     };
@@ -167,7 +153,7 @@ export default {
   line-height: 24px;
 }
 
-.href {
+.link {
   color: #409eff;
   font-weight: bold;
   font-size: 16px;
