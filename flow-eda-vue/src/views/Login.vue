@@ -1,5 +1,11 @@
 <template>
-  <div class="login-body" v-loading="loading">
+  <div
+    class="login-body"
+    v-loading="loading"
+    element-loading-text="正在处理中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.6)"
+  >
     <div class="login-container">
       <div class="head">
         <div class="name">
@@ -17,7 +23,6 @@
           <el-input
             type="text"
             v-model="ruleForm.username"
-            autocomplete="off"
             @keyup.enter.native="handleLogin(loginFormRef)"
           ></el-input>
         </el-form-item>
@@ -25,7 +30,6 @@
           <el-input
             type="password"
             v-model="ruleForm.password"
-            autocomplete="off"
             @keyup.enter.native="handleLogin(loginFormRef)"
             show-password
           ></el-input>
@@ -41,7 +45,7 @@
             提示：默认使用体验账号 test 登录，体验账号的数据会每日重置。
           </p>
           <p class="tips">
-            若需要永久保存用户所有数据，请先<a class="href" href="/"
+            若需要永久保存用户所有数据，请先<a class="href" href="#/register"
               >注册账号</a
             >
           </p>
@@ -133,7 +137,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 0 20px 0;
+  padding: 35px 0 20px 0;
 }
 
 .head img {
