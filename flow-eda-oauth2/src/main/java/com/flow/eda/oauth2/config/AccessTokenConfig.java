@@ -17,7 +17,7 @@ import java.util.List;
 public class AccessTokenConfig {
     @Autowired private DataSource dataSource;
 
-    @Value("${flow.oauth2.jwtSigningKey}")
+    @Value("${flow.oauth2.jwt_signing_key}")
     private String jwtSigningKey;
 
     /** Access Token持久化 */
