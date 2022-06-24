@@ -71,23 +71,24 @@ export default {
     };
 
     // 用户注册
-    const handleRegister = (formEl) => {
-      formEl.validate((valid) => {
+    const handleRegister = async (formEl) => {
+      formEl.validate(async (valid) => {
         if (valid) {
           loading.value = true;
-          userRegister(ruleForm).then((r) => {
-            if (r) {
-              ElMessage.success("注册成功");
-              // 自动登录
-              const success = userLogin(ruleForm.username, ruleForm.password);
-              if (success) {
-                // 登录成功，跳转首页
-                router.push("/flows");
-              }
-              loading.value = false;
+          const r = await userRegister(ruleForm);
+          if (r) {
+            ElMessage.success("注册成功");
+            // 自动登录
+            const success = await userLogin(
+              ruleForm.username,
+              ruleForm.password
+            );
+            if (success) {
+              // 登录成功，跳转首页
+              await router.push("/flows");
             }
-            loading.value = false;
-          });
+          }
+          loading.value = false;
         }
       });
     };

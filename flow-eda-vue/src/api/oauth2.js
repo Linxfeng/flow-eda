@@ -46,7 +46,7 @@ async function getOauthToken(data) {
 }
 
 /**用户注册*/
-export function userRegister(body) {
+export async function userRegister(body) {
   return request({
     url: "/oauth/register",
     method: "post",
