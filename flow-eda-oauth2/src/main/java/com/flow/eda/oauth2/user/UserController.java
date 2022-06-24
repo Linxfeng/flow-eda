@@ -1,13 +1,15 @@
 package com.flow.eda.oauth2.user;
 
+import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.common.exception.MissingPropertyException;
-import com.flow.eda.common.exception.ResourceAlreadyExistsException;
+import com.flow.eda.common.http.ApiError;
 import com.flow.eda.common.http.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +45,8 @@ public class UserController {
         }
         Object exist = oauthUserMapper.existUsername(username);
         if (exist != null) {
-            throw new ResourceAlreadyExistsException("username", username);
+            throw new FlowException(
+                    HttpStatus.BAD_REQUEST, ApiError.RESOURCE_ALREADY_EXISTS, "用户名已存在");
         }
         // 创建用户，保存
         try {
