@@ -45,7 +45,7 @@
             提示：默认使用体验账号 test 登录，体验账号的数据会每日重置。
           </p>
           <p class="tips">
-            若需要永久保存用户所有数据，请先
+            若需要永久保存用户下的数据，请先
             <router-link class="link" to="/register">注册账号</router-link>
           </p>
         </el-form-item>
@@ -58,6 +58,7 @@
 import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { userLogin } from "../api/oauth2";
+import { ElMessage } from "element-plus";
 
 export default {
   name: "Login",
@@ -76,14 +77,15 @@ export default {
     };
 
     // 用户登录
-    const handleLogin = (formEl) => {
-      formEl.validate((valid) => {
+    const handleLogin = async (formEl) => {
+      formEl.validate(async (valid) => {
         if (valid) {
           loading.value = true;
-          const success = userLogin(ruleForm.username, ruleForm.password);
+          const success = await userLogin(ruleForm.username, ruleForm.password);
           if (success) {
             // 登录成功，跳转首页
-            router.push("/flows");
+            ElMessage.success("登录成功");
+            await router.push("/flows");
           }
           loading.value = false;
         }
