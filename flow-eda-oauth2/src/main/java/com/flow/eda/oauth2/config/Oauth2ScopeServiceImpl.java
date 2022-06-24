@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -20,6 +21,9 @@ public class Oauth2ScopeServiceImpl implements Oauth2ScopeService {
 
     @Override
     public boolean verifyPermissions(String token, String uri) {
+        if (!StringUtils.hasText(token)) {
+            return false;
+        }
         OAuth2AccessToken oAuth2AccessToken = tokenStore.readAccessToken(token);
         if (oAuth2AccessToken != null) {
             OAuth2Authentication authentication = tokenStore.readAuthentication(oAuth2AccessToken);
