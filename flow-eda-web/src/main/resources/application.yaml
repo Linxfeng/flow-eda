@@ -47,7 +47,7 @@ security:
     resource-id: flow-eda
     client-id: 1df7b0c1-aac0-148a14c7cba8
     client-secret: zcUaT32GlwIjz4yBJjYZIIMvzf
-    check-token-uri: http://localhost:8086/oauth/check_token
+    check-token-url: http://localhost:8086/oauth/check_token
 logging:
   level:
     com.alibaba.nacos.common.remote.client: warn
