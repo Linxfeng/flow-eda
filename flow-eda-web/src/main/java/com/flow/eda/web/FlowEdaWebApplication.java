@@ -12,7 +12,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableTransactionManagement
 @DubboComponentScan(basePackageClasses = FlowInfoServiceImpl.class)
-@ComponentScan(basePackages = {"com.flow.eda.web", "com.flow.eda.common.config"})
+@ComponentScan(
+        basePackages = {
+            "com.flow.eda.web",
+            "com.flow.eda.common.config",
+            "com.flow.eda.common.resource"
+        })
 public class FlowEdaWebApplication {
 
     public static void main(String[] args) {
