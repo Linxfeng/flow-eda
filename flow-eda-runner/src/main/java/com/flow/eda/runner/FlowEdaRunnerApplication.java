@@ -11,11 +11,13 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.DispatcherServlet;
 
 @EnableDubbo
 @DubboComponentScan(basePackages = "com.flow.eda.runner.data")
 @SpringBootApplication(exclude = MongoAutoConfiguration.class)
+@ComponentScan(basePackages = {"com.flow.eda.runner", "com.flow.eda.common.resource"})
 public class FlowEdaRunnerApplication {
 
     public static void main(String[] args) {
