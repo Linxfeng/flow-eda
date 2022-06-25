@@ -5,15 +5,14 @@ async function getClientInfo() {
   const clientId = localStorage.getItem("client_id");
   const clientSecret = localStorage.getItem("client_secret");
   if (!clientId || !clientSecret) {
-    request({
+    const res = await request({
       url: "/oauth/client",
       method: "get",
-    }).then((res) => {
-      if (res && res.result) {
-        localStorage.setItem("client_id", res.result.clientId);
-        localStorage.setItem("client_secret", res.result.clientSecret);
-      }
     });
+    if (res && res.result) {
+      localStorage.setItem("client_id", res.result.clientId);
+      localStorage.setItem("client_secret", res.result.clientSecret);
+    }
   }
 }
 
