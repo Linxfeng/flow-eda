@@ -22,8 +22,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) {
         // 允许客户端表单方式身份验证
-        security.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
+        security.checkTokenAccess("isAuthenticated()")
                 .allowFormAuthenticationForClients();
     }
 
