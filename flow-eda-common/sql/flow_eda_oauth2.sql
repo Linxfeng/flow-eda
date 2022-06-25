@@ -1,13 +1,15 @@
 /*
  Navicat Premium Data Transfer
 
+ Source Server Type    : MySQL
+ Source Server Version : 80027
  Source Schema         : flow_eda_oauth2
 
  Target Server Type    : MySQL
  Target Server Version : 80027
  File Encoding         : 65001
 
- Date: 22/06/2022 17:42:10
+ Date: 25/06/2022 14:31:02
 */
 
 SET NAMES utf8mb4;
@@ -71,7 +73,7 @@ CREATE TABLE `oauth_client_details`  (
 -- ----------------------------
 -- Records of oauth_client_details
 -- ----------------------------
-INSERT INTO `oauth_client_details` VALUES ('1df7b0c1-aac0-148a14c7cba8', 'flow-eda', '$2a$10$UawfPVDcw.Z1bxXHfWploeTOjbSqlCJItUiGf/4H7u83Omm2g5vPW', 'read,write', 'client_credentials,authorization_code,password,refresh_token,implicit', '/', 'user', 7200, 2592000, NULL, 'true');
+INSERT INTO `oauth_client_details` VALUES ('1df7b0c1-aac0-148a14c7cba8', 'flow-eda', '$2a$10$UawfPVDcw.Z1bxXHfWploeTOjbSqlCJItUiGf/4H7u83Omm2g5vPW', 'read,write', 'client_credentials,authorization_code,password,refresh_token,implicit', '/', 'ROLE_API,ROLE_WS', 7200, 2592000, NULL, 'true');
 
 -- ----------------------------
 -- Table structure for oauth_client_token
@@ -134,10 +136,11 @@ CREATE TABLE `oauth_user`  (
   `update_date` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `index_username`(`username`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of oauth_user
 -- ----------------------------
+INSERT INTO `oauth_user` VALUES (1, 'test', '$2a$10$yIgxeIFX9Rw/ZnzWeY/D8u8reQov1ao/QUxxmkmvNKg9zwh57Fep.', '1df7b0c1-aac0-148a14c7cba8', 'ROLE_API,ROLE_WS', NULL, NULL, 1, '2022-06-22 17:57:46', '2022-06-22 17:57:46');
 
 SET FOREIGN_KEY_CHECKS = 1;
