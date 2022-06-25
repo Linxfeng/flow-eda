@@ -2,10 +2,14 @@ let ws = {};
 let logWs = {};
 let logContentWs = {};
 
+function urlWithToken(url) {
+  return url + "?access_token=" + localStorage.getItem("access_token");
+}
+
 // 建立连接，监听消息并进行回调
 function onOpen(id, callback) {
   if (Object.keys(ws).length === 0 || !ws[id]) {
-    const url = "ws://localhost:8088/ws/flow/" + id + "/nodes";
+    const url = urlWithToken("ws://localhost:8088/ws/flow/" + id + "/nodes");
     const socket = new WebSocket(url);
     socket.onmessage = function (msg) {
       callback(msg.data);
@@ -27,7 +31,7 @@ function onClose(id) {
 // 监听日志消息
 function onOpenLogs(id, callback) {
   if (Object.keys(logWs).length === 0 || !logWs[id]) {
-    const url = "ws://localhost:8082/ws/flow/" + id + "/logs";
+    const url = urlWithToken("ws://localhost:8082/ws/flow/" + id + "/logs");
     const socket = new WebSocket(url);
     socket.onmessage = function (msg) {
       callback(msg.data);
@@ -48,8 +52,9 @@ function onCloseLogs(id) {
 // 接收日志文件内容
 function onOpenLogDetail(path, callback) {
   if (Object.keys(logContentWs).length === 0 || !logContentWs[path]) {
-    const url =
-      "ws://localhost:8082/ws/logs/content/" + path.replaceAll("/", ":");
+    const url = urlWithToken(
+      "ws://localhost:8082/ws/logs/content/" + path.replaceAll("/", ":")
+    );
     const socket = new WebSocket(url);
     socket.onmessage = function (msg) {
       callback(msg.data);
