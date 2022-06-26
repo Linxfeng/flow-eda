@@ -8,8 +8,8 @@ import org.apache.ibatis.annotations.Select;
 public interface OauthUserMapper {
 
     @Insert(
-            "INSERT INTO oauth_user(`username`, `password`, `client_id`, `authorities`, `phone`, `email`, `status`, `create_date`, `update_date`) "
-                    + "VALUES(#{username}, #{password}, #{clientId}, #{authorities}, #{phone}, #{email}, #{status}, #{createDate}, #{updateDate})")
+            "INSERT INTO oauth_user(`username`, `password`, `client_id`, `authorities`, `phone`, `email`, `register_ip`, `status`, `create_date`, `update_date`) "
+                    + "VALUES(#{username}, #{password}, #{clientId}, #{authorities}, #{phone}, #{email}, #{registerIp}, #{status}, #{createDate}, #{updateDate})")
     void insert(OauthUser oauthUser);
 
     @Select(

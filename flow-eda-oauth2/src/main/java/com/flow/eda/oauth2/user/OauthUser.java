@@ -14,6 +14,7 @@ public class OauthUser implements Serializable {
     private String authorities;
     private String phone;
     private String email;
+    private String registerIp;
     private Boolean status;
     private Date createDate;
     private Date updateDate;

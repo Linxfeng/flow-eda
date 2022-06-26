@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 @Slf4j
@@ -34,12 +35,12 @@ public class UserController {
     private String authorities;
 
     @PostMapping("/oauth/register")
-    public Result<String> userRegister(@RequestBody Document request) {
-        String username = request.getString("username");
+    public Result<String> userRegister(@RequestBody Document body, HttpServletRequest request) {
+        String username = body.getString("username");
         if (username == null) {
             throw new MissingPropertyException("username");
         }
-        String password = request.getString("password");
+        String password = body.getString("password");
         if (password == null) {
             throw new MissingPropertyException("password");
         }
@@ -55,6 +56,7 @@ public class UserController {
             user.setPassword(passwordEncoder.encode(password));
             user.setClientId(clientId);
             user.setAuthorities(authorities);
+            user.setRegisterIp(getIp(request));
             user.setStatus(true);
             user.setCreateDate(new Date());
             user.setUpdateDate(new Date());
@@ -70,5 +72,10 @@ public class UserController {
     @GetMapping("/oauth/client")
     public Result<Document> getClientInfo() {
         return Result.of(new Document("clientId", clientId).append("clientSecret", clientSecret));
+    }
+
+    private String getIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Real-IP");
+        return ip != null ? ip : request.getRemoteAddr();
     }
 }
