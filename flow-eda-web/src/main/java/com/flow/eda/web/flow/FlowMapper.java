@@ -11,18 +11,20 @@ public interface FlowMapper {
     Flow findById(String id);
 
     @Select(
-            "<script>SELECT `id`,`name` FROM eda_flow WHERE id in <foreach collection='ids' item='id' open='(' separator=',' close=')'>#{id}</foreach></script>")
+            "<script>SELECT `id`,`name` FROM eda_flow WHERE id IN "
+                    + "<foreach collection='ids' item='id' open='(' separator=',' close=')'>#{id}</foreach></script>")
     List<Flow> findByIds(List<String> ids);
 
     @Select(
-            "<script>SELECT * FROM eda_flow WHERE 1=1 "
+            "<script>SELECT * FROM eda_flow WHERE username=#{username} "
                     + "<if test='status!=null'>AND `status`=#{status}</if>"
                     + "<if test='name!=null'> AND `name` LIKE '%${name}%'</if>"
                     + " ORDER BY create_date DESC</script>")
     List<Flow> findByRequest(FlowRequest request);
 
     @Insert(
-            "INSERT INTO eda_flow (`id`,`name`,description,`status`,create_date,update_date) VALUES(#{id},#{name},#{description},#{status},#{createDate},#{updateDate})")
+            "INSERT INTO eda_flow (`id`,`name`,description,username,`status`,create_date,update_date) "
+                    + "VALUES(#{id},#{name},#{description},#{username},#{status},#{createDate},#{updateDate})")
     void insert(Flow flow);
 
     @Update(

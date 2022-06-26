@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -19,14 +20,16 @@ public class FlowController {
 
     @OperationLog
     @GetMapping("/flow")
-    public PageResult<Flow> listFlow(FlowRequest request) {
+    public PageResult<Flow> listFlow(FlowRequest request, Principal principal) {
+        request.setUsername(principal.getName());
         return PageResult.of(flowService.listFlowByPage(request));
     }
 
     @OperationLog
     @PostMapping("/flow")
-    public Result<Flow> addFlow(@RequestBody Flow flow) {
+    public Result<Flow> addFlow(@RequestBody Flow flow, Principal principal) {
         this.check(flow);
+        flow.setUsername(principal.getName());
         flowService.addFlow(flow);
         return Result.of(flow);
     }
