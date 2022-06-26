@@ -8,7 +8,6 @@ import java.util.Date;
 /** 用户 */
 @Data
 public class OauthUser implements Serializable {
-    private Long id;
     private String username;
     private String password;
     private String clientId;

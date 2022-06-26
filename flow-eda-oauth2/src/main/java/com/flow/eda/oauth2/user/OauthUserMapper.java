@@ -16,6 +16,6 @@ public interface OauthUserMapper {
             "SELECT * FROM oauth_user WHERE username=#{username} AND client_id=#{clientId} AND status=1 LIMIT 1")
     OauthUser loadUserByUsername(String username, String clientId);
 
-    @Select("SELECT id FROM oauth_user WHERE username=#{username} AND status=1 LIMIT 1")
+    @Select("SELECT username FROM oauth_user WHERE username=#{username} AND status=1 LIMIT 1")
     Object existUsername(String username);
 }
