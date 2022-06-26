@@ -22,7 +22,7 @@
     <appender name="AMQP" class="org.springframework.amqp.rabbit.logback.AmqpAppender">
         <layout>
             <pattern>
-                <![CDATA[%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} %5level [%15.15t] %-40.40logger{39} : %m%n]]>
+                <![CDATA[%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai} %5level [%15.15t] : %m%n]]>
             </pattern>
         </layout>
         <addresses>${rabbitmqHost}:${rabbitmqPort}</addresses>
