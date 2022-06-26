@@ -1,6 +1,5 @@
 package com.flow.eda.oauth2.config;
 
-import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.oauth2.handler.LoginFailureHandler;
 import com.flow.eda.oauth2.handler.LoginSuccessHandler;
 import com.flow.eda.oauth2.handler.LogoutSuccessHandler;
@@ -19,40 +18,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsUtils;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private static final String URI_API = "/api/v1/";
-    private static final String URI_WS = "/ws/";
-    private static final String ROLE_ADMIN = "ROLE_ADMIN";
-    private static final String ROLE_API = "ROLE_API";
-    private static final String ROLE_WS = "ROLE_WS";
 
     @Lazy @Autowired private UserDetailsServiceImpl userDetailsService;
     @Autowired private LoginSuccessHandler loginSuccessHandler;
     @Autowired private LoginFailureHandler loginFailureHandler;
     @Autowired private LogoutSuccessHandler logoutSuccessHandler;
-
-    /** 检验请求的uri是否含有对应需要的权限项 */
-    static boolean uriMatchers(List<String> authorities, String uri) {
-        if (CollectionUtil.isEmpty(authorities)) {
-            return false;
-        }
-        // admin权限全部放行
-        if (authorities.contains(ROLE_ADMIN)) {
-            return true;
-        }
-        if (uri.startsWith(URI_API)) {
-            return authorities.contains(ROLE_API);
-        }
-        if (uri.startsWith(URI_WS)) {
-            return authorities.contains(ROLE_WS);
-        }
-        // 除了配置的uri之外的请求全部放行，系统找不到会自动404
-        return true;
-    }
 
     @Bean
     @Override
