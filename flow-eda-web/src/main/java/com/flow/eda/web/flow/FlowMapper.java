@@ -22,6 +22,9 @@ public interface FlowMapper {
                     + " ORDER BY create_date DESC</script>")
     List<Flow> findByRequest(FlowRequest request);
 
+    @Select("SELECT id FROM eda_flow WHERE username=#{username}")
+    List<String> findIdsByUser(String username);
+
     @Insert(
             "INSERT INTO eda_flow (`id`,`name`,description,username,`status`,create_date,update_date) "
                     + "VALUES(#{id},#{name},#{description},#{username},#{status},#{createDate},#{updateDate})")

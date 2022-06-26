@@ -30,7 +30,9 @@ public class LogController {
                 && !ADMIN.equals(principal.getName())) {
             throw new InvalidVerifyTokenException("Insufficient permissions");
         }
-        return PageResult.ofPage(logService.getLogList(request), request);
+        String username = ADMIN.equals(principal.getName()) ? null : principal.getName();
+        List<Logs> logList = logService.getLogList(request, username);
+        return PageResult.ofPage(logList, request);
     }
 
     @OperationLog
