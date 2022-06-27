@@ -4,7 +4,7 @@
       <div class="handle-box">
         <el-select v-model="params.type" class="handle-select mr10">
           <el-option key="RUNNING" label="运行日志" value="RUNNING"/>
-          <el-option key="OPERATION" label="操作日志" value="OPERATION"/>
+          <el-option v-if="username==='admin'" key="OPERATION" label="操作日志" value="OPERATION"/>
         </el-select>
         <el-button icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
         <el-button :disabled="!hasSelection" icon="el-icon-delete" style="float: right" type="primary"
@@ -42,6 +42,7 @@
 
 <script>
 import {reactive, ref} from "vue";
+import {useStore} from "vuex";
 import {listLogs, deleteLogs} from "../api/logs.js";
 import {useRouter} from "vue-router";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -49,6 +50,9 @@ import {ElMessage, ElMessageBox} from "element-plus";
 export default {
   name: "Logs",
   setup() {
+    const store = useStore();
+    const username = store.state.username;
+
     // 查询参数
     const params = reactive({
       page: 1,
@@ -135,6 +139,7 @@ export default {
 
 
     return {
+      username,
       params,
       tableData,
       pageTotal,
