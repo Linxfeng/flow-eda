@@ -61,11 +61,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(loginFailureHandler)
                 .and()
                 .logout()
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
                 .logoutUrl("/oauth/logout")
                 .logoutSuccessHandler(logoutSuccessHandler)
                 .deleteCookies("JSESSIONID")
                 .and()
                 .httpBasic();
+        // 单用户登录
+        http.sessionManagement().maximumSessions(1).maxSessionsPreventsLogin(true);
     }
 
     @Override
