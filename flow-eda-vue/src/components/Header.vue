@@ -48,6 +48,7 @@ export default {
       userInfo().then((res) => {
         if (res && res.result) {
           username.value = res.result.username;
+          store.state.username = res.result.username;
         }
       });
     };
