@@ -17,6 +17,9 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
+              <a href="https://github.com/Linxfeng/flow-eda" target="_blank">
+                <el-dropdown-item>代码仓库</el-dropdown-item>
+              </a>
               <el-dropdown-item divided command="logout"
                 >退出登录
               </el-dropdown-item>
@@ -28,16 +31,27 @@
   </div>
 </template>
 <script>
-import { computed, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { userLogout } from "../api/oauth2";
+import { userInfo, userLogout } from "../api/oauth2";
 
 export default {
   setup() {
     const router = useRouter();
     const store = useStore();
     const collapse = computed(() => store.state.collapse);
+    const username = ref("");
+
+    // 获取当前用户信息
+    const getUserInfo = () => {
+      userInfo().then((res) => {
+        if (res && res.result) {
+          username.value = res.result.username;
+        }
+      });
+    };
+    getUserInfo();
 
     // 侧边栏折叠
     const collapseChange = () => {
@@ -51,14 +65,17 @@ export default {
       }
     });
 
+    // 下拉选项命令
     const handleCommand = async (command) => {
       if (command === "logout") {
+        // 退出登录
         await userLogout();
         await router.push("/");
       }
     };
 
     return {
+      username,
       collapse,
       collapseChange,
       handleCommand,
