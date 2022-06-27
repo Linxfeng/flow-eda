@@ -76,7 +76,7 @@ public class UserController {
         return Result.ok();
     }
 
-    @GetMapping("/user/me")
+    @GetMapping("/oauth/me")
     public Result<Document> getCurrentUserInfo(HttpServletRequest request) {
         try {
             Authentication auth = tokenExtractor.extract(request);
