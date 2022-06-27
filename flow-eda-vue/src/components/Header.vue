@@ -71,6 +71,7 @@ export default {
       if (command === "logout") {
         // 退出登录
         await userLogout();
+        store.state.tagsList = [];
         await router.push("/");
       }
     };

@@ -57,6 +57,7 @@
 <script>
 import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 import { userLogin } from "../api/oauth2";
 import { ElMessage } from "element-plus";
 
@@ -64,8 +65,12 @@ export default {
   name: "Login",
   setup() {
     const router = useRouter();
+    const store = useStore();
+
     const loginFormRef = ref(null);
     const loading = ref(false);
+
+    // 登录表单
     const ruleForm = reactive({ username: "test", password: "test" });
     const rules = {
       username: [
@@ -84,6 +89,7 @@ export default {
           const success = await userLogin(ruleForm.username, ruleForm.password);
           if (success) {
             // 登录成功，跳转首页
+            store.state.tagsList = [];
             ElMessage.success("登录成功");
             await router.push("/flows");
           }
