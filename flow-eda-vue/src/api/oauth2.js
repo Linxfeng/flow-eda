@@ -74,6 +74,14 @@ export async function userLogout() {
   }
 }
 
+/**获取当前用户信息*/
+export async function userInfo() {
+  return request({
+    url: "/oauth/me",
+    method: "get",
+  });
+}
+
 /**刷新token*/
 export async function refreshToken() {
   const refreshToken = localStorage.getItem("refresh_token");
