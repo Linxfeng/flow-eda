@@ -6,7 +6,6 @@ import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -101,14 +100,9 @@ public class HttpRequestNode extends AbstractNode {
         // 发起请求
         CloseableHttpResponse response = httpClient.execute(request);
         // 获取结果并返回
-        if (response != null) {
-            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                String res = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-                return new ObjectMapper().readValue(res, Document.class);
-            }
-            throw new InternalException(
-                    "The http request failed.status code "
-                            + response.getStatusLine().getStatusCode());
+        if (response != null && response.getEntity() != null) {
+            String res = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+            return new ObjectMapper().readValue(res, Document.class);
         }
         throw new InternalException("The http request has no response.");
     }
