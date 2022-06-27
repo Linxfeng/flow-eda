@@ -5,6 +5,7 @@ import com.flow.eda.oauth2.handler.LoginSuccessHandler;
 import com.flow.eda.oauth2.handler.LogoutSuccessHandler;
 import com.flow.eda.oauth2.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -16,6 +17,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
+import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
 import org.springframework.web.cors.CorsUtils;
 
 @Configuration
@@ -76,5 +79,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         auth.eraseCredentials(true);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TokenExtractor tokenExtractor() {
+        return new BearerTokenExtractor();
     }
 }

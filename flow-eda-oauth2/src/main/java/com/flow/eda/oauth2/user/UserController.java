@@ -2,6 +2,7 @@ package com.flow.eda.oauth2.user;
 
 import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.common.exception.InternalException;
+import com.flow.eda.common.exception.InvalidVerifyTokenException;
 import com.flow.eda.common.exception.MissingPropertyException;
 import com.flow.eda.common.http.ApiError;
 import com.flow.eda.common.http.Result;
@@ -10,7 +11,11 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +29,8 @@ import java.util.Date;
 public class UserController {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private OauthUserMapper oauthUserMapper;
+    @Autowired private TokenExtractor tokenExtractor;
+    @Autowired private TokenStore tokenStore;
 
     @Value("${flow.oauth2.client_id}")
     private String clientId;
@@ -67,6 +74,21 @@ public class UserController {
             throw new InternalException(e.getMessage());
         }
         return Result.ok();
+    }
+
+    @GetMapping("/user/me")
+    public Result<Document> getCurrentUserInfo(HttpServletRequest request) {
+        try {
+            Authentication auth = tokenExtractor.extract(request);
+            if (auth != null && auth.getPrincipal() != null) {
+                OAuth2Authentication authentication =
+                        tokenStore.readAuthentication((String) auth.getPrincipal());
+                return Result.of(new Document("username", authentication.getName()));
+            }
+        } catch (Exception e) {
+            log.error("Get current user info failed: {}", e.getMessage());
+        }
+        throw new InvalidVerifyTokenException("Invalid token");
     }
 
     @GetMapping("/oauth/client")
