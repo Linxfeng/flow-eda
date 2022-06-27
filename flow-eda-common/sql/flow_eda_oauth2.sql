@@ -124,23 +124,23 @@ CREATE TABLE `oauth_refresh_token`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `oauth_user`;
 CREATE TABLE `oauth_user`  (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `username` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '用户名',
   `password` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '密码',
   `client_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '客户端ID',
   `authorities` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户权限项',
   `phone` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '电话',
   `email` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '邮箱',
+  `register_ip` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '注册IP',
   `status` tinyint(1) NULL DEFAULT NULL COMMENT '状态：启用/禁用',
   `create_date` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `update_date` datetime NULL DEFAULT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX `index_username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+  PRIMARY KEY (`username`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of oauth_user
 -- ----------------------------
-INSERT INTO `oauth_user` VALUES (1, 'test', '$2a$10$yIgxeIFX9Rw/ZnzWeY/D8u8reQov1ao/QUxxmkmvNKg9zwh57Fep.', '1df7b0c1-aac0-148a14c7cba8', 'ROLE_API,ROLE_WS', NULL, NULL, 1, '2022-06-22 17:57:46', '2022-06-22 17:57:46');
+INSERT INTO `oauth_user` VALUES ('admin', '$2a$10$D.bSJpNDkukAL1JhPHy/Ke2ce7qbdtTe926DBYYvB3GaN53IIeDSa', '1df7b0c1-aac0-148a14c7cba8', 'ROLE_ADMIN', NULL, NULL, '127.0.0.1', 1, '2022-06-22 17:52:22', '2022-06-22 17:52:22');
+INSERT INTO `oauth_user` VALUES ('test', '$2a$10$yIgxeIFX9Rw/ZnzWeY/D8u8reQov1ao/QUxxmkmvNKg9zwh57Fep.', '1df7b0c1-aac0-148a14c7cba8', 'ROLE_API,ROLE_WS', NULL, NULL, '127.0.0.1', 1, '2022-06-22 17:57:46', '2022-06-22 17:57:46');
 
 SET FOREIGN_KEY_CHECKS = 1;
