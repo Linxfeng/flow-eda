@@ -62,6 +62,18 @@ export async function userLogin(username, password) {
   return await getOauthToken(params);
 }
 
+/**用户登出*/
+export async function userLogout() {
+  const res = await request({
+    url: "/oauth/logout",
+    method: "post",
+  });
+  if (res) {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+  }
+}
+
 /**刷新token*/
 export async function refreshToken() {
   const refreshToken = localStorage.getItem("refresh_token");
