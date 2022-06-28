@@ -3,7 +3,8 @@
     <toolbar :status="flowStatus" @copyNode="copyNode(data.selectedNode)"
              @deleteNode="deleteNode(data.selectedNode)" @executeFlow="executeFlow"
              @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"
-             @showLogs="showLogs" @stopFlow="stopFlow" @zoomNode="zoomNode"/>
+             @showLogs="showLogs" @stopFlow="stopFlow" @zoomNode="zoomNode" @importFlow="importFlow"
+             @exportFlow="exportFlow"/>
     <div id="flow-content" class="flow-content">
       <div class="nodes-wrap">
         <el-collapse v-for="menu in Object.keys(data.nodeTypeList)" :model-value="menu">
@@ -461,6 +462,54 @@ export default {
       });
     };
 
+    // 导入流程
+    const importFlow = async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        const flow = JSON.parse(text);
+        if (flow && flow.nodeList && flow.lineList) {
+          // 流程数据重新赋值
+          const tempId = {};
+          flow.nodeList.forEach((n) => {
+            tempId[n.id] = generateUniqueID(8);
+            n.id = tempId[n.id];
+            n.flowId = props.flowId;
+          });
+          flow.lineList.forEach((n) => {
+            n.id = generateUniqueID(8);
+            n.from = tempId[n.from];
+            n.to = tempId[n.to];
+            n.flowId = props.flowId;
+          });
+          data.nodeList = flow.nodeList;
+          data.lineList = flow.lineList;
+          // 清除绘板实例，重新初始化
+          setTimeout(() => {
+            jsPlumbInstance.cleanupListeners();
+            jsPlumbInstance.deleteEveryConnection();
+            jsPlumbInstance.deleteEveryEndpoint();
+            jsPlumbInstance.reset();
+            init();
+          }, 0);
+          ElMessage.success("导入成功！");
+        } else {
+          ElMessage.error("导入失败！剪切板内容不正确");
+        }
+      } catch (e) {
+        ElMessage.error("导入失败！剪切板内容不正确");
+        console.log(e);
+      }
+    };
+
+    // 导出流程
+    const exportFlow = () => {
+      const flow = {
+        nodeList: data.nodeList,
+        lineList: data.lineList
+      }
+      navigator.clipboard.writeText(JSON.stringify(flow));
+    }
+
     // 展示/关闭流程实时运行日志
     const logVisible = ref(false);
     let logContent = ref("");
@@ -574,6 +623,7 @@ export default {
     onBeforeUnmount(() => {
       onCloseLogs(props.flowId);
       onClose(props.flowId);
+      jsPlumbInstance.reset();
     });
 
     return {
@@ -600,7 +650,9 @@ export default {
       stopFlow,
       logVisible,
       logContent,
-      showLogs
+      showLogs,
+      importFlow,
+      exportFlow
     };
   }
 };
