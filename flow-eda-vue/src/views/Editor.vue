@@ -553,7 +553,7 @@ export default {
     const saveData = async () => {
       if (data.nodeList.length === 0) {
         ElMessage.error("请先绘制流程图");
-        return;
+        return false;
       }
       // 封装节点数据参数
       let body = [];
@@ -582,6 +582,7 @@ export default {
       });
       // 保存流程数据
       await setNodeData(body);
+      return true;
     };
 
     // 运行本流程
@@ -591,11 +592,14 @@ export default {
         v.error = undefined;
         v.output = undefined;
       });
-      await saveData();
-      // 运行
-      const res = await executeNodeData(props.flowId);
-      if (res) {
-        ElMessage.success("操作成功");
+      // 先保存流程
+      const save = await saveData();
+      if (save) {
+        // 运行流程
+        const res = await executeNodeData(props.flowId);
+        if (res) {
+          ElMessage.success("操作成功");
+        }
       }
     };
 
