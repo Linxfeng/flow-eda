@@ -30,6 +30,8 @@ export default {
   'pages.flowList.editor.remark': '备注',
 
   // 流编辑器-工具栏
+  'pages.flowList.editor.import': '导入',
+  'pages.flowList.editor.export': '导出',
   'pages.flowList.editor.showLog': '查看日志',
   'pages.flowList.editor.closeLog': '关闭日志',
   'pages.flowList.editor.run': '运行',

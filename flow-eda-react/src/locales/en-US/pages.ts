@@ -30,6 +30,8 @@ export default {
   'pages.flowList.editor.remark': '备注',
 
   // Flow Editor-ToolBar
+  'pages.flowList.editor.import': 'Import',
+  'pages.flowList.editor.export': 'Export',
   'pages.flowList.editor.showLog': 'Show Log',
   'pages.flowList.editor.closeLog': 'Close Log',
   'pages.flowList.editor.run': 'Run Flow',
