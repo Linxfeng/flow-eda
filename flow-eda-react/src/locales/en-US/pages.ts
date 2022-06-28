@@ -27,7 +27,10 @@ export default {
   'pages.flowList.editor.checkFlow': 'Please draw some node first',
   'pages.flowList.editor.parameters': 'Custom params',
   'pages.flowList.editor.checkJson': 'Please input json format',
-  'pages.flowList.editor.remark': '备注',
+  'pages.flowList.editor.remark': 'Remark',
+  'pages.flowList.editor.exportFlow.success': 'Export successful! Content copied to clipboard',
+  'pages.flowList.editor.importFlow.failed': 'Import failed! Incorrect clipboard content',
+  'pages.flowList.editor.importFlow.success': 'Import successful！',
 
   // Flow Editor-ToolBar
   'pages.flowList.editor.import': 'Import',

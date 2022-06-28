@@ -28,6 +28,9 @@ export default {
   'pages.flowList.editor.parameters': '自定义参数',
   'pages.flowList.editor.checkJson': '请输入正确的json格式',
   'pages.flowList.editor.remark': '备注',
+  'pages.flowList.editor.exportFlow.success': '导出成功！内容已复制到剪切板',
+  'pages.flowList.editor.importFlow.failed': '导入失败！剪切板内容不正确',
+  'pages.flowList.editor.importFlow.success': '导入成功！',
 
   // 流编辑器-工具栏
   'pages.flowList.editor.import': '导入',
