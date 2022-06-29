@@ -35,20 +35,22 @@ const Login: React.FC = () => {
   return (
     <div className="login-body">
       <LoginForm
-        logo={<img alt="logo" src="/logo.svg" />}
-        title="流程管理系统"
-        subTitle="用户登录"
+        title={formatMsg('menu.logo.title')}
+        subTitle={formatMsg('menu.list.login')}
         initialValues={{
           username: 'test',
           password: 'test',
         }}
         actions={
           <div className="tips">
-            <p>提示：默认使用体验账号 test 登录，体验账号的数据会每日重置。</p>
             <p>
-              若需要永久保存用户下的流程数据，请先&nbsp;
+              <FormattedMessage id="pages.login.form.tips1" />
+            </p>
+            <p>
+              <FormattedMessage id="pages.login.form.tips2" />
+              &nbsp;
               <Link className="link" to="/register">
-                注册账号
+                <FormattedMessage id="pages.login.form.tips.register" defaultMessage="注册账号" />
               </Link>
             </p>
           </div>
@@ -63,16 +65,11 @@ const Login: React.FC = () => {
             size: 'large',
             prefix: <UserOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'用户名: admin or user'}
+          placeholder={formatMsg('pages.login.username', '用户名')}
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.login.username.required"
-                  defaultMessage="请输入用户名!"
-                />
-              ),
+              message: formatMsg('pages.login.username.required', '请输入用户名!'),
             },
           ]}
         />
@@ -82,16 +79,11 @@ const Login: React.FC = () => {
             size: 'large',
             prefix: <LockOutlined className={'prefixIcon'} />,
           }}
-          placeholder={'密码: ant.design'}
+          placeholder={formatMsg('pages.login.password', '密码')}
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.login.password.required"
-                  defaultMessage="请输入密码！"
-                />
-              ),
+              message: formatMsg('pages.login.password.required', '请输入密码!'),
             },
           ]}
         />
