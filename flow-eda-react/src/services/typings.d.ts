@@ -50,4 +50,16 @@ declare namespace API {
     params?: any[];
     description?: string;
   };
+
+  type LoginForm = {
+    username: string;
+    password: string;
+  };
+
+  type CurrentUser = {
+    username?: string;
+    avatar?: string;
+    email?: string;
+    phone?: string;
+  };
 }
