@@ -1,4 +1,16 @@
 export default {
+  // User Related
+  'pages.login.success': 'Login Success',
+  'pages.login.username': 'Username',
+  'pages.login.password': 'Password',
+  'pages.login.username.required': 'Please input username!',
+  'pages.login.password.required': 'Please input password!',
+  'pages.login.form.tips1':
+    'Tip: By default, the experience account test is used to log in, and the data of the experience account will be reset every day.',
+  'pages.login.form.tips2':
+    'If you need to permanently save the process data under the user, please first',
+  'pages.login.form.tips.register': 'Register Account',
+
   // Flow List
   'pages.flowList.flows.title': 'Flow List',
   'pages.flowList.flows.name': 'Name',

@@ -1,4 +1,14 @@
 export default {
+  // 用户相关
+  'pages.login.success': '登录成功',
+  'pages.login.username': '用户名',
+  'pages.login.password': '密码',
+  'pages.login.username.required': '请输入用户名!',
+  'pages.login.password.required': '请输入密码!',
+  'pages.login.form.tips1': '提示：默认使用体验账号 test 登录，体验账号的数据会每日重置。',
+  'pages.login.form.tips2': '若需要永久保存用户下的流程数据，请先',
+  'pages.login.form.tips.register': '注册账号',
+
   // 流程列表
   'pages.flowList.flows.title': '流程列表',
   'pages.flowList.flows.name': '名称',

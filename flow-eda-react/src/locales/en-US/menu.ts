@@ -4,4 +4,5 @@ export default {
   'menu.list.log-list': 'Logs',
   'menu.list.flow-editor': 'Flow Editor',
   'menu.list.log-detail': 'Log Detail',
+  'menu.list.login': 'User Login',
 };
