@@ -1,7 +1,8 @@
 import { useFormatMessage } from '@/hooks';
 import { userLogin, userRegister } from '@/services/api';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Form, Input, message } from 'antd';
+import { LoginForm, ProFormText } from '@ant-design/pro-form';
+import { Button, message } from 'antd';
 import React from 'react';
 import { FormattedMessage, history, useModel } from 'umi';
 import './index.less';
@@ -28,8 +29,8 @@ const Register: React.FC = () => {
       // 自动登录
       const pass = await userLogin(form);
       if (pass) {
-        await fetchUserInfo();
         // 登陆成功，跳转首页
+        await fetchUserInfo();
         history.push('/flows');
       }
     }
@@ -37,58 +38,58 @@ const Register: React.FC = () => {
 
   return (
     <div className="register-body">
-      <Form name="register" className="register-form" onFinish={handleSubmit}>
-        <Form.Item>
-          <div className="register-form-title">
-            <FormattedMessage id="menu.logo.title" defaultMessage="流程管理系统" />
+      <LoginForm
+        title={formatMsg('menu.logo.title')}
+        subTitle={formatMsg('menu.list.register')}
+        submitter={{
+          render: () => {
+            return (
+              <Button type="primary" htmlType="submit" className="register-form-button">
+                <FormattedMessage id="pages.register.form.submit" defaultMessage="注册" />
+              </Button>
+            );
+          },
+        }}
+        actions={
+          <div className="tips">
+            <p>
+              <FormattedMessage id="pages.register.form.tips" />
+            </p>
           </div>
-        </Form.Item>
-        <Form.Item>
-          <div className="register-form-subTitle">
-            <FormattedMessage id="menu.list.register" defaultMessage="用户注册" />
-          </div>
-        </Form.Item>
-        <Form.Item
+        }
+        onFinish={async (values) => {
+          await handleSubmit(values as API.LoginForm);
+        }}
+      >
+        <ProFormText
           name="username"
+          fieldProps={{
+            size: 'large',
+            prefix: <UserOutlined className={'prefixIcon'} />,
+          }}
+          placeholder={formatMsg('pages.login.username', '用户名')}
           rules={[
             {
               required: true,
               message: formatMsg('pages.login.username.required', '请输入用户名!'),
             },
           ]}
-        >
-          <Input
-            prefix={<UserOutlined className={'prefixIcon'} />}
-            placeholder={formatMsg('pages.login.username', '用户名')}
-          />
-        </Form.Item>
-        <Form.Item
+        />
+        <ProFormText.Password
           name="password"
+          fieldProps={{
+            size: 'large',
+            prefix: <LockOutlined className={'prefixIcon'} />,
+          }}
+          placeholder={formatMsg('pages.login.password', '密码')}
           rules={[
             {
               required: true,
               message: formatMsg('pages.login.password.required', '请输入密码!'),
             },
           ]}
-        >
-          <Input
-            prefix={<LockOutlined className={'prefixIcon'} />}
-            type="password"
-            autoComplete="off"
-            placeholder={formatMsg('pages.login.password', '密码')}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="register-form-button">
-            <FormattedMessage id="pages.register.form.submit" defaultMessage="注册" />
-          </Button>
-          <div className="tips">
-            <p>
-              <FormattedMessage id="pages.register.form.tips" />
-            </p>
-          </div>
-        </Form.Item>
-      </Form>
+        />
+      </LoginForm>
     </div>
   );
 };
