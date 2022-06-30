@@ -64,6 +64,7 @@ const Login: React.FC = () => {
           fieldProps={{
             size: 'large',
             prefix: <UserOutlined className={'prefixIcon'} />,
+            autoComplete: 'on',
           }}
           placeholder={formatMsg('pages.login.username', '用户名')}
           rules={[
@@ -78,6 +79,7 @@ const Login: React.FC = () => {
           fieldProps={{
             size: 'large',
             prefix: <LockOutlined className={'prefixIcon'} />,
+            autoComplete: 'off',
           }}
           placeholder={formatMsg('pages.login.password', '密码')}
           rules={[
