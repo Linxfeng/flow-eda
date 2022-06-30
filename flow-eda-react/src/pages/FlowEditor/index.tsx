@@ -335,6 +335,10 @@ const FlowEditor: React.FC = () => {
           tempId[n.id] = generateUniqueID(8);
           n.id = tempId[n.id];
           n.flowId = id;
+          // 清除节点状态信息
+          n.status = undefined;
+          n.error = undefined;
+          n.output = undefined;
         });
         flow.lineList.forEach((n: API.Node) => {
           n.id = generateUniqueID(8);
