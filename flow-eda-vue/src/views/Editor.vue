@@ -474,6 +474,10 @@ export default {
             tempId[n.id] = generateUniqueID(8);
             n.id = tempId[n.id];
             n.flowId = props.flowId;
+            // 清除节点状态信息
+            n.status = undefined;
+            n.error = undefined;
+            n.output = undefined;
           });
           flow.lineList.forEach((n) => {
             n.id = generateUniqueID(8);
