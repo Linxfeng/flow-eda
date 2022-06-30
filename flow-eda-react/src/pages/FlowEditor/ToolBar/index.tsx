@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { message, Tooltip } from 'antd';
 import ConfirmModal from '@/components/ConfirmModal';
 import IconFont from '@/components/IconFont';
-import './index.less';
 import { useFormatMessage } from '@/hooks';
+import { message, Tooltip } from 'antd';
+import React, { useState } from 'react';
+import './index.less';
 
 const ToolBar: React.FC<{
   status: string;
@@ -15,6 +15,8 @@ const ToolBar: React.FC<{
   stopFlow: () => void;
   zoomNode: (command: string) => void;
   showLogs: (show: boolean) => void;
+  importFlow: () => void;
+  exportFlow: () => void;
 }> = (props) => {
   const { formatMsg } = useFormatMessage();
   const [seeLog, setSeeLog] = useState<string>(
@@ -26,6 +28,10 @@ const ToolBar: React.FC<{
   const handle = async (command: string) => {
     if (command.startsWith('zoom')) {
       props.zoomNode(command.split('-')[1]);
+    } else if (command === 'import') {
+      props.importFlow();
+    } else if (command === 'export') {
+      props.exportFlow();
     } else if (command === 'logs') {
       if (openLog) {
         props.showLogs(false);
@@ -49,6 +55,17 @@ const ToolBar: React.FC<{
 
   return (
     <div className="toolbar">
+      <Tooltip title={formatMsg('pages.flowList.editor.import', '导入')} placement="bottom">
+        <span className="command" onClick={() => handle('import')}>
+          <IconFont type="icon-lx-import" style={iconStyle} />
+        </span>
+      </Tooltip>
+      <Tooltip title={formatMsg('pages.flowList.editor.export', '导出')} placement="bottom">
+        <span className="command" onClick={() => handle('export')}>
+          <IconFont type="icon-lx-export" style={iconStyle} />
+        </span>
+      </Tooltip>
+      <span className="separator" />
       <Tooltip title={seeLog} placement="bottom">
         <span className="command" onClick={() => handle('logs')}>
           <IconFont type="icon-lx-logs" style={iconStyle} />
