@@ -1,8 +1,9 @@
 import RightContent from '@/components/RightContent';
-import { userInfo } from '@/services/api';
+import { refreshToken, userInfo } from '@/services/api';
 import type { RequestConfig } from '@@/plugin-request/request';
+import { message } from 'antd';
 import type { RunTimeLayoutConfig } from 'umi';
-import { history } from 'umi';
+import { history, request as req } from 'umi';
 import type { RequestOptionsInit } from 'umi-request';
 
 /** 请求拦截器，在请求头添加AccessToken */
@@ -25,6 +26,23 @@ const authHeaderInterceptor = (url: string, options: RequestOptionsInit) => {
   };
 };
 
+/** 响应拦截器，状态401时RefreshToken */
+const authResponseInterceptor = async (response: Response, options: RequestOptionsInit) => {
+  // 未授权
+  if (response.status === 401) {
+    // 刷新token
+    const pass = await refreshToken();
+    if (pass) {
+      // 刷新token成功，重新之前的请求
+      return await req(options.url, options);
+    }
+    // 登录过期，跳转登陆页
+    await message.error('登录过期', 1);
+    location.href = '/login';
+  }
+  return response;
+};
+
 /**配置request adaptor，统一异常处理*/
 export const request: RequestConfig = {
   errorConfig: {
@@ -38,6 +56,8 @@ export const request: RequestConfig = {
   },
   // 配置请求拦截器
   requestInterceptors: [authHeaderInterceptor],
+  // 配置响应拦截器
+  responseInterceptors: [authResponseInterceptor],
 };
 
 // 配置initialState，存储当前用户信息
