@@ -156,7 +156,6 @@ const FlowEditor: React.FC = () => {
         });
         // 连接节点之间的连线
         setLineList(lines);
-        connectLines(lines);
       }
     });
   };
@@ -347,13 +346,13 @@ const FlowEditor: React.FC = () => {
           }
           n.flowId = id;
         });
-        // 清除绘板实例，重新初始化
+        // 清除绘板实例，重新绘制流程图
         setTimeout(() => {
           jsPlumbInstance.cleanupListeners();
           jsPlumbInstance.deleteEveryConnection();
           jsPlumbInstance.deleteEveryEndpoint();
           jsPlumbInstance.reset();
-
+          // 更新新的流程数据
           setNodeList(flow.nodeList);
           setLineList(flow.lineList);
         }, 0);
@@ -469,6 +468,11 @@ const FlowEditor: React.FC = () => {
   useEffect(() => {
     nodeList.forEach((node) => reloadNode(node));
   }, [nodeList]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /** 当面板上的连线发生变化时，重新绘制连线 */
+  useEffect(() => {
+    connectLines(lineList);
+  }, [lineList]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /** 监听ws消息，更新节点状态和输出信息 */
   useEffect(() => {
