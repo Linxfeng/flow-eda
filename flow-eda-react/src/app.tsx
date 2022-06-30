@@ -1,5 +1,8 @@
+import RightContent from '@/components/RightContent';
 import { userInfo } from '@/services/api';
 import type { RequestConfig } from '@@/plugin-request/request';
+import type { RunTimeLayoutConfig } from 'umi';
+import { history } from 'umi';
 import type { RequestOptionsInit } from 'umi-request';
 
 /** 请求拦截器，在请求头添加AccessToken */
@@ -46,7 +49,24 @@ export async function getInitialState(): Promise<{
   const fetchUserInfo = async () => {
     return await userInfo();
   };
+  // 如果不是登录/注册页面，需要重新获取当前用户
+  if (history.location.pathname !== '/login' && history.location.pathname !== '/register') {
+    const currentUser = await fetchUserInfo();
+    return {
+      fetchUserInfo,
+      currentUser,
+    };
+  }
   return {
     fetchUserInfo,
   };
 }
+
+// 配置ProLayout
+export const layout: RunTimeLayoutConfig = () => {
+  return {
+    rightContentRender: () => <RightContent />,
+    disableContentMargin: false,
+    menuHeaderRender: undefined,
+  };
+};
