@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'umi';
-import { jsPlumb } from 'jsplumb';
+import { useFormatMessage } from '@/hooks';
+import FlowLog from '@/pages/FlowEditor/FlowLog';
+import FlowNode from '@/pages/FlowEditor/FlowNode/index';
+import { changeLineState, setPanZoom, zoomPan } from '@/pages/FlowEditor/js/editor';
+import { connectOptions, defaultSetting, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
+import FlowDetail from '@/pages/FlowEditor/NodeDetail';
+import ToolBar from '@/pages/FlowEditor/ToolBar/index';
 import { getFlowData, getNodeTypes, runFlow, setFlowData, stopFlow } from '@/services/api';
-import { defaultSetting, connectOptions, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
+import { onCloseLogs, onCloseNode, onOpenLogs, onOpenNode } from '@/services/ws';
 import { generateUniqueID } from '@/utils/util';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Collapse, message, Modal } from 'antd';
-const { Panel } = Collapse;
+import { jsPlumb } from 'jsplumb';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'umi';
 import './index.less';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { useFormatMessage } from '@/hooks';
-import { onCloseLogs, onCloseNode, onOpenLogs, onOpenNode } from '@/services/ws';
-import ToolBar from '@/pages/FlowEditor/ToolBar/index';
-import FlowNode from '@/pages/FlowEditor/FlowNode/index';
-import FlowLog from '@/pages/FlowEditor/FlowLog';
-import FlowDetail from '@/pages/FlowEditor/NodeDetail';
-import { changeLineState, setPanZoom, zoomPan } from '@/pages/FlowEditor/js/editor';
+const { Panel } = Collapse;
 
 const FlowEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -324,6 +324,58 @@ const FlowEditor: React.FC = () => {
     }
   };
 
+  /** 导入流程 */
+  const importFlow = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const flow = JSON.parse(text);
+      if (flow && flow.nodeList && flow.lineList) {
+        // 流程数据重新赋值
+        const tempId = {};
+        flow.nodeList.forEach((n: API.Node) => {
+          tempId[n.id] = generateUniqueID(8);
+          n.id = tempId[n.id];
+          n.flowId = id;
+        });
+        flow.lineList.forEach((n: API.Node) => {
+          n.id = generateUniqueID(8);
+          if (n.from && tempId[n.from]) {
+            n.from = tempId[n.from];
+          }
+          if (n.to && tempId[n.to]) {
+            n.to = tempId[n.to];
+          }
+          n.flowId = id;
+        });
+        // 清除绘板实例，重新初始化
+        setTimeout(() => {
+          jsPlumbInstance.cleanupListeners();
+          jsPlumbInstance.deleteEveryConnection();
+          jsPlumbInstance.deleteEveryEndpoint();
+          jsPlumbInstance.reset();
+
+          setNodeList(flow.nodeList);
+          setLineList(flow.lineList);
+        }, 0);
+        message.success(formatMsg('pages.flowList.editor.importFlow.success'));
+      } else {
+        message.error(formatMsg('pages.flowList.editor.importFlow.failed'));
+      }
+    } catch (e) {
+      message.error(formatMsg('pages.flowList.editor.importFlow.failed'));
+    }
+  };
+
+  /** 导出流程 */
+  const exportFlow = async () => {
+    const flow = {
+      nodeList: nodeList,
+      lineList: lineList,
+    };
+    await navigator.clipboard.writeText(JSON.stringify(flow));
+    message.success(formatMsg('pages.flowList.editor.exportFlow.success'));
+  };
+
   /** 展示运行日志 */
   const showLogs = (show: boolean) => {
     if (show) {
@@ -458,6 +510,8 @@ const FlowEditor: React.FC = () => {
             await zoomPan(command, jsPlumbInstance);
           }}
           showLogs={showLogs}
+          exportFlow={exportFlow}
+          importFlow={importFlow}
         />
         <div id="flow-content" className="flow-content">
           <div className="nodes-wrap">
