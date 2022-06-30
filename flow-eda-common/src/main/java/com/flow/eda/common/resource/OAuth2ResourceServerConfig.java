@@ -44,7 +44,15 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        // 拦截全部请求
-        super.configure(http);
+        // 指定的请求需要鉴权，其余放行
+        http.cors()
+                .and()
+                .csrf()
+                .disable()
+                .authorizeRequests()
+                .antMatchers("/api/http/**", "/w/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated();
     }
 }
