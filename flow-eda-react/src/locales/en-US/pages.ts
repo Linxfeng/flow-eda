@@ -10,6 +10,10 @@ export default {
   'pages.login.form.tips2':
     'If you need to permanently save the process data under the user, please first',
   'pages.login.form.tips.register': 'Register Account',
+  'pages.register.form.submit': 'Register',
+  'pages.register.success': 'Register Success',
+  'pages.register.form.tips':
+    'Tip: After the account is successfully registered, it will automatically log in, please remember the account and password',
 
   // Flow List
   'pages.flowList.flows.title': 'Flow List',

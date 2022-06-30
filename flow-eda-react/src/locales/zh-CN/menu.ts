@@ -5,4 +5,5 @@ export default {
   'menu.list.flow-editor': '流编辑器',
   'menu.list.log-detail': '日志详情',
   'menu.list.login': '用户登录',
+  'menu.list.register': '用户注册',
 };

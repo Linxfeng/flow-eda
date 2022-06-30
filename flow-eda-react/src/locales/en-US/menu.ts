@@ -5,4 +5,5 @@ export default {
   'menu.list.flow-editor': 'Flow Editor',
   'menu.list.log-detail': 'Log Detail',
   'menu.list.login': 'User Login',
+  'menu.list.register': 'User Register',
 };

@@ -8,6 +8,9 @@ export default {
   'pages.login.form.tips1': '提示：默认使用体验账号 test 登录，体验账号的数据会每日重置。',
   'pages.login.form.tips2': '若需要永久保存用户下的流程数据，请先',
   'pages.login.form.tips.register': '注册账号',
+  'pages.register.form.submit': '注册',
+  'pages.register.success': '注册成功',
+  'pages.register.form.tips': '提示：账号注册成功后会自动登录，请牢记账号和密码',
 
   // 流程列表
   'pages.flowList.flows.title': '流程列表',
