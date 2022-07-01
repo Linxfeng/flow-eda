@@ -1,5 +1,6 @@
 import RightContent from '@/components/RightContent';
 import { refreshToken, userInfo } from '@/services/api';
+// @ts-ignore
 import type { RequestConfig } from '@@/plugin-request/request';
 import { message } from 'antd';
 import type { RunTimeLayoutConfig } from 'umi';
@@ -70,7 +71,11 @@ export async function getInitialState(): Promise<{
     return await userInfo();
   };
   // 如果不是登录/注册页面，需要重新获取当前用户
-  if (history.location.pathname !== '/login' && history.location.pathname !== '/register') {
+  if (
+    history.location.pathname !== '/' &&
+    history.location.pathname !== '/login' &&
+    history.location.pathname !== '/register'
+  ) {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
