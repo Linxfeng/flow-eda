@@ -9,7 +9,7 @@ const ToolBar: React.FC<{
   status: string;
   copyNode: () => void;
   pasteNode: () => void;
-  saveData: () => void;
+  saveData: () => Promise<boolean>;
   deleteNode: () => void;
   executeFlow: () => void;
   stopFlow: () => void;
@@ -42,8 +42,10 @@ const ToolBar: React.FC<{
       }
       setOpenLog(!openLog);
     } else if (command === 'save') {
-      props.saveData();
-      message.success(formatMsg('component.message.success', '操作成功'));
+      const save = await props.saveData();
+      if (save) {
+        message.success(formatMsg('component.message.success', '操作成功'));
+      }
     } else if (command === 'copy') {
       props.copyNode();
     } else if (command === 'paste') {

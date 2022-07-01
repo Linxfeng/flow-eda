@@ -395,10 +395,10 @@ const FlowEditor: React.FC = () => {
   };
 
   /** 保存流程图所有节点数据 */
-  const saveData = async () => {
+  const saveData = async (): Promise<boolean> => {
     if (nodeList.length === 0) {
       message.error(formatMsg('pages.flowList.editor.checkFlow'));
-      return;
+      return false;
     }
     // 流程节点数据参数
     const body: API.Node[] = [];
@@ -427,6 +427,7 @@ const FlowEditor: React.FC = () => {
     });
     // 保存/更新流程节点数据
     await setFlowData(body);
+    return true;
   };
 
   /** 运行本流程 */
@@ -437,13 +438,15 @@ const FlowEditor: React.FC = () => {
       n.output = undefined;
     });
     // 保存当前流程数据
-    await saveData();
-    // 运行本流程
-    runFlow(id).then((res) => {
-      if (res) {
-        message.success(formatMsg('component.message.success'));
-      }
-    });
+    const save = await saveData();
+    if (save) {
+      // 运行本流程
+      runFlow(id).then((res) => {
+        if (res) {
+          message.success(formatMsg('component.message.success'));
+        }
+      });
+    }
   };
 
   /** 停止流程 */
