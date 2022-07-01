@@ -52,6 +52,10 @@ services:
       - /root/app/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
       - /root/app/nginx/conf/conf.d/default.conf:/etc/nginx/conf.d/default.conf
       - /root/app/nginx/logs:/wwwlogs
+  oauth2:
+    image: flow-eda-oauth2
+    container_name: oauth2
+    network_mode: host
   logger:
     image: flow-eda-logger
     container_name: logger
