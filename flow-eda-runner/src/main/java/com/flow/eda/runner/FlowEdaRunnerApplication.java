@@ -1,7 +1,7 @@
 package com.flow.eda.runner;
 
 import com.flow.eda.runner.node.http.response.HttpResponseServlet;
-import com.flow.eda.runner.status.FlowNodeWebsocket;
+import com.flow.eda.runner.utils.ApplicationContextUtil;
 import org.apache.dubbo.config.spring.context.annotation.DubboComponentScan;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,7 +23,7 @@ public class FlowEdaRunnerApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext applicationContext =
                 SpringApplication.run(FlowEdaRunnerApplication.class, args);
-        FlowNodeWebsocket.setApplicationContext(applicationContext);
+        ApplicationContextUtil.setApplicationContext(applicationContext);
     }
 
     @Bean

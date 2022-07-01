@@ -2,11 +2,11 @@ package com.flow.eda.runner.status;
 
 import com.flow.eda.common.exception.ResourceNotFoundException;
 import com.flow.eda.runner.node.Node;
+import com.flow.eda.runner.utils.ApplicationContextUtil;
 import com.flow.eda.runner.utils.FlowLogs;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -24,20 +24,14 @@ public class FlowNodeWebsocket {
     /** 每个流程id对应一个session */
     private static final Map<String, Session> SESSION_POOL = new ConcurrentHashMap<>();
 
-    private static ApplicationContext applicationContext;
-
-    /** 解决多例websocket实例下注入的bean为null的问题 */
-    public static void setApplicationContext(ApplicationContext applicationContext) {
-        FlowNodeWebsocket.applicationContext = applicationContext;
-    }
-
     @OnOpen
     public void onOpen(Session session, @PathParam("id") String id) {
         Document message = new Document();
         try {
             // 获取当前流程状态，校验id参数
             String flowStatus =
-                    applicationContext.getBean(FlowStatusService.class).getFlowStatus(id, message);
+                    ApplicationContextUtil.getBean(FlowStatusService.class)
+                            .getFlowStatus(id, message);
             message.append("flowStatus", flowStatus);
         } catch (ResourceNotFoundException e) {
             log.error("The client flow id {} is invalid", id);
@@ -75,8 +69,7 @@ public class FlowNodeWebsocket {
         String flowStatus = message.getString("flowStatus");
         if (flowStatus == null) {
             flowStatus =
-                    applicationContext
-                            .getBean(FlowStatusService.class)
+                    ApplicationContextUtil.getBean(FlowStatusService.class)
                             .getFlowStatus(flowId, message);
             message.append("flowStatus", flowStatus);
         }
@@ -90,7 +83,8 @@ public class FlowNodeWebsocket {
             }
         }
         // 向mq中推送流程的实时运行状态信息
-        applicationContext.getBean(FlowStatusMqProducer.class).sendFlowStatus(flowId, flowStatus);
+        ApplicationContextUtil.getBean(FlowStatusMqProducer.class)
+                .sendFlowStatus(flowId, flowStatus);
         if (Node.Status.FINISHED.name().equals(flowStatus)) {
             FlowLogs.info(flowId, "flow {} run finished", flowId);
         }
