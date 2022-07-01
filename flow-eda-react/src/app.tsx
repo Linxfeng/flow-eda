@@ -39,7 +39,7 @@ const authResponseInterceptor = async (response: Response, options: RequestOptio
     }
     // 登录过期，跳转登陆页
     await message.error('登录过期', 1);
-    location.href = '/login';
+    history.push('/login');
   }
   return response;
 };
