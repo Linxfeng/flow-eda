@@ -25,3 +25,9 @@ mybatis:
   type-handlers-package: com.flow.eda.web.mybatis
   configuration:
     map-underscore-to-camel-case: true
+security:
+  oauth2:
+    resource-id: flow-eda
+    client-id: 1df7b0c1-aac0-148a14c7cba8
+    client-secret: zcUaT32GlwIjz4yBJjYZIIMvzf
+    check-token-url: http://localhost:8086/oauth/check_token
