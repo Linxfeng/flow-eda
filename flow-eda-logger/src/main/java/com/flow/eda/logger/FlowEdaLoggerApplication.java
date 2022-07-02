@@ -7,7 +7,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.flow.eda.logger", "com.flow.eda.common.resource"})
+@ComponentScan(
+        basePackages = {
+                "com.flow.eda.logger",
+                "com.flow.eda.common.config",
+                "com.flow.eda.common.resource"
+        })
 public class FlowEdaLoggerApplication {
 
     public static void main(String[] args) {

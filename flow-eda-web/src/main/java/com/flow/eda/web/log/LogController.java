@@ -25,8 +25,7 @@ public class LogController {
             throw new MissingRequestParameterException("type");
         }
         // 仅管理员用户可查看操作日志
-        if (LogsService.Type.OPERATION.equals(request.getType())
-                && !ADMIN.equals(principal.getName())) {
+        if ("OPERATION".equals(request.getType().name()) && !ADMIN.equals(principal.getName())) {
             throw new InvalidVerifyTokenException("Insufficient permissions");
         }
         String username = ADMIN.equals(principal.getName()) ? null : principal.getName();

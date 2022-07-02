@@ -18,11 +18,8 @@ public class LogService {
     @Autowired private FlowMapper flowMapper;
 
     /** 获取日志文件信息列表 */
-    public List<Logs> getLogList(LogRequest request) {
-        List<Logs> list = logClient.getLogList(request.getType().name()).getResult();
-        List<String> ids = filterMap(list, l -> l.getFlow() != null, Logs::getFlow);
     public List<Logs> getLogList(LogRequest request, String username) {
-        List<Logs> list = logsService.getLogList(request.getType());
+        List<Logs> list = logClient.getLogList(request.getType().name()).getResult();
         List<String> ids;
         if (username != null) {
             // 根据用户进行过滤
@@ -43,7 +40,7 @@ public class LogService {
                     MergeBuilder.source(list, Logs::getFlow)
                             .target(flows, Flow::getId)
                             .mergeS((log, flow) -> log.setFlowName(flow.getName()));
-        } else if (LogsService.Type.RUNNING.equals(request.getType())) {
+        } else if ("RUNNING".equals(request.getType().name())) {
             list.clear();
         }
         // 根据日志的日期排序，降序

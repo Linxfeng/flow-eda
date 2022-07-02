@@ -7,10 +7,7 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.flow.eda.common.utils.CollectionUtil.*;
@@ -27,8 +24,8 @@ public class FlowStatusService {
 
     public void startRun(
             String flowId, List<FlowData> data, List<FlowData> starts, List<FlowData> timer) {
-        this.nodeMap.put(flowId, new ConcurrentHashSet<>());
-        this.runMap.put(flowId, new ConcurrentHashSet<>());
+        this.nodeMap.put(flowId, new HashSet<>());
+        this.runMap.put(flowId, new HashSet<>());
         if (isNotEmpty(starts)) {
             this.parseAllNodes(flowId, data, starts);
         }
@@ -63,7 +60,7 @@ public class FlowStatusService {
     /** 判断当前流程状态是否已完成 */
     public boolean isFinished(String flowId) {
         if (!nodeMap.containsKey(flowId)) {
-            String status = flowInfoService.getFlowStatus(flowId);
+            String status = flowStatusClient.getFlowStatus(flowId).getResult();
             return Node.Status.FINISHED.name().equals(status);
         }
         return nodeMap.get(flowId).isEmpty();
@@ -110,7 +107,7 @@ public class FlowStatusService {
 
     /** 移除当前节点之后的所有节点(包含当前节点) */
     public void removeNextNode(List<FlowData> data, FlowData currentNode) {
-        Set<String> nodeSet = new ConcurrentHashSet<>();
+        Set<String> nodeSet = new HashSet<>();
         nodeSet.add(currentNode.getId());
         this.parseNextNode(data, currentNode, nodeSet);
         this.nodeMap.get(currentNode.getFlowId()).removeAll(nodeSet);
