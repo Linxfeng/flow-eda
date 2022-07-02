@@ -1,7 +1,17 @@
 export default [
   {
     path: '/',
-    redirect: '/flows',
+    redirect: '/login',
+  },
+  {
+    path: '/login',
+    layout: false,
+    component: './Login',
+  },
+  {
+    path: '/register',
+    layout: false,
+    component: './Register',
   },
   {
     name: 'list.flow-list',

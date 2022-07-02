@@ -1,17 +1,20 @@
 // @ts-ignore
-import { FormattedMessage, history } from 'umi';
+import { useFormatMessage, useSubmit } from '@/hooks/index';
+import { deleteLogs, getLogList } from '@/services/api';
+import { useModel } from '@@/plugin-model/useModel';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { PageContainer } from '@ant-design/pro-layout';
 import { Modal, Space } from 'antd';
 import type { Key } from 'react';
 import React, { useRef, useState } from 'react';
-import { deleteLogs, getLogList } from '@/services/api';
-import { useFormatMessage, useSubmit } from '@/hooks/index';
+import { FormattedMessage, history } from 'umi';
 
 const LogList: React.FC = () => {
   const [selectedRowKeys, setSelectedRows] = useState<Key[]>([]);
+  const { initialState } = useModel('@@initialState');
+  const currentUser = initialState?.currentUser;
   const actionRef = useRef<ActionType>();
   const { formatMsg } = useFormatMessage();
   const { submitRequest } = useSubmit();
@@ -34,6 +37,18 @@ const LogList: React.FC = () => {
     });
   };
 
+  const getEnum = () => {
+    if (currentUser?.username === 'admin') {
+      return {
+        RUNNING: { text: formatMsg('pages.logList.logs.type.running') },
+        OPERATION: { text: formatMsg('pages.logList.logs.type.operation') },
+      };
+    }
+    return {
+      RUNNING: { text: formatMsg('pages.logList.logs.type.running') },
+    };
+  };
+
   const columns: ProColumns<API.Log>[] = [
     {
       title: formatMsg('pages.logList.logs.type', '日志类型'),
@@ -41,10 +56,7 @@ const LogList: React.FC = () => {
       width: '18%',
       valueType: 'select',
       initialValue: 'RUNNING',
-      valueEnum: {
-        RUNNING: { text: formatMsg('pages.logList.logs.type.running') },
-        OPERATION: { text: formatMsg('pages.logList.logs.type.operation') },
-      },
+      valueEnum: getEnum(),
     },
     {
       title: formatMsg('pages.logList.logs.flowName', '流程名称'),

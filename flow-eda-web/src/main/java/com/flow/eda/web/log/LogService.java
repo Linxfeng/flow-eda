@@ -21,13 +21,30 @@ public class LogService {
     public List<Logs> getLogList(LogRequest request) {
         List<Logs> list = logClient.getLogList(request.getType().name()).getResult();
         List<String> ids = filterMap(list, l -> l.getFlow() != null, Logs::getFlow);
+    public List<Logs> getLogList(LogRequest request, String username) {
+        List<Logs> list = logsService.getLogList(request.getType());
+        List<String> ids;
+        if (username != null) {
+            // 根据用户进行过滤
+            List<String> idsByUser = flowMapper.findIdsByUser(username);
+            ids =
+                    filterMap(
+                            list,
+                            l -> l.getFlow() != null && idsByUser.contains(l.getFlow()),
+                            Logs::getFlow);
+        } else {
+            ids = filterMap(list, l -> l.getFlow() != null, Logs::getFlow);
+        }
         if (CollectionUtil.isNotEmpty(ids)) {
+            list.removeIf(l -> !ids.contains(l.getFlow()));
             // 聚合流程名称
             List<Flow> flows = flowMapper.findByIds(ids);
             list =
                     MergeBuilder.source(list, Logs::getFlow)
                             .target(flows, Flow::getId)
                             .mergeS((log, flow) -> log.setFlowName(flow.getName()));
+        } else if (LogsService.Type.RUNNING.equals(request.getType())) {
+            list.clear();
         }
         // 根据日志的日期排序，降序
         list.sort((o1, o2) -> comparingDate(o1.getDate(), o2.getDate()));

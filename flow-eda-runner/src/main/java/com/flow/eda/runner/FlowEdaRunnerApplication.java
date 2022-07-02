@@ -15,13 +15,13 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableFeignClients
 @SpringBootApplication(exclude = MongoAutoConfiguration.class)
-@ComponentScan(basePackages = {"com.flow.eda.runner", "com.flow.eda.common.config"})
+@ComponentScan(basePackages = {"com.flow.eda.runner", "com.flow.eda.common.resource"})
 public class FlowEdaRunnerApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext applicationContext =
                 SpringApplication.run(FlowEdaRunnerApplication.class, args);
-        FlowNodeWebsocket.setApplicationContext(applicationContext);
+        ApplicationContextUtil.setApplicationContext(applicationContext);
     }
 
     @Bean

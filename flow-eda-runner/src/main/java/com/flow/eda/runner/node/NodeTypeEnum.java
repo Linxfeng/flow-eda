@@ -2,6 +2,7 @@ package com.flow.eda.runner.node;
 
 import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.common.model.FlowData;
+import com.flow.eda.runner.node.condition.ConditionNode;
 import com.flow.eda.runner.node.delay.DelayNode;
 import com.flow.eda.runner.node.http.request.HttpRequestNode;
 import com.flow.eda.runner.node.http.response.HttpResponseNode;
@@ -28,6 +29,7 @@ public enum NodeTypeEnum {
     OUTPUT("output", OutputNode.class),
     TIMER("timer", TimerNode.class),
     DELAY("delay", DelayNode.class),
+    CONDITION("condition", ConditionNode.class),
     /** 解析节点 */
     PARSER("parser", ParserNode.class),
     /** 网络节点 */

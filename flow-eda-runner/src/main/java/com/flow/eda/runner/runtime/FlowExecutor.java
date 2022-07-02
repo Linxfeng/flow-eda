@@ -5,6 +5,8 @@ import com.flow.eda.common.model.FlowData;
 import com.flow.eda.runner.node.Node;
 import com.flow.eda.runner.node.NodeTypeEnum;
 import com.flow.eda.runner.status.FlowNodeWebsocket;
+import com.flow.eda.runner.status.FlowStatusService;
+import com.flow.eda.runner.utils.ApplicationContextUtil;
 import com.flow.eda.runner.utils.FlowLogs;
 import org.bson.Document;
 
@@ -48,14 +50,26 @@ public class FlowExecutor {
         currentNode.getParams().append("flowId", flowId).append("nodeId", currentNode.getId());
         try {
             Node nodeInstance = getInstance(currentNode);
-            sendNodeStatus(
-                    currentNode.getId(), new Document("status", nodeInstance.status().name()));
+            // 更新节点运行状态
+            if (nodeInstance.status() != null) {
+                sendNodeStatus(
+                        currentNode.getId(), new Document("status", nodeInstance.status().name()));
+                info(flowId, "start running [{}] node. input:{}", type, input);
+            } else {
+                // 当前节点中断后，更新流程状态
+                FlowStatusService service = ApplicationContextUtil.getBean(FlowStatusService.class);
+                service.removeNextNode(flowData, currentNode);
+                if (service.isFinished(flowId)) {
+                    flowNodeWebsocket.sendMessage(
+                            String.valueOf(flowId),
+                            new Document("flowStatus", Node.Status.FINISHED.name()));
+                }
+            }
             // 处理阻塞节点
             if (nodeInstance instanceof FlowBlockNodePool.BlockNode) {
                 FlowBlockNodePool.addBlockNode(flowId, (FlowBlockNodePool.BlockNode) nodeInstance);
             }
-            // 运行节点
-            info(flowId, "start running [{}] node. input:{}", type, input);
+            // 执行节点
             nodeInstance.run(
                     (p) -> {
                         info(flowId, "run [{}] node finished. output:{}", type, p.toJson());

@@ -1,4 +1,20 @@
 export default {
+  // User Related
+  'pages.login.success': 'Login Success',
+  'pages.login.username': 'Username',
+  'pages.login.password': 'Password',
+  'pages.login.username.required': 'Please input username!',
+  'pages.login.password.required': 'Please input password!',
+  'pages.login.form.tips1':
+    'Tip: By default, the experience account test is used to log in, and the data of the experience account will be reset every day.',
+  'pages.login.form.tips2':
+    'If you need to permanently save the process data under the user, please first',
+  'pages.login.form.tips.register': 'Register Account',
+  'pages.register.form.submit': 'Register',
+  'pages.register.success': 'Register Success',
+  'pages.register.form.tips':
+    'Tip: After the account is successfully registered, it will automatically log in, please remember the account and password',
+
   // Flow List
   'pages.flowList.flows.title': 'Flow List',
   'pages.flowList.flows.name': 'Name',
@@ -27,9 +43,14 @@ export default {
   'pages.flowList.editor.checkFlow': 'Please draw some node first',
   'pages.flowList.editor.parameters': 'Custom params',
   'pages.flowList.editor.checkJson': 'Please input json format',
-  'pages.flowList.editor.remark': '备注',
+  'pages.flowList.editor.remark': 'Remark',
+  'pages.flowList.editor.exportFlow.success': 'Export successful! Content copied to clipboard',
+  'pages.flowList.editor.importFlow.failed': 'Import failed! Incorrect clipboard content',
+  'pages.flowList.editor.importFlow.success': 'Import successful！',
 
   // Flow Editor-ToolBar
+  'pages.flowList.editor.import': 'Import',
+  'pages.flowList.editor.export': 'Export',
   'pages.flowList.editor.showLog': 'Show Log',
   'pages.flowList.editor.closeLog': 'Close Log',
   'pages.flowList.editor.run': 'Run Flow',

@@ -1,4 +1,17 @@
 export default {
+  // 用户相关
+  'pages.login.success': '登录成功',
+  'pages.login.username': '用户名',
+  'pages.login.password': '密码',
+  'pages.login.username.required': '请输入用户名!',
+  'pages.login.password.required': '请输入密码!',
+  'pages.login.form.tips1': '提示：默认使用体验账号 test 登录，体验账号的数据会每日重置。',
+  'pages.login.form.tips2': '若需要永久保存用户下的流程数据，请先',
+  'pages.login.form.tips.register': '注册账号',
+  'pages.register.form.submit': '注册',
+  'pages.register.success': '注册成功',
+  'pages.register.form.tips': '提示：账号注册成功后会自动登录，请牢记账号和密码',
+
   // 流程列表
   'pages.flowList.flows.title': '流程列表',
   'pages.flowList.flows.name': '名称',
@@ -28,8 +41,13 @@ export default {
   'pages.flowList.editor.parameters': '自定义参数',
   'pages.flowList.editor.checkJson': '请输入正确的json格式',
   'pages.flowList.editor.remark': '备注',
+  'pages.flowList.editor.exportFlow.success': '导出成功！内容已复制到剪切板',
+  'pages.flowList.editor.importFlow.failed': '导入失败！剪切板内容不正确',
+  'pages.flowList.editor.importFlow.success': '导入成功！',
 
   // 流编辑器-工具栏
+  'pages.flowList.editor.import': '导入',
+  'pages.flowList.editor.export': '导出',
   'pages.flowList.editor.showLog': '查看日志',
   'pages.flowList.editor.closeLog': '关闭日志',
   'pages.flowList.editor.run': '运行',

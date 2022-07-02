@@ -7,7 +7,11 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.flow.eda.common.utils.CollectionUtil.*;
 
@@ -15,26 +19,22 @@ import static com.flow.eda.common.utils.CollectionUtil.*;
 @Service
 public class FlowStatusService {
     /** 所有需要执行的节点 */
-    private final Map<String, Set<String>> nodeMap = new HashMap<>();
+    private final Map<String, Set<String>> nodeMap = new ConcurrentHashMap<>();
     /** 正在运行的节点 */
-    private final Map<String, Set<String>> runMap = new HashMap<>();
-    /** 临时存储流数据 */
-    private final Map<String, List<FlowData>> dataMap = new HashMap<>();
+    private final Map<String, Set<String>> runMap = new ConcurrentHashMap<>();
 
     @Autowired private FlowStatusClient flowStatusClient;
 
     public void startRun(
             String flowId, List<FlowData> data, List<FlowData> starts, List<FlowData> timer) {
-        this.dataMap.put(flowId, data);
-        this.nodeMap.put(flowId, new HashSet<>());
-        this.runMap.put(flowId, new HashSet<>());
+        this.nodeMap.put(flowId, new ConcurrentHashSet<>());
+        this.runMap.put(flowId, new ConcurrentHashSet<>());
         if (isNotEmpty(starts)) {
-            this.parseAllNodes(flowId, starts);
+            this.parseAllNodes(flowId, data, starts);
         }
         if (isNotEmpty(timer)) {
-            this.parseAllNodes(flowId, timer);
+            this.parseAllNodes(flowId, data, timer);
         }
-        this.dataMap.remove(flowId);
     }
 
     /** 实时计算流程状态 */
@@ -60,6 +60,15 @@ public class FlowStatusService {
         return Node.Status.RUNNING.name();
     }
 
+    /** 判断当前流程状态是否已完成 */
+    public boolean isFinished(String flowId) {
+        if (!nodeMap.containsKey(flowId)) {
+            String status = flowInfoService.getFlowStatus(flowId);
+            return Node.Status.FINISHED.name().equals(status);
+        }
+        return nodeMap.get(flowId).isEmpty();
+    }
+
     /** 获取运行中的节点id */
     public List<String> getRunningNodes(String flowId) {
         Set<String> nodes = this.runMap.get(flowId);
@@ -76,26 +85,34 @@ public class FlowStatusService {
     }
 
     /** 解析出所有要执行的节点 */
-    private void parseAllNodes(String flowId, List<FlowData> starts) {
+    private void parseAllNodes(String flowId, List<FlowData> data, List<FlowData> starts) {
         forEach(
                 starts,
                 n -> {
                     this.nodeMap.get(flowId).add(n.getId());
-                    parseNextNode(flowId, n);
+                    parseNextNode(data, n, this.nodeMap.get(flowId));
                 });
     }
 
-    private void parseNextNode(String flowId, FlowData currentNode) {
-        List<FlowData> data = this.dataMap.get(flowId);
+    /** 解析出当前节点之后的所有节点 */
+    private void parseNextNode(List<FlowData> data, FlowData currentNode, Set<String> nodeSet) {
         List<String> ids =
                 filterMap(data, n -> currentNode.getId().equals(n.getFrom()), FlowData::getTo);
         if (isNotEmpty(ids)) {
             forEach(
                     filter(data, n -> ids.contains(n.getId())),
                     n -> {
-                        this.nodeMap.get(flowId).add(n.getId());
-                        parseNextNode(flowId, n);
+                        nodeSet.add(n.getId());
+                        parseNextNode(data, n, nodeSet);
                     });
         }
+    }
+
+    /** 移除当前节点之后的所有节点(包含当前节点) */
+    public void removeNextNode(List<FlowData> data, FlowData currentNode) {
+        Set<String> nodeSet = new ConcurrentHashSet<>();
+        nodeSet.add(currentNode.getId());
+        this.parseNextNode(data, currentNode, nodeSet);
+        this.nodeMap.get(currentNode.getFlowId()).removeAll(nodeSet);
     }
 }

@@ -10,8 +10,6 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,22 +23,18 @@ public class LogContentWebsocket {
     private static final int LINES = 20;
     /** 日志文件根目录 */
     private static final String ROOT = System.getProperty("user.dir");
-    /** 每个日志文件路径对应一个session */
-    private static final Map<String, Session> SESSION_POOL = new ConcurrentHashMap<>();
     /** 用于异步推送日志文件内容的线程池 */
     private final ExecutorService pool = Executors.newCachedThreadPool();
 
     @OnOpen
     public void onOpen(Session session, @PathParam("path") String path) {
-        SESSION_POOL.put(path, session);
         log.info("Connected: new logs content request client connected, {}", path);
         // 客户端建立连接之后立即开始推送
-        pool.execute(() -> pushLogContent(path));
+        pool.execute(() -> pushLogContent(path, session));
     }
 
     @OnClose
     public void onClose(@PathParam("path") String path) {
-        SESSION_POOL.remove(path);
         log.info("Disconnected: logs content request client disconnected, {}", path);
     }
 
@@ -55,7 +49,7 @@ public class LogContentWebsocket {
     }
 
     /** 推送日志文件内容 */
-    private void pushLogContent(String path) {
+    private void pushLogContent(String path, Session session) {
         try {
             String filePath = ROOT + path.replaceAll(":", "/");
             BufferedReader in = new BufferedReader(new FileReader(filePath));
@@ -65,13 +59,13 @@ public class LogContentWebsocket {
                 builder.append(in.readLine()).append("\n");
                 lines++;
                 if (lines == LINES) {
-                    sendMessage(path, builder.toString());
+                    this.sendMessage(session, builder.toString());
                     builder = new StringBuilder();
                     lines = 0;
                 }
             }
             if (lines > 0) {
-                sendMessage(path, builder.toString());
+                this.sendMessage(session, builder.toString());
             }
             in.close();
         } catch (IOException e) {
@@ -79,12 +73,10 @@ public class LogContentWebsocket {
         }
     }
 
-    private void sendMessage(String path, String message) {
-        if (SESSION_POOL.get(path) != null) {
+    private void sendMessage(Session session, String message) {
+        if (session != null && session.isOpen()) {
             try {
-                synchronized (SESSION_POOL.get(path)) {
-                    SESSION_POOL.get(path).getBasicRemote().sendText(message);
-                }
+                session.getBasicRemote().sendText(message);
             } catch (Exception e) {
                 log.error("Send websocket message failed:{}", e.getMessage());
             }

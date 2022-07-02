@@ -6,23 +6,53 @@
     </div>
     <div class="logo">流程管理系统</div>
     <div class="header-right">
-      <div class="header-avatar">
+      <div class="header-user-con">
         <div class="user-avatar">
-          <img alt="" src="../assets/img/logo.png"/>
+          <img alt="" src="../assets/img/logo.png" />
         </div>
+        <el-dropdown class="user-name" trigger="click" @command="handleCommand">
+          <span class="el-dropdown-link">
+            {{ username }}
+            <i class="el-icon-caret-bottom"></i>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <a href="https://github.com/Linxfeng/flow-eda" target="_blank">
+                <el-dropdown-item>代码仓库</el-dropdown-item>
+              </a>
+              <el-dropdown-item divided command="logout"
+                >退出登录
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
     </div>
   </div>
 </template>
 <script>
-import {computed, onMounted} from "vue";
-import {useStore} from "vuex";
+import { ref, computed, onMounted } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { userInfo, userLogout } from "../api/oauth2";
 
 export default {
   setup() {
-
+    const router = useRouter();
     const store = useStore();
     const collapse = computed(() => store.state.collapse);
+    const username = ref("");
+
+    // 获取当前用户信息
+    const getUserInfo = () => {
+      userInfo().then((res) => {
+        if (res && res.result) {
+          username.value = res.result.username;
+          store.state.username = res.result.username;
+        }
+      });
+    };
+    getUserInfo();
 
     // 侧边栏折叠
     const collapseChange = () => {
@@ -36,22 +66,34 @@ export default {
       }
     });
 
+    // 下拉选项命令
+    const handleCommand = async (command) => {
+      if (command === "logout") {
+        // 退出登录
+        await userLogout();
+        store.state.tagsList = [];
+        await router.push("/");
+      }
+    };
+
     return {
+      username,
       collapse,
       collapseChange,
+      handleCommand,
     };
   },
 };
 </script>
 <style lang="less" scoped>
 .header {
-  background-color: #242f42;
   position: relative;
   box-sizing: border-box;
   width: 100%;
   height: 70px;
-  font-size: 22px;
   color: #fff;
+  font-size: 22px;
+  background-color: #242f42;
 
   .logo {
     float: left;
@@ -63,8 +105,8 @@ export default {
 .collapse-btn {
   float: left;
   padding: 0 21px;
-  cursor: pointer;
   line-height: 70px;
+  cursor: pointer;
 
   &:hover {
     background: rgb(40, 52, 70);
@@ -78,8 +120,8 @@ export default {
 
 .header-avatar {
   display: flex;
-  height: 70px;
   align-items: center;
+  height: 70px;
 }
 
 .user-name {
@@ -95,5 +137,24 @@ export default {
     height: 30px;
     border-radius: 50%;
   }
+}
+
+.header-user-con {
+  display: flex;
+  align-items: center;
+  height: 70px;
+}
+
+.user-name {
+  margin-left: 10px;
+}
+
+.el-dropdown-link {
+  color: #fff;
+  cursor: pointer;
+}
+
+.el-dropdown-menu__item {
+  text-align: center;
 }
 </style>

@@ -16,6 +16,7 @@ import static com.flow.eda.common.utils.CollectionUtil.*;
 public class NodeTypeService {
     /** 定义节点类型的menu，并规定展示顺序 */
     private static final List<String> TYPE_MENU = Arrays.asList("基础", "解析", "网络", "数据库");
+
     @Autowired private NodeTypeMapper nodeTypeMapper;
     @Autowired private NodeTypeParamMapper nodeTypeParamMapper;
 

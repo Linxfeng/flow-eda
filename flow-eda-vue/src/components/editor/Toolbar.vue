@@ -1,5 +1,16 @@
 <template>
   <div class="toolbar">
+    <el-tooltip content="导入" placement="bottom">
+      <span class="command" @click="handle('import')">
+      <span class="icon-lx-import"/>
+      </span>
+    </el-tooltip>
+    <el-tooltip content="导出" placement="bottom">
+      <span class="command" @click="handle('export')">
+      <span class="icon-lx-export"/>
+      </span>
+    </el-tooltip>
+    <span class="separator"/>
     <el-tooltip :content="logs" placement="bottom">
       <span class="command" @click="handle('logs')">
       <span class="icon-lx-logs"/>
@@ -98,6 +109,16 @@ export default {
     const handle = (command) => {
       if (command.startsWith("zoom")) {
         context.emit("zoomNode", command.split('-')[1]);
+      } else if (command === "import") {
+        ElMessageBox.confirm("确认导入流程？这将会从当前剪切板中读取内容生成新的流程图，完全覆盖本流程的数据", "提示", {
+          type: "warning",
+        }).then(() => {
+          context.emit("importFlow");
+        }).catch(() => {
+        });
+      } else if (command === "export") {
+        context.emit("exportFlow");
+        ElMessage.success("导出成功！内容已复制到剪切板");
       } else if (command === "logs") {
         openLogs = !openLogs;
         if (openLogs) {

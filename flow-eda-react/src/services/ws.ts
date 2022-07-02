@@ -3,7 +3,8 @@ const logWs = {};
 const logContentWs = {};
 
 function openWs(url: string, callback: (res: string) => void) {
-  const socket = new WebSocket(url);
+  // websocket请求url带上token认证
+  const socket = new WebSocket(url + '?access_token=' + localStorage.getItem('access_token'));
   socket.onmessage = function (msg) {
     callback(msg.data);
   };
