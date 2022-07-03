@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -65,9 +64,7 @@ public class HttpResponseNode extends AbstractNode implements FlowBlockNodePool.
         }
         // 获取请求参数，向下游输出
         try {
-            Document data =
-                    Document.parse(
-                            IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8));
+            Document data = Document.parse(IOUtils.toString(request.getInputStream(), "UTF-8"));
             Document output = output();
             output.putAll(data);
             callback.callback(output);
