@@ -47,6 +47,7 @@ public abstract class AbstractNode implements Node {
         // 从本节点的输入参数中取值
         if (params != null) {
             payload = PlaceholderUtil.replacePlaceholder(payload, params);
+            params = PlaceholderUtil.replacePlaceholder(params, params);
         }
         return params;
     }
