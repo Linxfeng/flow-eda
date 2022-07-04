@@ -1,36 +1,21 @@
 package com.flow.eda.runner.node.http.response;
 
-import com.flow.eda.common.exception.FlowException;
-import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
-import com.flow.eda.runner.node.http.request.HttpRequestNode;
-import com.flow.eda.runner.runtime.FlowBlockNodePool;
-import com.flow.eda.runner.utils.PlaceholderUtil;
+import com.flow.eda.runner.node.http.HttpDispatcherServlet;
+import com.flow.eda.runner.node.http.receive.HttpReceiveNode;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.flow.eda.common.utils.CollectionUtil.isNotEmpty;
-
+/** HTTP响应节点，用于响应HTTP请求，与HTTP接收节点{@link HttpReceiveNode}搭配使用 */
 @Slf4j
-public class HttpResponseNode extends AbstractNode implements FlowBlockNodePool.BlockNode {
+public class HttpResponseNode extends AbstractNode {
     private String uri;
     private String method;
-    private List<String> query;
     private Document resData;
-    private NodeFunction callback;
+    private Document output;
 
     public HttpResponseNode(Document params) {
         super(params);
@@ -38,62 +23,23 @@ public class HttpResponseNode extends AbstractNode implements FlowBlockNodePool.
 
     @Override
     public void run(NodeFunction function) {
-        HttpResponseServlet.addHandlerMapping(this);
-        setStatus(Status.RUNNING);
-        this.callback = function;
-    }
-
-    /** 处理请求 */
-    public void handle(HttpServletRequest request, HttpServletResponse response) {
-        String result = resData.toJson();
-        // 替换响应数据中的参数占位符
-        if (isNotEmpty(query)) {
-            Map<String, String> params = new HashMap<>();
-            for (String k : query) {
-                String v = request.getParameter(k);
-                if (v != null) {
-                    params.put(k, v);
-                }
-            }
-            if (!params.isEmpty()) {
-                for (Map.Entry<String, String> entry : params.entrySet()) {
-                    String k = entry.getKey();
-                    result = StringUtils.replace(result, "${" + k + "}", entry.getValue());
-                }
-            }
-        }
-        // 获取请求参数，向下游输出
-        try {
-            Document data = Document.parse(IOUtils.toString(request.getInputStream(), "UTF-8"));
-            Document output = output();
-            output.putAll(data);
-            callback.callback(output);
-        } catch (Exception e) {
-            log.error("Get request params failed: {}", e.getMessage());
-        }
         // 响应数据
-        response.setContentType("application/json;charset=utf-8");
-        try (PrintWriter writer = response.getWriter()) {
-            writer.write(result);
-            writer.flush();
-        } catch (IOException e) {
-            log.error("Write response failed: {}", e.getMessage());
-        }
+        HttpDispatcherServlet.responseData(getMapping(), output.toJson());
+        // 向下输出
+        setStatus(Status.FINISHED);
+        Document out = output();
+        out.putAll(this.output);
+        function.callback(out);
     }
 
     @Override
     protected void verify(Document params) {
-        try {
-            this.uri = NodeVerify.requiredUrl(params, "uri");
-            this.method = HttpRequestNode.verifyMethod(params);
+        this.uri = NodeVerify.requiredUrl(params, "uri");
+        this.method = NodeVerify.requiredMethod(params);
 
-            String q = params.getString("query");
-            if (StringUtils.hasLength(q)) {
-                this.query = Arrays.asList(q.split(","));
-            }
-
-            String res = params.getString("resData");
-            NodeVerify.notBlank(res, "resData");
+        String res = params.getString("resData");
+        if (StringUtils.hasText(res)) {
+            res = res.trim();
             NodeVerify.isTrue(res.startsWith("{"), "resData");
             NodeVerify.isTrue(res.endsWith("}"), "resData");
             try {
@@ -101,23 +47,17 @@ public class HttpResponseNode extends AbstractNode implements FlowBlockNodePool.
             } catch (Exception ignored) {
                 NodeVerify.throwWithName("resData");
             }
-
-            // 解析占位符
-            List<String> keys = PlaceholderUtil.getKeys(resData);
-            if (isNotEmpty(keys) && isNotEmpty(query)) {
-                this.query = CollectionUtil.filter(keys, k -> query.contains(k));
-            }
-        } catch (Exception e) {
-            throw FlowException.wrap(e, "The http node parameters is invalid");
+            this.output = this.resData;
+        } else {
+            this.output = new Document();
+            this.output.putAll(params);
+            this.output.remove("uri");
+            this.output.remove("method");
+            this.output.remove("resData");
         }
     }
 
     public String getMapping() {
         return uri + ":" + method;
-    }
-
-    @Override
-    public void destroy() {
-        HttpResponseServlet.removeHandlerMapping(this);
     }
 }

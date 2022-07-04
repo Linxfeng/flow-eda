@@ -3,6 +3,9 @@ package com.flow.eda.runner.node;
 import com.flow.eda.common.exception.InvalidParameterException;
 import org.bson.Document;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** 节点参数校验工具 */
 public class NodeVerify {
 
@@ -38,6 +41,15 @@ public class NodeVerify {
         NodeVerify.notBlank(uri, url);
         NodeVerify.isTrue(uri.startsWith("/"), url);
         return uri;
+    }
+
+    public static String requiredMethod(Document params) {
+        String method = params.getString("method");
+        NodeVerify.notBlank(method, "method");
+        List<String> list =
+                Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH");
+        NodeVerify.isTrue(list.contains(method), "method");
+        return method;
     }
 
     public static void throwWithName(String name) {

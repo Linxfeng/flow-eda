@@ -24,7 +24,10 @@ public class ParserNode extends AbstractNode {
     @Override
     public void run(NodeFunction callback) {
         Document result = PlaceholderUtil.parse(payload, keys);
-        result.append("params", getInput());
+        Document input = getInput();
+        if (!input.isEmpty()) {
+            result.append("params", input);
+        }
         result.putAll(output());
         setStatus(Status.FINISHED);
         callback.callback(result);

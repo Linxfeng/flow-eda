@@ -91,7 +91,11 @@ public class MysqlNode extends AbstractNode {
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = metaData.getColumnName(i);
                 Object value = resultSet.getObject(i);
-                result.append(columnName, value);
+                if (value != null && !(value instanceof String)) {
+                    result.append(columnName, value.toString());
+                } else {
+                    result.append(columnName, value);
+                }
             }
             list.add(result);
         }
