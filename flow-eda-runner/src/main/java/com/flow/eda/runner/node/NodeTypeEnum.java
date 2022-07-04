@@ -4,6 +4,7 @@ import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.runner.node.condition.ConditionNode;
 import com.flow.eda.runner.node.delay.DelayNode;
+import com.flow.eda.runner.node.http.receive.HttpReceiveNode;
 import com.flow.eda.runner.node.http.request.HttpRequestNode;
 import com.flow.eda.runner.node.http.response.HttpResponseNode;
 import com.flow.eda.runner.node.mongodb.MongodbNode;
@@ -34,6 +35,7 @@ public enum NodeTypeEnum {
     PARSER("parser", ParserNode.class),
     /** 网络节点 */
     HTTP_REQUEST("http_request", HttpRequestNode.class),
+    HTTP_RECEIVE("http_receive", HttpReceiveNode.class),
     HTTP_RESPONSE("http_response", HttpResponseNode.class),
     WS_SERVER("ws_server", WsServerNode.class),
     WS_CLIENT("ws_client", WsClientNode.class),
