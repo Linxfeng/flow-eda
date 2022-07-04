@@ -28,15 +28,6 @@ public class HttpRequestNode extends AbstractNode {
         super(params);
     }
 
-    public static String verifyMethod(Document params) {
-        String method = params.getString("method");
-        NodeVerify.notBlank(method, "method");
-        List<String> list =
-                Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH");
-        NodeVerify.isTrue(list.contains(method), "method");
-        return method;
-    }
-
     @Override
     public void run(NodeFunction function) {
         try {
