@@ -1,6 +1,6 @@
 package com.flow.eda.runner;
 
-import com.flow.eda.runner.node.http.response.HttpResponseServlet;
+import com.flow.eda.runner.node.http.HttpDispatcherServlet;
 import com.flow.eda.runner.utils.ApplicationContextUtil;
 import org.apache.dubbo.config.spring.context.annotation.DubboComponentScan;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
@@ -29,6 +29,6 @@ public class FlowEdaRunnerApplication {
     @Bean
     @Qualifier(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
     public DispatcherServlet dispatcherServlet() {
-        return new HttpResponseServlet();
+        return new HttpDispatcherServlet();
     }
 }
