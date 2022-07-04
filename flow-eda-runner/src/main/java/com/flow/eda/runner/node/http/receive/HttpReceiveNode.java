@@ -87,6 +87,8 @@ public class HttpReceiveNode extends AbstractNode implements FlowBlockNodePool.B
                 break;
             }
         }
+        // 响应结束后重置状态
+        this.finished = false;
     }
 
     /** 响应HTTP请求，返回数据 */
