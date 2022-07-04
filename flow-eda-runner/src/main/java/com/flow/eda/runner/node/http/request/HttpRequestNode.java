@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class HttpRequestNode extends AbstractNode {
@@ -52,7 +51,7 @@ public class HttpRequestNode extends AbstractNode {
                 NodeVerify.isTrue(url.startsWith("http"), "url");
             }
             this.url = url;
-            this.method = verifyMethod(params);
+            this.method = NodeVerify.requiredMethod(params);
 
             String param = params.getString("params");
             if (StringUtils.hasLength(param)) {
@@ -64,6 +63,11 @@ public class HttpRequestNode extends AbstractNode {
             this.body = params.getString("body");
             if (StringUtils.hasLength(body)) {
                 NodeVerify.isTrue(body.startsWith("{") && body.endsWith("}"), "body");
+                try {
+                    Document.parse(body);
+                } catch (Exception ignore) {
+                    NodeVerify.throwWithName("body");
+                }
             }
 
             String header = params.getString("header");
@@ -72,21 +76,22 @@ public class HttpRequestNode extends AbstractNode {
                 for (String h : header.split(",")) {
                     NodeVerify.isTrue(h.contains(":"), "header");
                     String[] str = new String[2];
-                    str[0] = h.split(":")[0].trim();
+                    str[0] = h.trim().split(":")[0].trim();
                     NodeVerify.notNull(str[0], "header");
-                    str[1] = h.split(":")[1].trim();
+                    str[1] = h.trim().split(":")[1].trim();
                     NodeVerify.notNull(str[1], "header");
                     this.headers.add(str);
                 }
             }
         } catch (Exception e) {
-            throw FlowException.wrap(e, "The http node parameters is invalid");
+            throw FlowException.wrap(e, "The http_request node parameters is invalid");
         }
     }
 
     private Document executeHttpRequest() throws Exception {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpRequestExpand request = new HttpRequestExpand(url, method);
+        request.addHeader("Content-Type", "application/json;charset=utf-8");
         // 添加请求header
         if (headers != null) {
             for (String[] header : headers) {
@@ -105,14 +110,5 @@ public class HttpRequestNode extends AbstractNode {
             return new ObjectMapper().readValue(res, Document.class);
         }
         throw new InternalException("The http request has no response.");
-    }
-
-    public static String verifyMethod(Document params) {
-        String method = params.getString("method");
-        NodeVerify.notBlank(method, "method");
-        List<String> list =
-                Arrays.asList("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS", "TRACE", "PATCH");
-        NodeVerify.isTrue(list.contains(method), "method");
-        return method;
     }
 }
