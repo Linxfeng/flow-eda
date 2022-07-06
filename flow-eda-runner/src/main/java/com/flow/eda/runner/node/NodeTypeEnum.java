@@ -14,6 +14,7 @@ import com.flow.eda.runner.node.mysql.MysqlNode;
 import com.flow.eda.runner.node.output.OutputNode;
 import com.flow.eda.runner.node.parser.ParserNode;
 import com.flow.eda.runner.node.redis.RedisNode;
+import com.flow.eda.runner.node.sequence.SequenceNode;
 import com.flow.eda.runner.node.start.StartNode;
 import com.flow.eda.runner.node.timer.TimerNode;
 import com.flow.eda.runner.node.ws.client.WsClientNode;
@@ -31,6 +32,7 @@ public enum NodeTypeEnum {
     TIMER("timer", TimerNode.class),
     DELAY("delay", DelayNode.class),
     CONDITION("condition", ConditionNode.class),
+    SEQUENCE("sequence", SequenceNode.class),
     /** 解析节点 */
     PARSER("parser", ParserNode.class),
     /** 网络节点 */
