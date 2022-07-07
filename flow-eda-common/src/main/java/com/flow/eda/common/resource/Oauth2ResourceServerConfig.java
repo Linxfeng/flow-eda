@@ -13,7 +13,7 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 /** 声明资源服务器，通过Oauth2鉴权认证 */
 @Configuration
 @EnableResourceServer
-public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter {
+public class Oauth2ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
     @Value("${security.oauth2.resource-id}")
     private String resourceId;

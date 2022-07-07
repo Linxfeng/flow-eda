@@ -3,7 +3,7 @@ package com.flow.eda.runner.node.mqtt.pub;
 import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
-import com.flow.eda.runner.node.mqtt.MqttAbstractNode;
+import com.flow.eda.runner.node.mqtt.AbstractMqttNode;
 import com.flow.eda.runner.node.mqtt.MqttClientManager;
 import com.flow.eda.runner.runtime.FlowBlockNodePool;
 import com.flow.eda.runner.utils.PlaceholderUtil;
@@ -13,10 +13,10 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
 
 /** MQTT发布节点 */
-public class MqttPubNode extends MqttAbstractNode implements FlowBlockNodePool.BlockNode {
+public class PubMqttNode extends AbstractMqttNode implements FlowBlockNodePool.BlockNode {
     private String message;
 
-    public MqttPubNode(Document params) {
+    public PubMqttNode(Document params) {
         super(params);
     }
 
@@ -64,8 +64,8 @@ public class MqttPubNode extends MqttAbstractNode implements FlowBlockNodePool.B
     @Override
     public boolean eq(FlowBlockNodePool.BlockNode blockNode) {
         // MQTT发布节点可多次重复执行，复用MQTT连接，每次更新节点对象
-        if (blockNode instanceof MqttAbstractNode) {
-            MqttAbstractNode node = (MqttAbstractNode) blockNode;
+        if (blockNode instanceof AbstractMqttNode) {
+            AbstractMqttNode node = (AbstractMqttNode) blockNode;
             return getNodeId().equals(node.getNodeId());
         }
         return false;

@@ -8,8 +8,8 @@ import com.flow.eda.runner.node.http.receive.HttpReceiveNode;
 import com.flow.eda.runner.node.http.request.HttpRequestNode;
 import com.flow.eda.runner.node.http.response.HttpResponseNode;
 import com.flow.eda.runner.node.mongodb.MongodbNode;
-import com.flow.eda.runner.node.mqtt.pub.MqttPubNode;
-import com.flow.eda.runner.node.mqtt.sub.MqttSubNode;
+import com.flow.eda.runner.node.mqtt.pub.PubMqttNode;
+import com.flow.eda.runner.node.mqtt.sub.SubMqttNode;
 import com.flow.eda.runner.node.mysql.MysqlNode;
 import com.flow.eda.runner.node.output.OutputNode;
 import com.flow.eda.runner.node.parser.ParserNode;
@@ -31,6 +31,7 @@ public enum NodeTypeEnum {
     OUTPUT("output", OutputNode.class),
     TIMER("timer", TimerNode.class),
     DELAY("delay", DelayNode.class),
+    /** 运算节点 */
     CONDITION("condition", ConditionNode.class),
     SEQUENCE("sequence", SequenceNode.class),
     /** 解析节点 */
@@ -41,8 +42,8 @@ public enum NodeTypeEnum {
     HTTP_RESPONSE("http_response", HttpResponseNode.class),
     WS_SERVER("ws_server", WsServerNode.class),
     WS_CLIENT("ws_client", WsClientNode.class),
-    MQTT_SUB("mqtt_sub", MqttSubNode.class),
-    MQTT_PUB("mqtt_pub", MqttPubNode.class),
+    MQTT_SUB("mqtt_sub", SubMqttNode.class),
+    MQTT_PUB("mqtt_pub", PubMqttNode.class),
     /** 数据库节点 */
     MYSQL("mysql", MysqlNode.class),
     MONGODB("mongodb", MongodbNode.class),

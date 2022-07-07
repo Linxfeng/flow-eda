@@ -11,7 +11,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 @Getter
-public abstract class MqttAbstractNode extends AbstractNode {
+public abstract class AbstractMqttNode extends AbstractNode {
     private String clientId;
     private String broker;
     private String topic;
@@ -19,7 +19,7 @@ public abstract class MqttAbstractNode extends AbstractNode {
     private String password;
     private MqttClient client;
 
-    public MqttAbstractNode(Document params) {
+    public AbstractMqttNode(Document params) {
         super(params);
     }
 

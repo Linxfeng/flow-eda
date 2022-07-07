@@ -8,9 +8,9 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 /** MQTT回调 */
 @Slf4j
 public class MqttMessageCallback implements MqttCallbackExtended {
-    private final MqttSubNode node;
+    private final SubMqttNode node;
 
-    public MqttMessageCallback(MqttSubNode node) {
+    public MqttMessageCallback(SubMqttNode node) {
         this.node = node;
     }
 
