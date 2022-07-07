@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.concurrent.TimeUnit;
 
+/** 序列节点，依次输出整数序列，输出间隔为100ms */
 public class SequenceNode extends AbstractNode {
     private int start;
     private int end;

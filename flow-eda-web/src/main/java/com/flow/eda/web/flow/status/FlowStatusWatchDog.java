@@ -4,12 +4,13 @@ import com.flow.eda.web.log.LogAspect;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /** 看门狗，用于监听流程状态变化 */
 public class FlowStatusWatchDog {
-    /** 刷新周期 */
-    private static final long SLEEP = 2000;
+    /** 刷新周期(秒) */
+    private static final long SLEEP = 2;
     /** key为流程id，流程状态更新时会更新对应的value值为true */
     private static final Map<String, Boolean> MAP = new ConcurrentHashMap<>();
 
@@ -36,7 +37,7 @@ public class FlowStatusWatchDog {
                                             }
                                         });
                         try {
-                            Thread.sleep(SLEEP);
+                            TimeUnit.SECONDS.sleep(SLEEP);
                         } catch (InterruptedException e) {
                             LogAspect.error(e.getMessage());
                         }
