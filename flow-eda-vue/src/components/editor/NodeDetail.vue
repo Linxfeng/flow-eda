@@ -24,7 +24,7 @@
           <el-select v-if="p.inType==='select' && p.placeholder" v-model="detailForm[p.key+'-o']" class="input-right">
             <el-option v-for="op in p.option.split(',')" :key="op" :label="op" :value="op"></el-option>
           </el-select>
-          <el-select v-if="p.inType==='select' && !p.placeholder" v-model="detailForm[p.key]" class="input">
+          <el-select v-if="p.inType==='select' && !p.placeholder" v-model="detailForm[p.key]" clearable class="input">
             <el-option v-for="op in p.option.split(',')" :key="op" :label="op" :value="op"></el-option>
           </el-select>
         </el-form-item>

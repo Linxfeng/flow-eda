@@ -165,7 +165,7 @@ const FlowDetail: React.FC<{
                     key={p.key}
                     rules={[{ required: p.required }]}
                   >
-                    <Select className="input">
+                    <Select allowClear={true} className="input">
                       {p.option?.split(',')?.map((op: string) => {
                         return (
                           <Option value={op} key={op}>
