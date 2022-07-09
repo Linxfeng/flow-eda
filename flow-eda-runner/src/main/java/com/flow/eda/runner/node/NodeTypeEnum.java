@@ -16,6 +16,7 @@ import com.flow.eda.runner.node.parser.ParserNode;
 import com.flow.eda.runner.node.redis.RedisNode;
 import com.flow.eda.runner.node.sequence.SequenceNode;
 import com.flow.eda.runner.node.splice.SpliceNode;
+import com.flow.eda.runner.node.split.SplitNode;
 import com.flow.eda.runner.node.start.StartNode;
 import com.flow.eda.runner.node.timer.TimerNode;
 import com.flow.eda.runner.node.ws.client.WsClientNode;
@@ -36,6 +37,7 @@ public enum NodeTypeEnum {
     CONDITION("condition", ConditionNode.class),
     SEQUENCE("sequence", SequenceNode.class),
     SPLICE("splice", SpliceNode.class),
+    SPLIT("split", SplitNode.class),
     /** 解析节点 */
     PARSER("parser", ParserNode.class),
     /** 网络节点 */
