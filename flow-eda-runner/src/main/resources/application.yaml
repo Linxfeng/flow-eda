@@ -10,29 +10,9 @@ spring:
     password: guest
     log_exchange: flow.log
     log_routing_key: flow.running.log
-dubbo:
-  application:
-    name: flow-eda-runner
-    qos-enable: false
-    qos-accept-foreign-ip: false
-  registry:
-    protocol: dubbo
-    address: nacos://localhost:8848
-    username: nacos
-    password: nacos
-  protocol:
-    name: dubbo
-    port: 20882
-  consumer:
-    check: false
-    timeout: 5000
-    retries: 0
 security:
   oauth2:
     resource-id: flow-eda
     client-id: 1df7b0c1-aac0-148a14c7cba8
     client-secret: zcUaT32GlwIjz4yBJjYZIIMvzf
     check-token-url: http://localhost:8086/oauth/check_token
-logging:
-  level:
-    com.alibaba.nacos.common.remote.client: warn

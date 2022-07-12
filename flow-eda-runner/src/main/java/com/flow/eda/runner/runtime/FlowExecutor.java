@@ -1,7 +1,7 @@
 package com.flow.eda.runner.runtime;
 
-import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.FlowException;
+import com.flow.eda.common.model.FlowData;
 import com.flow.eda.runner.node.Node;
 import com.flow.eda.runner.node.NodeTypeEnum;
 import com.flow.eda.runner.status.FlowNodeWebsocket;

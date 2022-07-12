@@ -1,32 +1,43 @@
 package com.flow.eda.logger.logs;
 
-import com.flow.eda.common.dubbo.api.LogsService;
-import com.flow.eda.common.dubbo.model.Logs;
+import com.flow.eda.common.http.Result;
+import com.flow.eda.common.model.Logs;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboService;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/** 日志服务接口 */
 @Slf4j
-@Service
-@DubboService(interfaceClass = LogsService.class)
-public class LogsServiceImpl implements LogsService {
+@RestController
+@RequestMapping("/api/v1/feign")
+public class LogsController {
     private static final String ROOT = System.getProperty("user.dir");
 
-    @Override
-    public List<Logs> getLogList(Type type) {
+    /**
+     * 获取日志信息列表
+     *
+     * @param type 日志类型
+     * @return 日志信息列表
+     */
+    @GetMapping("/logs")
+    public Result<List<Logs>> getLogList(@RequestParam Type type) {
         if (Type.OPERATION == type) {
-            return getOperationLogs();
+            return Result.of(getOperationLogs());
         } else {
-            return getRunningLogs();
+            return Result.of(getRunningLogs());
         }
     }
 
-    @Override
-    public void deleteLogFiles(List<String> path) {
+    /**
+     * 删除日志文件
+     *
+     * @param path 日志文件路径
+     */
+    @DeleteMapping("/logs")
+    public void deleteLogs(@RequestBody List<String> path) {
         path.forEach(this::deleteLogFile);
     }
 
@@ -80,5 +91,13 @@ public class LogsServiceImpl implements LogsService {
             }
         } catch (Exception ignored) {
         }
+    }
+
+    /** 日志类型 */
+    enum Type {
+        /** 操作日志 */
+        OPERATION,
+        /** 运行日志 */
+        RUNNING
     }
 }

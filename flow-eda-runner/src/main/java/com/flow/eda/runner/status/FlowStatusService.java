@@ -1,18 +1,13 @@
 package com.flow.eda.runner.status;
 
-import com.flow.eda.common.dubbo.api.FlowInfoService;
-import com.flow.eda.common.dubbo.model.FlowData;
+import com.flow.eda.common.model.FlowData;
 import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.runner.node.Node;
-import org.apache.dubbo.common.utils.ConcurrentHashSet;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.flow.eda.common.utils.CollectionUtil.*;
@@ -25,12 +20,12 @@ public class FlowStatusService {
     /** 正在运行的节点 */
     private final Map<String, Set<String>> runMap = new ConcurrentHashMap<>();
 
-    @DubboReference private FlowInfoService flowInfoService;
+    @Autowired private FlowStatusClient flowStatusClient;
 
     public void startRun(
             String flowId, List<FlowData> data, List<FlowData> starts, List<FlowData> timer) {
-        this.nodeMap.put(flowId, new ConcurrentHashSet<>());
-        this.runMap.put(flowId, new ConcurrentHashSet<>());
+        this.nodeMap.put(flowId, new HashSet<>());
+        this.runMap.put(flowId, new HashSet<>());
         if (isNotEmpty(starts)) {
             this.parseAllNodes(flowId, data, starts);
         }
@@ -43,7 +38,7 @@ public class FlowStatusService {
     public String getFlowStatus(String flowId, Document message) {
         String nodeId = message.getString("nodeId");
         if (!nodeMap.containsKey(flowId) || nodeId == null) {
-            return flowInfoService.getFlowStatus(flowId);
+            return flowStatusClient.getFlowStatus(flowId).getResult();
         }
         String status = message.getString("status");
         if (Node.Status.FAILED.name().equals(status)) {
@@ -65,7 +60,7 @@ public class FlowStatusService {
     /** 判断当前流程状态是否已完成 */
     public boolean isFinished(String flowId) {
         if (!nodeMap.containsKey(flowId)) {
-            String status = flowInfoService.getFlowStatus(flowId);
+            String status = flowStatusClient.getFlowStatus(flowId).getResult();
             return Node.Status.FINISHED.name().equals(status);
         }
         return nodeMap.get(flowId).isEmpty();
@@ -112,7 +107,7 @@ public class FlowStatusService {
 
     /** 移除当前节点之后的所有节点(包含当前节点) */
     public void removeNextNode(List<FlowData> data, FlowData currentNode) {
-        Set<String> nodeSet = new ConcurrentHashSet<>();
+        Set<String> nodeSet = new HashSet<>();
         nodeSet.add(currentNode.getId());
         this.parseNextNode(data, currentNode, nodeSet);
         this.nodeMap.get(currentNode.getFlowId()).removeAll(nodeSet);

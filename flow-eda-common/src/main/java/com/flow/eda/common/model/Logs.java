@@ -1,4 +1,4 @@
-package com.flow.eda.common.dubbo.model;
+package com.flow.eda.common.model;
 
 import lombok.Getter;
 

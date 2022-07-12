@@ -1,10 +1,9 @@
 package com.flow.eda.web.log;
 
-import com.flow.eda.common.dubbo.api.LogsService;
-import com.flow.eda.common.dubbo.model.Logs;
 import com.flow.eda.common.exception.InvalidVerifyTokenException;
 import com.flow.eda.common.exception.MissingRequestParameterException;
 import com.flow.eda.common.http.Result;
+import com.flow.eda.common.model.Logs;
 import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.web.http.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +25,7 @@ public class LogController {
             throw new MissingRequestParameterException("type");
         }
         // 仅管理员用户可查看操作日志
-        if (LogsService.Type.OPERATION.equals(request.getType())
-                && !ADMIN.equals(principal.getName())) {
+        if ("OPERATION".equals(request.getType().name()) && !ADMIN.equals(principal.getName())) {
             throw new InvalidVerifyTokenException("Insufficient permissions");
         }
         String username = ADMIN.equals(principal.getName()) ? null : principal.getName();
