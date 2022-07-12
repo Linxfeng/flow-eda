@@ -35,11 +35,15 @@ public class LogController {
 
     @OperationLog
     @DeleteMapping("/logs")
-    public Result<String> deleteLogs(@RequestBody List<String> ids) {
-        // 操作日志不允许删除
-        List<String> list = CollectionUtil.filter(ids, id -> !id.startsWith("/logs/operation"));
-        if (CollectionUtil.isNotEmpty(list)) {
-            logService.deleteLogs(list);
+    public Result<String> deleteLogs(@RequestBody List<String> ids, Principal principal) {
+        // 操作日志仅管理员用户可删除
+        if (ADMIN.equals(principal.getName())) {
+            logService.deleteLogs(ids);
+        } else {
+            List<String> list = CollectionUtil.filter(ids, id -> !id.startsWith("/logs/operation"));
+            if (CollectionUtil.isNotEmpty(list)) {
+                logService.deleteLogs(list);
+            }
         }
         return Result.ok();
     }

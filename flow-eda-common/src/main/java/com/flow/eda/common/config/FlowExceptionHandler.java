@@ -65,6 +65,7 @@ public class FlowExceptionHandler extends ResponseEntityExceptionHandler {
                     case "NotEmpty":
                     case "NotNull":
                         error.error(ApiError.MISSING_PARAMETER).setMessage(description);
+                        break;
                     default:
                         String message =
                                 String.format("The %s parameter value type invalid", field);

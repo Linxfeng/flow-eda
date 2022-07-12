@@ -1,4 +1,4 @@
-# flow-eda-vue
+# flow-eda-react
 
 ## Project setup
 
@@ -21,7 +21,7 @@ yarn serve
 or
 
 ```
-npm run dev
+npm start
 ```
 
 ### Compiles and minifies for production

@@ -2,17 +2,17 @@ package com.flow.eda.runner.node.mqtt.sub;
 
 import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.NodeFunction;
-import com.flow.eda.runner.node.mqtt.MqttAbstractNode;
+import com.flow.eda.runner.node.mqtt.AbstractMqttNode;
 import com.flow.eda.runner.node.mqtt.MqttClientManager;
 import com.flow.eda.runner.runtime.FlowBlockNodePool;
 import org.bson.Document;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 /** MQTT订阅节点 */
-public class MqttSubNode extends MqttAbstractNode implements FlowBlockNodePool.BlockNode {
+public class SubMqttNode extends AbstractMqttNode implements FlowBlockNodePool.BlockNode {
     private NodeFunction callback;
 
-    public MqttSubNode(Document params) {
+    public SubMqttNode(Document params) {
         super(params);
     }
 

@@ -91,11 +91,9 @@ public class PlaceholderUtil {
         String str = output.toJson();
         for (String k : keys) {
             Object value = res.get(k);
-            String v = "";
             if (value != null) {
-                v = value.toString();
+                str = StringUtils.replace(str, "${" + k + "}", value.toString());
             }
-            str = StringUtils.replace(str, "${" + k + "}", v);
         }
         try {
             return Document.parse(str);

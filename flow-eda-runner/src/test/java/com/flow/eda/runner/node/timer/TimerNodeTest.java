@@ -4,6 +4,8 @@ import org.bson.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.TimeUnit;
+
 class TimerNodeTest {
 
     @Test
@@ -14,7 +16,7 @@ class TimerNodeTest {
         timerNode.run((p) -> n[0]++);
         try {
             // 主线程等待执行完毕
-            Thread.sleep(5000);
+            TimeUnit.SECONDS.sleep(5);
         } catch (InterruptedException ignored) {
         }
         Assertions.assertEquals(n[0], 3);
