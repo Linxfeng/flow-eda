@@ -28,6 +28,11 @@
         icon: "./favicon.ico",
         maxLevel: 2,
         subMaxLevel: 3,
+        search: {
+          placeholder: "搜索",
+          noData: "找不到结果!",
+          depth: 3,
+        },
         alias: {
           "/.*/_sidebar.md": "/_sidebar.md",
           "/.*/_navbar.md": "/_navbar.md",
@@ -35,5 +40,6 @@
       };
     </script>
     <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
   </body>
 </html>
