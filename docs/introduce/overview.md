@@ -44,9 +44,8 @@ flow-eda项目是一种基于事件驱动的流式低代码编程应用程序，
 
 
 ### 交流群
-
 若需要技术支持或者想进行技术交流，可以扫码添加本人微信或者微信群，也可以进群提开发要求，我会尽可能进行扩展开发。欢迎进行技术交流！
 
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/img/weixin.jpg)
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/img/group.jpg)
+![image](../img/weixin.jpg)
+![image](../img/group.jpg)
 
