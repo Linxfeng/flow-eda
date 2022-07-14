@@ -1,5 +1,9 @@
-* 介绍
-    * [项目概览](introduce/overview.md)
-    * [项目架构](introduce/architecture.md)
+- 介绍
 
-* 入门
+  - [项目概览](introduce/overview.md)
+  - [项目架构](introduce/architecture.md)
+
+- 入门
+  - [快速上手](getting-started/quick-start.md)
+  - [绘制流程图](getting-started/flow-editor.md)
+  - [功能节点](getting-started/components.md)
