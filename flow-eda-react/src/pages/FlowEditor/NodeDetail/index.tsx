@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { Button, Form, Input, Select } from 'antd';
-const { Option } = Select;
-import './index.less';
-import ReactJson from 'react-json-view';
 import { useFormatMessage } from '@/hooks';
 import { FormattedMessage } from '@@/plugin-locale/localeExports';
+import { Button, Form, Input, Select } from 'antd';
+import React, { useEffect } from 'react';
+import ReactJson from 'react-json-view';
+import './index.less';
+const { Option } = Select;
 
 const FlowDetail: React.FC<{
   node: API.Node;
@@ -184,7 +184,7 @@ const FlowDetail: React.FC<{
             className="item"
             name="payload"
             label={formatMsg('pages.flowList.editor.parameters', '自定义参数')}
-            tooltip="参数为json格式，可传递至下一节点，使用${xx}接收，例如${a,httpResult.$0.name}"
+            tooltip="参数为json格式，可传递至下一节点，使用${xx}接收，例如${httpResult.$0.name}"
             rules={[{ validator: checkJson }]}
           >
             <Input.TextArea autoSize={true} className="input" placeholder="{'a':'xx','b':'123'}" />
