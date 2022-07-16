@@ -65,8 +65,11 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
         this.sendAfterConnect = params.getString("sendAfterConnect");
         this.sendAfterReceive = params.getString("sendAfterReceive");
 
+        this.fanout = false;
         String isSend = params.getString("fanout");
-        this.fanout = "Send".equals(isSend);
+        if (StringUtils.hasLength(isSend)) {
+            this.fanout = "发送".equals(isSend);
+        }
 
         // set output
         if (this.fanout) {
