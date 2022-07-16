@@ -220,17 +220,39 @@ MQTT 发布节点，可向指定 MQTT 服务的指定 topic 中发送自定义�
 
 > 多次重复运行同一个本节点，后台会复用同一个 MQTT 连接，直至流程结束时断开连接。
 
-### mysql 节点
+### Mysql 节点
 
-Mysql 节点，可连接 mysql 数据库，执行自定义 sql 语句，支持任意类型的多条 sql 语句，输出每条语句的执行结果和内容
-可连接 mysql 数据库，执行自定义 sql 语句，支持任意类型的多条 sql 语句，输出执行结果和内容
+Mysql 节点可用于连接 mysql 数据库，采用 JDBC 驱动，可执行自定义 sql 语句，支持同时执行任意类型的多条 sql 语句，支持联表查询。
+执行完成后，会输出每条语句的内容和对应的执行结果。
 
-### mongodb 节点
+**节点参数：**
 
-MongoDB 节点，可连接 MongoDB 数据库，执行自定义命令语句，输出执行结果和内容
-可连接 mongodb 数据库，执行自定义命令语句，输出执行结果和内容
+- URL 地址<font color=red>\*</font>：指采用 JDBC 驱动连接至 mysql 数据库的地址，通常以`jdbc:mysql://`开头。
+- 用户名<font color=red>\*</font>：指连接到 mysql 数据库所需要的认证信息，用户名。
+- 密码<font color=red>\*</font>：指连接到 mysql 数据库所需要的认证信息，密码。
+- 执行 SQL 语句<font color=red>\*</font>：指要执行的 sql 语句，支持任意类型的多条语句，以英文分号分隔。
 
-### redis 节点
+### MongoDB 节点
 
-Redis 节点，可连接 redis 服务器，执行自定义操作，输出执行结果和内容
-可连接 redis 服务器，执行自定义操作，输出执行结果和内容
+MongoDB 节点，可连接至 MongoDB 数据库，执行自定义命令语句，输出执行结果和内容，输出字段名为`result`。
+
+**节点参数：**
+
+- URL 地址<font color=red>\*</font>：指要连接的 MongoDB 数据库的地址，通常以`mongodb://`开头。
+- 数据库名称<font color=red>\*</font>：指要执行命令语句的数据库的名称，数据库名称通常为英文。
+- 执行语句<font color=red>\*</font>：指要执行的命令语句，要求为 json 格式，具体格式请参考 MongoDB[官方文档](https://www.mongodb.com/docs/manual/reference/command/)。
+
+### Redis 节点
+
+Redis 节点，可连接至 Redis 服务器，用户可以执行某些常用操作，例如设置值、查询值等等，执行完成后，会将执行结果向下游输出，输出字段名为`result`。
+
+**节点参数：**
+
+- 服务器地址<font color=red>\*</font>：指要连接的 Redis 服务器的地址。
+- 操作<font color=red>\*</font>：列举了许多常用操作可供用户选择，例如 get、set、del 等，几乎可以满足用户的所有操作需求。
+- 参数<font color=red>\*</font>：指要执行的操作对应的参数，选择的操作需要几个参数，此处就填几个参数，多个参数之间使用英文逗号分隔。
+- 用户名：连接到 Redis 服务器所需要的认证身份信息，无需认证时则不用填写。
+- 密码：连接到 Redis 服务器所需要的认证身份信息，无需认证时则不用填写。
+- 数据库：用户可指定切换 Redis 服务器的数据库，默认为 0，一般无特殊要求不会主动去切换数据库。
+
+> Redis 默认建立了 16 个数据库，db0 - db15，默认使用 db0，可手动切换。
