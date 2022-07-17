@@ -14,19 +14,18 @@
 - 进阶
 
   - [本地环境安装](advanced/local-install.md)
-  - [本地启动](advanced/local-start.md)
+  - [本地启动项目](advanced/local-start.md)
   - [设计思想](advanced/design-philosophy.md)
   - [源码解析](advanced/source-code.md)
-  - [功能扩展](advanced/extend-function.md)
-  - [二次开发](advanced/re-development.md)
+  - [扩展开发](advanced/extend-dev.md)
 
 - 部署
 
-  - [windows 环境部署](deploy/windows.md)
-  - [mac 环境部署](deploy/mac.md)
-  - [linux 环境部署](deploy/linux.md)
   - [docker 部署](deploy/docker.md)
   - [docker-compose 部署](deploy/docker-compose.md)
+  - [linux 环境部署](deploy/linux.md)
+  - [windows 环境部署](deploy/windows.md)
+  - [mac 环境部署](deploy/mac.md)
 
 - 版本
 
