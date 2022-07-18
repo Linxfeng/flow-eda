@@ -21,6 +21,7 @@
 
 - 部署
 
+  - [项目打包](deploy/packaging.md)
   - [docker 部署](deploy/docker.md)
   - [docker-compose 部署](deploy/docker-compose.md)
   - [linux 环境部署](deploy/linux.md)
