@@ -45,5 +45,58 @@ export const wsIp: string = "ws://127.0.0.1";
 
 ### 打包后端项目
 
-后端项目的构建需要安装maven构建管理工具
+后端项目的构建需要安装 maven 构建管理工具，打包后端项目可以使用你的 IDE 编辑器自带的打包构建工具，也可以使用命令行打包。
 
+此处我们仅介绍命令行打包方式。在项目根目录下执行打包命令：
+
+```shell
+mvn clean package
+```
+
+![image](../img/packaging2.png ":size=60%")
+
+首次打包会稍微有点慢，因为要下载各种依赖等。待其打包完毕后，显示如下图所示，就代表打包成功了。
+
+![image](../img/packaging3.png ":size=60%")
+
+此时需要手动将打好的各个 jar 包复制出来，jar 包位置在各个项目的`target`目录下。
+我们在桌面或方便的位置新建一个文件夹，将 jar 包复制到该文件夹内（也可以直接将 jar 包放在桌面），待部署时使用。
+
+![image](../img/packaging4.png ":size=40%")
+![image](../img/packaging5.png)
+
+### 打包前端项目
+
+前端项目打包需要安装 node 和 npm 环境，可以使用 yarn 或 npm 命令进行打包，此处我们使用 npm 命令进行打包。
+
+- 打包 vue 项目
+
+```shell
+# 进入项目目录
+cd flow-eda-vue
+# 打包
+npm run build
+```
+
+![image](../img/packaging6.png ":size=60%")
+
+- 打包 react 项目
+
+```shell
+# 进入项目目录
+cd flow-eda-react
+# 打包
+npm run build
+```
+
+![image](../img/packaging7.png ":size=60%")
+
+> 作者在开发时使用的 node 版本为 v14.18.0，npm 的版本为 7.13.0，若遇到打包问题，请尝试调整下版本。
+
+前端项目打包好之后，需要将打包产生的 dist 文件夹复制到刚刚存放 jar 包的文件夹内。
+我们将 vue 项目下复制过来的 dist 文件夹重命名为`vue`，将 react 项目下复制过来的 dist 文件夹重命名为`react`，
+这样做是为了在部署时区分这两个项目，如果你仅需要部署单个前端项目，则不需要进行区分，直接用 dist 就可以。
+
+至此，我们的项目打包就完成了，准备好文件待部署时使用。
+
+![image](../img/packaging8.png ":size=30%")
