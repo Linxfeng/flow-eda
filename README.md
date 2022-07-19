@@ -94,6 +94,7 @@ React 版本[在线 demo](http://120.48.9.40:90)
 | Spring Boot     | 2.6.4    | 微服务框架           |
 | Mybatis         | 3.5.9    | ORM 框架             |
 | Mysql           | 8.0.28   | 数据库               |
+| Maven           | 3.6.3    | 项目构建管理工具     |
 | PageHelper      | 5.3.0    | MyBatis 物理分页插件 |
 | Lombok          | 1.18.22  | 代码插件             |
 | Nacos           | 2.0.4    | 服务注册中心         |
