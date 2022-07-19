@@ -1,3 +1,5 @@
+import { wsIp } from '@/global';
+
 const nodeWs = {};
 const logWs = {};
 const logContentWs = {};
@@ -14,7 +16,7 @@ function openWs(url: string, callback: (res: string) => void) {
 /** 监听流程运行时的节点信息 */
 export function onOpenNode(id: string, callback: (res: string) => void) {
   if (Object.keys(nodeWs).length === 0 || !nodeWs[id]) {
-    const url = 'ws://localhost:8088/ws/flow/' + id + '/nodes';
+    const url = wsIp + ':8088/ws/flow/' + id + '/nodes';
     nodeWs[id] = openWs(url, callback);
   }
 }
@@ -22,7 +24,7 @@ export function onOpenNode(id: string, callback: (res: string) => void) {
 /** 监听流程运行时的日志信息 */
 export function onOpenLogs(id: string, callback: (res: string) => void) {
   if (Object.keys(logWs).length === 0 || !logWs[id]) {
-    const url = 'ws://localhost:8082/ws/flow/' + id + '/logs';
+    const url = wsIp + ':8082/ws/flow/' + id + '/logs';
     logWs[id] = openWs(url, callback);
   }
 }
@@ -30,7 +32,7 @@ export function onOpenLogs(id: string, callback: (res: string) => void) {
 /** 接收日志文件内容 */
 export function onOpenLogContent(path: string, callback: (res: string) => void) {
   if (Object.keys(logContentWs).length === 0 || !logContentWs[path]) {
-    const url = 'ws://localhost:8082/ws/logs/content/' + path.replaceAll('/', ':');
+    const url = wsIp + ':8082/ws/logs/content/' + path.replaceAll('/', ':');
     logContentWs[path] = openWs(url, callback);
   }
 }
