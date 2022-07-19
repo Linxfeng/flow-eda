@@ -37,21 +37,21 @@ React 版本[在线 demo](http://120.48.9.40:90)
 
 ### 项目展示
 
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/gif/flows.gif)
+![image](docs/img/flows.gif)
 
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/gif/logs.gif)
+![image](docs/img/logs.gif)
 
 **Vue3 版本界面：**
 
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/img/vue3.png)
+![image](docs/img/vue3.png)
 
 **React 版本界面：**
 
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/img/react.png)
+![image](docs/img/react.png)
 
 **编辑器界面：**
 
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/img/editor.png)
+![image](docs/img/editor.png)
 
 期待您的参与，项目持续扩展完善中...
 
@@ -83,7 +83,7 @@ React 版本[在线 demo](http://120.48.9.40:90)
 
 ### 系统架构图
 
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/img/architecture.png)
+![image](docs/img/architecture.png)
 
 ### 后端技术栈
 
@@ -171,5 +171,5 @@ PS：由于现有的服务器资源已经无法支撑后续开发的项目部署
 
 若需要技术支持或者想进行技术交流，可以扫码添加本人微信或者微信群，也可以进群提开发要求，我会尽可能进行扩展开发。欢迎加群进行技术交流！
 
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/img/weixin.jpg)
-![image](https://gitee.com/Linxff/flow-eda/raw/master/flow-eda-common/img/group.jpg)
+![image](docs/img/weixin.jpg)
+![image](docs/img/group.jpg)
