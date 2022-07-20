@@ -4,11 +4,10 @@ services:
   mysql:
     image: mysql
     container_name: mysql
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 123456
     ports:
-      - 3306:3306
+      - "3306:3306"
     volumes:
       - /root/app/mysql/data/:/var/lib/mysql
       - /root/app/mysql/conf.d:/etc/mysql/conf.d
@@ -16,10 +15,9 @@ services:
   rabbitmq:
     image: rabbitmq
     container_name: rabbitmq
-    restart: always
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - /root/app/rabbitmq/data:/var/lib/rabbitmq
   nacos:
@@ -27,11 +25,10 @@ services:
     container_name: nacos
     depends_on:
       - mysql
-    restart: always
     ports:
-      - 8848:8848
-      - 9848:9848
-      - 9849:9849
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
     environment:
       MODE: standalone
       SPRING_DATASOURCE_PLATFORM: mysql
@@ -45,8 +42,7 @@ services:
   nginx:
     image: nginx
     container_name: nginx
-    ports:
-      - 80:80
+    network_mode: host
     volumes:
       - /root/app/nginx/www:/www
       - /root/app/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
