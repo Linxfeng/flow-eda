@@ -538,7 +538,6 @@ public class FlowBlockNodePool {
 然后交给`FlowBlockNodePool`类统一管理。这样我们就实现了阻塞节点的统一管理方案，当停止流程时，就可以调用一些统一的停止/销毁方法来停止流程的运行。
 
 ```java
-@Service
 public class FlowDataRuntime {
     /** 停止流程 */
     public void stopFlowData(String flowId) {
@@ -551,3 +550,54 @@ public class FlowDataRuntime {
     }
 }
 ```
+
+### 清理流程缓存
+
+当流程运行结束或流程停止运行后，需要对流程运行时产生的一些线程池、集合容器等缓存数据进行清理。
+若不及时清理这些数据，一方面是占用不必要的内存空间，可能会造成内存泄露等问题；
+另一方面是可能会引起流程数据的线程安全等问题。那么我们如何清理，什么时候清理呢？
+
+当流程运行结束后，会通知到 web 服务，并进行数据库的状态更新。
+我们为了保证数据一致性，选择在更新数据库之后，调用清理流程接口进行流程缓存数据清理。
+在`com.flow.eda.web.flow.status.FlowStatusService`类中
+
+```java
+public class FlowStatusService {
+    private final Map<String, String> statusMap = new HashMap<>();
+
+    /** 将当前流程的状态更新到数据库 */
+    private void updateStatus(String flowId) {
+        if (statusMap.containsKey(flowId)) {
+            // 将流程状态更新到数据库
+            flowMapper.updateStatus(flowId, status);
+            // 如果流程已执行完毕，则需要清理缓存数据
+            if (!Flow.Status.RUNNING.name().equals(status)) {
+                statusMap.remove(flowId);
+                flowDataService.clearFlowData(flowId);
+            }
+        }
+    }
+}
+```
+
+此处调用了 runner 服务的清理方法，具体实现在类`com.flow.eda.runner.runtime.FlowDataRuntime`中
+
+```java
+public class FlowDataRuntime {
+    /** 清理流程运行的缓存数据 */
+    public void clearFlowData(String flowId) {
+        // 销毁流程中运行节点的普通线程
+        FlowThreadPool.shutdownThreadPool(flowId);
+        // 销毁定时任务线程
+        FlowThreadPool.shutdownSchedulerPool(flowId);
+        // 销毁阻塞节点数据
+        FlowBlockNodePool.shutdownBlockNode(flowId);
+        // 清理状态服务的集合容器
+        flowStatusService.clear(flowId);
+    }
+}
+```
+
+此清理缓存数据的方法与停止流程的方法逻辑类似，但是还有一些业务上的区别，如 websocket 消息推送等等，故而将它们分开。
+
+这样设计的好处除了可以保证数据一致性之外，无论是手动停止流程，还是流程自己运行结束，都可以执行到清理方法。
