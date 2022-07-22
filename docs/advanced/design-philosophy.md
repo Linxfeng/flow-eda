@@ -484,3 +484,70 @@ public class FlowStatusService {
 ### 停止流程运行
 
 从设计角度思考一下，当一个流程运行起来之后，我们要如何去停止它？
+
+实际上，停止一个正在运行的流程实现起来会有些复杂，举个例子，你运行的流程中含有一个延时器节点，延迟一个小时，当前流程正好执行到这里，
+卡在延时器节点处于等待中，此时，你想停止当前流程的运行，要怎么实现？
+若换成是 WS 服务端等类似的[阻塞节点](getting-started/flow-node?id=节点性质类型)呢，要如何停止？
+
+答案显而易见，我们除了要统一管理所有负责节点运行的线程之外，我们还需要统一管理那些可能会卡状态的节点。
+前面在[流程运行设计](advanced/design-philosophy?id=流程运行设计)里面已经介绍了统一管理线程池的方案，这里再介绍一下阻塞节点的统一管理方案。
+在`com.flow.eda.runner.runtime.FlowBlockNodePool`类中
+
+```java
+/** 用于统一管理流程中的所有阻塞节点 */
+public class FlowBlockNodePool {
+    private static final Map<String, List<BlockNode>> POOL = new ConcurrentHashMap<>();
+
+    public static void addBlockNode(String flowId, BlockNode blockNode) {
+        synchronized (POOL) {
+            if (POOL.containsKey(flowId)) {
+                List<BlockNode> list = POOL.get(flowId);
+                // 若判断两个阻塞节点相同，需要进行替换更新
+                list.removeIf(node -> node.eq(blockNode));
+                list.add(blockNode);
+            } else {
+                List<BlockNode> list = new ArrayList<>();
+                list.add(blockNode);
+                POOL.put(flowId, list);
+            }
+        }
+    }
+
+    public static void shutdownBlockNode(String flowId) {
+        if (POOL.containsKey(flowId)) {
+            synchronized (POOL) {
+                POOL.get(flowId).forEach(BlockNode::destroy);
+                POOL.remove(flowId);
+            }
+        }
+    }
+
+    /** 阻塞节点需要实现此接口，重写销毁方法 */
+    public interface BlockNode {
+        void destroy();
+
+        /** 提供比较两个阻塞节点是否相同的扩展方法 */
+        default boolean eq(BlockNode blockNode) {
+            return false;
+        }
+    }
+}
+```
+
+可以看到类中定义了一个阻塞节点接口`BlockNode`，当某个节点为阻塞节点时，需要实现该接口，重写`destroy`方法，定义该节点的中断和销毁逻辑，
+然后交给`FlowBlockNodePool`类统一管理。这样我们就实现了阻塞节点的统一管理方案，当停止流程时，就可以调用一些统一的停止/销毁方法来停止流程的运行。
+
+```java
+@Service
+public class FlowDataRuntime {
+    /** 停止流程 */
+    public void stopFlowData(String flowId) {
+        // 停止流程中运行节点的普通线程
+        FlowThreadPool.shutdownThreadPool(flowId);
+        // 停止定时任务线程
+        FlowThreadPool.shutdownSchedulerPool(flowId);
+        // 停止/销毁阻塞节点
+        FlowBlockNodePool.shutdownBlockNode(flowId);
+    }
+}
+```
