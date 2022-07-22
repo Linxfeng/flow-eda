@@ -16,7 +16,6 @@
   - [本地环境安装](advanced/local-install.md)
   - [本地启动项目](advanced/local-start.md)
   - [设计思想](advanced/design-philosophy.md)
-  - [源码解析](advanced/source-code.md)
   - [扩展开发](advanced/extend-dev.md)
 
 - 部署
