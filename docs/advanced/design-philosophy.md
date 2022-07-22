@@ -167,7 +167,7 @@ public class FlowExecutor {
 **1. 线程池管理工具**
 
 各个流程的运行采用统一管理线程池的方式，给每个流程分配一个单独的线程池，保证各流程运行时的线程安全。
-线程池管理工具`FlowThreadPool`内容如下：
+线程池管理工具`com.flow.eda.runner.runtime.FlowThreadPool`内容如下：
 
 ```java
 /** 用于执行整个流程的线程池管理工具，方便统一管理和约束线程池的创建/使用/销毁 */
@@ -200,7 +200,7 @@ public class FlowThreadPool {
 一个流程的运行是由各个节点的单独运行连接起来的。当我们运行一个流程时，需要先找出流程中的起始节点，然后获取流程线程池，从起始节点开始，异步运行。
 
 当流程开始运行后，先从起始节点开始，按照节点之间的连接顺序，依次向下运行，直至流程运行结束。
-对于单条流程的运行我们也专门封装一个类来处理，`FlowExecutor`类内容如下：
+对于单条流程的运行我们也专门封装一个类来处理，`com.flow.eda.runner.runtime.FlowExecutor`类内容如下：
 
 ```java
 /** 单条流程的执行者 */
@@ -278,7 +278,7 @@ web 服务多出来一个未运行的状态，这是由于用户新建了流程�
 
 当一个流程开始运行时，我们就需要开始实时计算该流程的运行状态，并将其通过 websocket 推送至前端。
 计算流程的运行状态服务我们写在 runner 运行引擎中，这是由于流程的运行状态是由多个节点运行状态决定的。
-我们可以根据每个节点的运行状态更新来刷新流程运行状态，具体实现逻辑写在`FlowStatusService`类中。
+我们可以根据每个节点的运行状态更新来刷新流程运行状态，具体实现逻辑写在`com.flow.eda.runner.status.FlowStatusService`类中。
 
 ```java
 /** 流程状态服务，主要负责实时计算流程运行状态并监控其状态变更 */
@@ -389,4 +389,98 @@ public class FlowNodeWebsocket {
 }
 ```
 
-这样一来，每次节点运行状态更新时，都会将状态信息推送到 RabbitMQ 中，保证了状态同步的消息投递。那么我们还需要在 web 服务里接收并处理这些消息。
+这样一来，每次节点运行状态更新时，都会将状态信息推送到 RabbitMQ 中，保证了流程状态同步的消息投递。那么我们还需要在 web 服务里接收并处理这些消息。
+
+在 web 服务中，接收 RabbitMQ 消息很简单，关键在于如何处理这些流程状态信息。由于节点运行速度非常快，这就可能导致会在极短的时间内收到大量的流程状态信息。
+而如此短暂且多量的信息，是不可能每次都去更新数据库的。那么我们采用只更新最后收到的消息行不行？答案是不行，
+因为无法预料是否还会继续收到消息，也无法知道下一条消息什么时候来。由于本项目暂时没有引入 Redis 作为应用缓存，这就为更新数据库中的流程状态带来了困难。
+
+本项目采用了看门狗用于监听流程状态变化，在`com.flow.eda.web.flow.status.FlowStatusWatchDog`类中
+
+```java
+/** 看门狗，用于监听流程状态变化 */
+public class FlowStatusWatchDog {
+    /** 刷新周期(秒) */
+    private static final long SLEEP = 2;
+    /** key为流程id，流程状态更新时会更新对应的value值为true */
+    private static final Map<String, Boolean> MAP = new ConcurrentHashMap<>();
+
+    /** 刷新看门狗 */
+    public static void refresh(String flowId, Consumer<String> callback) {
+        if (MAP.isEmpty()) {
+            MAP.put(flowId, true);
+            watch(callback);
+        } else {
+            MAP.put(flowId, true);
+        }
+    }
+
+    /** 监视对应的流程是否进行刷新，若固定周期内未刷新，则踢出map并进行回调 */
+    private static void watch(Consumer<String> callback) {
+        Runnable runnable =
+                () -> {
+                    while (!MAP.isEmpty()) {
+                        MAP.keySet()
+                                .forEach(
+                                        flowId -> {
+                                            if (MAP.get(flowId)) {
+                                                MAP.put(flowId, false);
+                                            }
+                                        });
+                        try {
+                            TimeUnit.SECONDS.sleep(SLEEP);
+                        } catch (InterruptedException e) {
+                            LogAspect.error(e.getMessage());
+                        }
+                        MAP.keySet()
+                                .forEach(
+                                        flowId -> {
+                                            if (!MAP.get(flowId)) {
+                                                MAP.remove(flowId);
+                                                callback.accept(flowId);
+                                            }
+                                        });
+                    }
+                };
+        new Thread(runnable).start();
+    }
+}
+```
+
+每当 web 服务接收到 RabbitMQ 中的状态信息时，就去刷新一下看门狗，这样一来，当超过看门狗固定的刷新周期还未收到新消息时，我们就可以进行数据库状态更新了。
+具体的实现逻辑在`com.flow.eda.web.flow.status.FlowStatusService`类中
+
+```java
+@Service
+public class FlowStatusService {
+    private final Map<String, String> statusMap = new HashMap<>();
+    @Autowired private FlowMapper flowMapper;
+
+    /** 刷新缓存中的流程状态 */
+    public void update(Document payload) {
+        String flowId = payload.getString("flowId");
+        String status = payload.getString("status");
+        statusMap.put(flowId, status);
+        // 刷新看门狗
+        FlowStatusWatchDog.refresh(flowId, this::updateStatus);
+    }
+
+    /** 将当前流程的状态更新到数据库 */
+    private void updateStatus(String flowId) {
+        if (statusMap.containsKey(flowId)) {
+            String status = statusMap.get(flowId);
+            flowMapper.updateStatus(flowId, status);
+        }
+    }
+}
+```
+
+可以看到，我们使用看门狗机制，很好的解决了上述短暂且大量消息的数据更新问题。
+
+这样的设计方案完美的解决了流程运行引擎和 web 服务以及数据库之间的流程状态同步问题。
+同时也避免了频繁更新数据库的情况，虽然会带来短暂的数据延迟，但对于流程列表中的数据来说，短暂的延迟也是可以接受的；
+同时对于前端来讲，流程状态是实时推送的，并不会受到任何影响。
+
+### 停止流程运行
+
+从设计角度思考一下，当一个流程运行起来之后，我们要如何去停止它？
