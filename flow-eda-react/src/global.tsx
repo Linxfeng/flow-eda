@@ -28,3 +28,5 @@ if ('serviceWorker' in navigator && isHttps) {
   });
   clearCache();
 }
+
+export const wsIp: string = 'ws://localhost';

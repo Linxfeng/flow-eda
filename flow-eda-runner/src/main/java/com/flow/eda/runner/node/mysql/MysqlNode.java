@@ -28,9 +28,12 @@ public class MysqlNode extends AbstractNode {
         try {
             // 加载驱动
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            // 建立数据库连接
-            connection = DriverManager.getConnection(url, username, password);
-
+            try {
+                // 建立数据库连接
+                connection = DriverManager.getConnection(url, username, password);
+            } catch (Exception e) {
+                throw new FlowException("Mysql connection failed. Please check url");
+            }
             // 开启事务
             connection.setAutoCommit(false);
             Document result = new Document();

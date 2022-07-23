@@ -1,39 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Document</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="Description">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/vue.css">
-</head>
-<body>
-  <div id="app"></div>
-  <script>
-    window.$docsify = {
-      name: 'flow-eda',
-      nameLink: '/',
-      repo: 'https://github.com/Linxfeng/flow-eda',
-      loadNavbar: true,
-      loadSidebar: true,
-      auto2top: true,
-      icon: './favicon.ico',
-      maxLevel: 2,
-      subMaxLevel: 3,
-      alias: {
-        '/.*/_sidebar.md': '/_sidebar.md',
-        '/.*/_navbar.md': '/_navbar.md'
-      },
-    }
-  </script>
-  <script src="//cdn.jsdelivr.net/npm/docsify"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
-  <style type="text/css">
-    body:not(.ready) {
-      overflow: auto;
-    }
-  </style>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="Description" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0"
+    />
+    <link rel="stylesheet" href="./lib/vue.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      window.$docsify = {
+        name: "flow-eda",
+        nameLink: "/flow-eda",
+        // nameLink: "/",
+        repo: "https://github.com/Linxfeng/flow-eda",
+        coverpage: true,
+        loadNavbar: true,
+        loadSidebar: true,
+        auto2top: true,
+        icon: "./flow-eda/favicon.ico",
+        maxLevel: 2,
+        subMaxLevel: 3,
+        search: {
+          placeholder: "搜索",
+          noData: "找不到结果!",
+          depth: 3,
+        },
+        alias: {
+          "/.*/_sidebar.md": "/_sidebar.md",
+          "/.*/_navbar.md": "/_navbar.md",
+        },
+      };
+    </script>
+    <!--    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>-->
+    <script src="./lib/docsify@4.min.js"></script>
+    <script src="./lib/search.min.js"></script>
+    <script src="./lib/docsify-copy-code.min.js"></script>
+    <script src="./lib/prism-bash.min.js"></script>
+    <script src="./lib/prism-yaml.min.js"></script>
+    <script src="./lib/prism-java.min.js"></script>
+  </body>
 </html>

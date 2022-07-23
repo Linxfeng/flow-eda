@@ -21,7 +21,8 @@ public class FlowController {
     @OperationLog
     @GetMapping("/flow")
     public PageResult<Flow> listFlow(FlowRequest request, Principal principal) {
-        request.setUsername(principal.getName());
+        String name = principal.getName();
+        request.setUsername("admin".equals(name) ? null : name);
         return PageResult.of(flowService.listFlowByPage(request));
     }
 

@@ -27,7 +27,11 @@ public class MongodbNode extends AbstractNode {
             setStatus(Status.FINISHED);
             callback.callback(output().append("result", document));
         } catch (Exception e) {
-            throw new FlowException(e.getMessage());
+            String message = e.getMessage();
+            if (message.startsWith("Timed out")) {
+                throw new FlowException("MongoDB connection failed. Please check url");
+            }
+            throw new FlowException(message);
         }
     }
 

@@ -9,7 +9,7 @@
  Target Server Version : 80027
  File Encoding         : 65001
 
- Date: 09/07/2022 16:57:17
+ Date: 19/07/2022 13:44:32
 */
 
 SET NAMES utf8mb4;
@@ -49,7 +49,7 @@ INSERT INTO `eda_flow` VALUES ('3wccjaqq9y0000', '拼接节点示例', '使用�
 INSERT INTO `eda_flow` VALUES ('41as9fmikt8000', '中止运行示例', '可在流程运行过程中，点击停止运行按钮，中止运行', 'test', 'FINISHED', '2022-05-09 17:47:20', '2022-05-09 17:47:20');
 INSERT INTO `eda_flow` VALUES ('48r380g6qc4000', '解析器示例', '包含开始-解析器-输出等节点', 'test', 'FINISHED', '2022-05-09 15:11:38', '2022-05-09 15:11:38');
 INSERT INTO `eda_flow` VALUES ('4d3es9ekt6m000', '分割节点示例', '使用分割节点对数据进行分割并输出', 'test', 'FINISHED', '2022-06-09 16:40:38', '2022-07-09 16:40:38');
-INSERT INTO `eda_flow` VALUES ('4ufazyee92c000', 'Mysql节点使用示例', '使用Mysql节点连接至指定的mysql数据库，并执行自定义sql语句，查看执行结果。前置条件：需要具备或已知mysql数据库地址，更新到节点URL属性上再运行流程', 'test', 'FINISHED', '2022-06-04 18:11:50', '2022-06-04 18:20:14');
+INSERT INTO `eda_flow` VALUES ('4ufazyee92c000', 'Mysql节点使用示例', '使用Mysql节点连接至指定的mysql数据库，并执行自定义sql语句，查看执行结果。前置条件：需要具备或已知mysql数据库地址，更新到节点URL属性上再运行流程', 'test', 'FAILED', '2022-06-04 18:11:50', '2022-06-04 18:20:14');
 INSERT INTO `eda_flow` VALUES ('4z9vdqsd5kg000', '增删改查-接口请求模型示例', '通过发送HTTP请求，对用户做增删改查操作的业务模型。前置条件：需要先运行流程[接口服务模型示例]', 'test', 'FINISHED', '2022-07-04 14:48:43', '2022-07-09 16:32:32');
 INSERT INTO `eda_flow` VALUES ('5czjn0rra74000', '增删改查-接口服务模型示例', '展示了用户增删改查接口服务的业务模型。（先运行此流程后，再运行接口请求模型示例）', 'test', 'FINISHED', '2022-07-03 10:48:40', '2022-07-09 16:35:14');
 INSERT INTO `eda_flow` VALUES ('5epeyaoy9ac000', '请求自定义HTTP服务', '发起HTTP请求，用于检查自定义HTTP服务的结果。前置条件：需要先运行流程[自定义HTTP服务示例]', 'test', 'FINISHED', '2022-06-19 15:13:06', '2022-06-19 15:13:06');
@@ -385,7 +385,7 @@ INSERT INTO `eda_flow_node_data` VALUES ('5qguok13ub4000', NULL, '5czjn0rra74000
 INSERT INTO `eda_flow_node_data` VALUES ('5qu8mi653lw000', '输出', '2dzjjpdtijb400', 4, '250px', '190px', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5r43xrlgtsc000', NULL, '3gsaefsrjvc000', NULL, NULL, NULL, NULL, NULL, NULL, '4c8mzac4do6000', '18fl3883e75s00');
 INSERT INTO `eda_flow_node_data` VALUES ('5rb9xhczuk0000', '输出', 'nm8hriar4ds00', 4, '340px', '45px', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `eda_flow_node_data` VALUES ('5sfvkcmh4a0000', 'WS服务端', '18rwqz520iio00', 34, '205px', '235px', NULL, '{\"path\": \"/w/test\", \"query\": \"name\", \"fanout\": \"Send\", \"sendAfterConnect\": \"hello ${name}!\"}', NULL, NULL, NULL);
+INSERT INTO `eda_flow_node_data` VALUES ('5sfvkcmh4a0000', 'WS服务端', '18rwqz520iio00', 34, '205px', '235px', NULL, '{\"path\": \"/w/test\", \"query\": \"name\", \"fanout\": \"发送\", \"sendAfterConnect\": \"hello ${name}!\"}', NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5suu5vrlsrk000', 'HTTP响应', '5czjn0rra74000', 33, '200px', '795px', NULL, '{\"uri\": \"/api/http/test/user\", \"method\": \"GET\"}', NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5u9p54sev5w000', NULL, '10j5nc7cz5k000', NULL, NULL, NULL, NULL, NULL, NULL, '27s1wzggeb400', '5plrpukibww000');
 INSERT INTO `eda_flow_node_data` VALUES ('5ugkbmc5hmo000', '延时2秒', '3gsaefsrjvc000', 3, '240px', '50px', NULL, '{\"delay\": \"2,SECONDS\"}', '{\"timestamp\": \"${timestamp}\"}', NULL, NULL);
@@ -451,8 +451,8 @@ CREATE TABLE `eda_flow_node_type`  (
 -- ----------------------------
 -- Records of eda_flow_node_type
 -- ----------------------------
-INSERT INTO `eda_flow_node_type` VALUES (1, 'start', '开始', '基础', '/svg/start.svg', 'rgb(0 128 0 / 20%)', '在一个流程中，开始节点作为该流程的触发起始节点');
-INSERT INTO `eda_flow_node_type` VALUES (2, 'timer', '定时器', '基础', '/svg/timer.svg', 'rgb(0 128 88 / 25%)', '可作为起始节点，用于定时触发流程周期性执行；若作为非起始节点，则由上游节点进行触发执行');
+INSERT INTO `eda_flow_node_type` VALUES (1, 'start', '开始', '基础', '/svg/start.svg', 'rgb(0 128 0 / 20%)', '在一个流程中，开始节点是触发流程执行的起始节点');
+INSERT INTO `eda_flow_node_type` VALUES (2, 'timer', '定时器', '基础', '/svg/timer.svg', 'rgb(0 128 88 / 25%)', '可作为起始节点，用于定时触发流程周期性执行，可指定执行次数，可输出指定格式的时间戳；亦可作为非起始节点，由上游节点触发执行。');
 INSERT INTO `eda_flow_node_type` VALUES (3, 'delay', '延时器', '基础', '/svg/delay.svg', 'rgb(8 155 16 / 25%)', '延时节点，可设定延迟时间，用于延迟其下游节点的运行');
 INSERT INTO `eda_flow_node_type` VALUES (4, 'output', '输出', '基础', '/svg/output.svg', 'rgb(145 188 130 / 75%)', '输出节点，可展示其上游节点的输出参数信息');
 INSERT INTO `eda_flow_node_type` VALUES (5, 'condition', '条件', '运算', '/svg/condition.svg', 'rgb(220 200 80 / 60%)', '条件节点，用于判断条件是否满足，可使用多个此节点组成与或等逻辑通路，条件满足后会继续向下游节点执行输出');
@@ -486,7 +486,7 @@ CREATE TABLE `eda_flow_node_type_param`  (
   `placeholder` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '参数值提示性内容',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `index_type_id`(`type_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 55 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 60 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of eda_flow_node_type_param
@@ -506,7 +506,7 @@ INSERT INTO `eda_flow_node_type_param` VALUES (12, 33, 'method', '请求方式',
 INSERT INTO `eda_flow_node_type_param` VALUES (14, 33, 'resData', '响应数据', 0, 'input', NULL, '{\"result\":\"OK\"} (不填默认返回上游节点的输出)');
 INSERT INTO `eda_flow_node_type_param` VALUES (15, 34, 'path', '路径', 1, 'input', NULL, '/w/test');
 INSERT INTO `eda_flow_node_type_param` VALUES (16, 34, 'query', '请求参数', 0, 'input', NULL, 'name,id');
-INSERT INTO `eda_flow_node_type_param` VALUES (17, 34, 'fanout', '节点输出参数发送', 1, 'select', 'Don\'t Send,Send', NULL);
+INSERT INTO `eda_flow_node_type_param` VALUES (17, 34, 'fanout', '输出参数发送（默认不发送）', 0, 'select', '发送,不发送', NULL);
 INSERT INTO `eda_flow_node_type_param` VALUES (18, 34, 'sendAfterConnect', '建立连接后发送', 0, 'input', NULL, 'eg: hello ${name}! balabala...');
 INSERT INTO `eda_flow_node_type_param` VALUES (19, 34, 'sendAfterReceive', '收到消息后发送', 0, 'input', NULL, 'eg: received! balabala...');
 INSERT INTO `eda_flow_node_type_param` VALUES (20, 35, 'path', '路径', 1, 'input', NULL, '/w/test?name=test1');
@@ -535,9 +535,9 @@ INSERT INTO `eda_flow_node_type_param` VALUES (42, 53, 'args', '参数', 1, 'inp
 INSERT INTO `eda_flow_node_type_param` VALUES (43, 53, 'username', '用户名', 0, 'input', NULL, NULL);
 INSERT INTO `eda_flow_node_type_param` VALUES (44, 53, 'password', '密码', 0, 'input', NULL, NULL);
 INSERT INTO `eda_flow_node_type_param` VALUES (45, 53, 'database', '数据库', 0, 'input', NULL, '1');
-INSERT INTO `eda_flow_node_type_param` VALUES (46, 5, 'field', '字段名', 1, 'input', NULL, NULL);
+INSERT INTO `eda_flow_node_type_param` VALUES (46, 5, 'field', '字段名', 1, 'input', NULL, '仅可填写单个字段名');
 INSERT INTO `eda_flow_node_type_param` VALUES (47, 5, 'condition', '判断逻辑', 1, 'select', '=,!=,>,>=,<,<=', NULL);
-INSERT INTO `eda_flow_node_type_param` VALUES (48, 5, 'value', '判断值', 1, 'input', NULL, NULL);
+INSERT INTO `eda_flow_node_type_param` VALUES (48, 5, 'value', '判断值', 1, 'input', NULL, '支持null，表示该字段不存在或值为null');
 INSERT INTO `eda_flow_node_type_param` VALUES (49, 32, 'uri', 'URI', 1, 'input', NULL, '/api/http/test');
 INSERT INTO `eda_flow_node_type_param` VALUES (50, 32, 'method', '请求方式', 1, 'select', 'GET,POST,PUT,DELETE,HEAD,OPTIONS,TRACE,PATCH', NULL);
 INSERT INTO `eda_flow_node_type_param` VALUES (51, 6, 'start', '初始值', 1, 'input', NULL, '请输入整数（产生的序列包含此值）');

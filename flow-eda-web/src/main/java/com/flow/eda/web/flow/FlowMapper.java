@@ -16,7 +16,8 @@ public interface FlowMapper {
     List<Flow> findByIds(List<String> ids);
 
     @Select(
-            "<script>SELECT * FROM eda_flow WHERE username=#{username} "
+            "<script>SELECT * FROM eda_flow WHERE 1=1 "
+                    + "<if test='username!=null'>AND `username`=#{username}</if>"
                     + "<if test='status!=null'>AND `status`=#{status}</if>"
                     + "<if test='name!=null'> AND `name` LIKE '%${name}%'</if>"
                     + " ORDER BY create_date DESC</script>")
