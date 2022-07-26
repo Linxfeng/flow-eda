@@ -23,8 +23,6 @@
   - [docker 部署](deploy/docker.md)
   - [docker-compose 部署](deploy/docker-compose.md)
   - [linux 环境部署](deploy/linux.md)
-  - [windows 环境部署](deploy/windows.md)
-  - [mac 环境部署](deploy/mac.md)
 
 - 版本
 
