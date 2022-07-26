@@ -46,9 +46,9 @@ default-time-zone='+8:00'
 docker run --privileged=true -d -v /root/app/mysql/data/:/var/lib/mysql -v /root/app/mysql/conf.d:/etc/mysql/conf.d -v /root/app/mysql/my.cnf:/etc/mysql/my.cnf -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=123456 mysql
 ```
 
-执行成功后，可以使用`docker ps -a`命令查看容器运行状态。
+执行成功后，可以使用`docker ps -a`命令查看容器运行状态。你可以使用 Navicat 等 mysql 客户端工具进行连接，若连接成功，则 mysql 服务部署成功，正常运行。
 
-你可以使用 Navicat 等 mysql 客户端工具进行连接，若连接成功，则 mysql 服务部署成功，正常运行。
+Mysql 服务部署完成后，需要[导入 sql 文件](advanced/local-start?id=导入-sql-文件)。
 
 > 注意服务器防火墙等因素可能会导致客户端无法连接的情况。
 
@@ -93,7 +93,7 @@ exit
 部署 nacos 服务稍微繁琐一点，主要是因为它需要连接到 mysql 数据库，便于持久化存储数据。
 
 我们在部署 nacos 之前，需要先连接到我们的 mysql 数据库，创建一个名为`nacos_config`的数据库，然后导入 sql 文件。
-本项目下载了 sql 文件，在项目`flow-eda-common`中，`sql/nacos_config.sql`文件。
+本项目下载了 sql 文件，在项目`flow-eda-common`中，`sql/nacos_config.sql`文件。（如果前面已经导入了 sql 文件，则无需再次导入）
 
 创建好数据库，成功导入 sql 文件后，我们执行 docker 命令，启动 nacos 服务。
 注意修改命令中的`MYSQL_SERVICE_HOST`和`MYSQL_SERVICE_PASSWORD`的值，分别为你的 mysql 服务的 ip 地址和 root 用户的密码。

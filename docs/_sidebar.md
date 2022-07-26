@@ -13,7 +13,6 @@
 
 - 进阶
 
-  - [本地环境安装](advanced/local-install.md)
   - [本地启动项目](advanced/local-start.md)
   - [设计思想](advanced/design-philosophy.md)
   - [扩展开发](advanced/extend-dev.md)
@@ -24,8 +23,6 @@
   - [docker 部署](deploy/docker.md)
   - [docker-compose 部署](deploy/docker-compose.md)
   - [linux 环境部署](deploy/linux.md)
-  - [windows 环境部署](deploy/windows.md)
-  - [mac 环境部署](deploy/mac.md)
 
 - 版本
 
