@@ -14,7 +14,7 @@
 
 安装好中间件服务后，需要使用 Navicat 或其它客户端工具连接到 Mysql 数据库，[导入 sql 文件](advanced/local-start?id=导入-sql-文件)。
 
-### 部署后端项目
+### 部署后端应用
 
 当后端项目所依赖的中间件服务部署完成、正常运行后，我们就可以开始部署后端服务了。
 这里采用运行 jar 包的方式来部署后端项目，项目的 jar 包来源详见[项目打包](deploy/packaging.md)。
@@ -51,6 +51,33 @@ nohup java -jar flow-eda-runner-0.0.1-SNAPSHOT.jar >runner.log 2>&1 &
 
 至此，后端项目就部署好了。
 
-### 部署前端项目
+### 部署前端应用
 
-前端项目
+前端应用我们使用 Nginx 进行部署，首先需要在 linux 上安装 nginx 服务，可参考[linux 安装 nginx 并配置反向代理](https://blog.csdn.net/Lin_xiaofeng/article/details/125992996)。
+我们有 vue 和 react 两个前端项目，你可以按需部署，将你想要部署的项目配置到 80 端口即可，也可以将两个项目都部署，配置不同端口即可。（下面我们以 vue 项目为例进行部署）
+
+安装好 nginx 服务之后，我们需要将前端项目打好的包上传至 nginx 服务的 www 目录下，前端包来源详见[项目打包](deploy/packaging.md)。
+
+```shell
+cd /usr/local/nginx
+mkdir www
+```
+
+![image](../img/linux5.png ":size=40%")
+
+然后我们需要配置反向代理，编辑`/usr/local/nginx/conf`目录下的`nginx.conf`文件
+
+```shell
+cd /usr/local/nginx/conf
+vi nginx.conf
+```
+
+需要将 root 目录改完你上传的包的路径，然后需要配置项目所需要的反向代理
+
+![image](../img/linux6.png ":size=60%")
+
+配置完之后，重启 nginx 服务，打开浏览器，访问你的服务器 IP 地址，默认 80 端口。测试平台是否功能完好，没有异常。
+
+![image](../img/linux7.png)
+
+至此，linux 环境项目部署完成。
