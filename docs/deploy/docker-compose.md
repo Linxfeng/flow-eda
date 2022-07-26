@@ -271,8 +271,9 @@ cd /root/app/docker-compose
 docker-compose up -d
 ```
 
-启动后，需要使用 Navicat 客户端工具连接到 mysql 数据库，创建一个名为`nacos_config`的数据库，然后导入 sql 文件。
-本项目下载了 sql 文件，在项目`flow-eda-common`中，`sql/nacos_config.sql`文件。
+3. **导入 sql 文件**
+
+服务部署后，需要使用 Navicat 或其它客户端工具连接到 Mysql 数据库，[导入 sql 文件](advanced/local-start?id=导入-sql-文件)。
 
 > 由于启动 nacos 服务需要连接至 mysql 数据库，所以第一次启动时会失败，我们建好数据库，导入 sql 文件后，再次执行启动命令即可。
 > 若 nacos 服务遇到解决不了的问题，可以查看[官方 issues](https://github.com/alibaba/nacos/issues)寻找类似的问题和解决方案。

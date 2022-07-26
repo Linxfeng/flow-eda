@@ -24,6 +24,16 @@
 - [docker 部署](deploy/docker.md)
 - [docker-compose 部署](deploy/docker-compose.md)
 
+### 导入 sql 文件
+
+安装好中间件服务之后，需要使用 Navicat 或其它客户端工具连接到 Mysql 数据库，导入项目所需要的 sql 文件。
+
+sql 文件在项目`flow-eda-common`的`sql`目录中。
+
+- 创建`nacos_config`数据库，导入`nacos_config.sql`文件。
+- 创建`flow_eda`数据库，导入`flow_eda.sql`文件。
+- 创建`flow_eda_oauth2`数据库，导入`flow_eda_oauth2.sql`文件。
+
 ### 本地构建项目
 
 我们需要将项目的源码拉取到本地，可根据自身网络情况选择 Github 还是 Gitee 平台拉取代码。
