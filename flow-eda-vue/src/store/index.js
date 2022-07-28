@@ -4,7 +4,6 @@ export default createStore({
   state: {
     tagsList: [],
     collapse: false,
-    username: "",
   },
   mutations: {
     delTagsItem(state, data) {

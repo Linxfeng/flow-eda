@@ -42,7 +42,6 @@
 
 <script>
 import {reactive, ref} from "vue";
-import {useStore} from "vuex";
 import {listLogs, deleteLogs} from "../api/logs.js";
 import {useRouter} from "vue-router";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -50,8 +49,7 @@ import {ElMessage, ElMessageBox} from "element-plus";
 export default {
   name: "Logs",
   setup() {
-    const store = useStore();
-    const username = store.state.username;
+    const username = localStorage.getItem("username");
 
     // 查询参数
     const params = reactive({
