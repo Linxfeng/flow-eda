@@ -29,8 +29,12 @@ export default {
     watch(
         () => props.path,
         (n, o) => {
-          getData(n);
-          onCloseLogDetail(o);
+          if (n) {
+            if (n !== o) {
+              onCloseLogDetail(o);
+              getData(n);
+            }
+          }
         }
     );
 
