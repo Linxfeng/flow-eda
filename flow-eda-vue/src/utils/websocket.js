@@ -1,82 +1,33 @@
-let ws = {};
-let logWs = {};
-let logContentWs = {};
+import { ElMessage } from "element-plus";
+import { refreshToken } from "../api/oauth2";
+
+/** 创建WebSocket连接 */
+export function newWebSocket(url, callback) {
+  const socket = new WebSocket(urlWithToken(url));
+  socket.onerror = async function (e) {
+    // 刷新token
+    const pass = await refreshToken();
+    if (pass) {
+      // 刷新token成功，重新请求
+      const ws = new WebSocket(urlWithToken(url));
+      ws.onmessage = function (msg) {
+        callback(msg.data);
+      };
+      return ws;
+    } else {
+      // 刷新token失败，退出登录
+      ElMessage.error("登录过期");
+      location.href = "/";
+    }
+  };
+  socket.onmessage = function (msg) {
+    callback(msg.data);
+  };
+  return socket;
+}
 
 function urlWithToken(url) {
-  return url + "?access_token=" + localStorage.getItem("access_token");
+  return (
+    window.$wsIp + url + "?access_token=" + localStorage.getItem("access_token")
+  );
 }
-
-// 建立连接，监听消息并进行回调
-function onOpen(id, callback) {
-  if (Object.keys(ws).length === 0 || !ws[id]) {
-    const url = urlWithToken(window.$wsIp + ":8088/ws/flow/" + id + "/nodes");
-    const socket = new WebSocket(url);
-    socket.onmessage = function (msg) {
-      callback(msg.data);
-    };
-    ws[id] = socket;
-  }
-}
-
-// 关闭连接
-function onClose(id) {
-  if (ws && ws[id]) {
-    try {
-      ws[id].close();
-    } catch (ignore) {}
-    ws[id] = null;
-  }
-}
-
-// 监听日志消息
-function onOpenLogs(id, callback) {
-  if (Object.keys(logWs).length === 0 || !logWs[id]) {
-    const url = urlWithToken(window.$wsIp + ":8082/ws/flow/" + id + "/logs");
-    const socket = new WebSocket(url);
-    socket.onmessage = function (msg) {
-      callback(msg.data);
-    };
-    logWs[id] = socket;
-  }
-}
-
-function onCloseLogs(id) {
-  if (logWs && logWs[id]) {
-    try {
-      logWs[id].close();
-    } catch (ignore) {}
-    logWs[id] = null;
-  }
-}
-
-// 接收日志文件内容
-function onOpenLogDetail(path, callback) {
-  if (Object.keys(logContentWs).length === 0 || !logContentWs[path]) {
-    const url = urlWithToken(
-      window.$wsIp + ":8082/ws/logs/content/" + path.replaceAll("/", ":")
-    );
-    const socket = new WebSocket(url);
-    socket.onmessage = function (msg) {
-      callback(msg.data);
-    };
-    logContentWs[path] = socket;
-  }
-}
-
-function onCloseLogDetail(path) {
-  if (logContentWs && logContentWs[path]) {
-    try {
-      logContentWs[path].close();
-    } catch (ignore) {}
-    logContentWs[path] = null;
-  }
-}
-
-export {
-  onOpen,
-  onClose,
-  onOpenLogs,
-  onCloseLogs,
-  onOpenLogDetail,
-  onCloseLogDetail,
-};
