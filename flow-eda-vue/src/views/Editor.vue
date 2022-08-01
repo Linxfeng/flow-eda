@@ -1,61 +1,123 @@
 <template>
   <div style="height: 100%">
-    <toolbar :status="flowStatus" @copyNode="copyNode(data.selectedNode)"
-             @deleteNode="deleteNode(data.selectedNode)" @executeFlow="executeFlow"
-             @keyup="keyupNode($event,data.selectedNode)" @pasteNode="pasteNode" @saveData="saveData"
-             @showLogs="showLogs" @stopFlow="stopFlow" @zoomNode="zoomNode" @importFlow="importFlow"
-             @exportFlow="exportFlow"/>
+    <toolbar
+      :status="flowStatus"
+      @copyNode="copyNode(data.selectedNode)"
+      @deleteNode="deleteNode(data.selectedNode)"
+      @executeFlow="executeFlow"
+      @keyup="keyupNode($event, data.selectedNode)"
+      @pasteNode="pasteNode"
+      @saveData="saveData"
+      @showLogs="showLogs"
+      @stopFlow="stopFlow"
+      @zoomNode="zoomNode"
+      @importFlow="importFlow"
+      @exportFlow="exportFlow"
+    />
     <div id="flow-content" class="flow-content">
       <div class="nodes-wrap">
-        <el-collapse v-for="menu in Object.keys(data.nodeTypeList)" :model-value="menu">
+        <el-collapse
+          v-for="menu in Object.keys(data.nodeTypeList)"
+          :model-value="menu"
+        >
           <el-collapse-item :title="menu" :name="menu">
-            <div v-for="item in data.nodeTypeList[menu]" :key="item.type" :style="{background: item.background}"
-                 class="node"
-                 draggable="true" @dragstart="drag(item)" @mousemove="moveDes($event,item)" @mouseout="hideDes(item)">
+            <div
+              v-for="item in data.nodeTypeList[menu]"
+              :key="item.type"
+              :style="{ background: item.background }"
+              class="node"
+              draggable="true"
+              @dragstart="drag(item)"
+              @mousemove="moveDes($event, item)"
+              @mouseout="hideDes(item)"
+            >
               <div class="svg">
-                <img :src="item.svg" alt="" style="padding: 4px">
+                <img :src="item.svg" alt="" style="padding: 4px" />
               </div>
               <div class="name">{{ item.typeName }}</div>
-              <div v-show="showDescription.show" :style="{left: showDescription.left,top: showDescription.top}"
-                   class="description">
+              <div
+                v-show="showDescription.show"
+                :style="{
+                  left: showDescription.left,
+                  top: showDescription.top,
+                }"
+                class="description"
+              >
                 {{ showDescription.data }}
               </div>
             </div>
           </el-collapse-item>
         </el-collapse>
       </div>
-      <div id="flowWrap" ref="flowWrap" class="flow-wrap" @dragover="allowDrop" @drop="drop"
-           @keyup="keyupNode($event,data.selectedNode)">
+      <div
+        id="flowWrap"
+        ref="flowWrap"
+        class="flow-wrap"
+        @dragover="allowDrop"
+        @drop="drop"
+        @keyup="keyupNode($event, data.selectedNode)"
+      >
         <div id="flow" tabindex="1" @focusin="showNodeDetail(null)">
-          <div v-show="auxiliaryLine.isShowXLine"
-               :style="{width: auxiliaryLinePos.width, top:auxiliaryLinePos.y + 'px', left: auxiliaryLinePos.offsetX + 'px'}"
-               class="auxiliary-line-x"></div>
-          <div v-show="auxiliaryLine.isShowYLine"
-               :style="{height: auxiliaryLinePos.height, left:auxiliaryLinePos.x + 'px', top: auxiliaryLinePos.offsetY + 'px'}"
-               class="auxiliary-line-y"></div>
-          <flowNode v-for="item in data.nodeList" :id="item.id" :key="item.id" :node="item"
-                    @changeLineState="changeLineState" @showNodeDetail="showNodeDetail"/>
+          <div
+            v-show="auxiliaryLine.isShowXLine"
+            :style="{
+              width: auxiliaryLinePos.width,
+              top: auxiliaryLinePos.y + 'px',
+              left: auxiliaryLinePos.offsetX + 'px',
+            }"
+            class="auxiliary-line-x"
+          ></div>
+          <div
+            v-show="auxiliaryLine.isShowYLine"
+            :style="{
+              height: auxiliaryLinePos.height,
+              left: auxiliaryLinePos.x + 'px',
+              top: auxiliaryLinePos.offsetY + 'px',
+            }"
+            class="auxiliary-line-y"
+          ></div>
+          <flowNode
+            v-for="item in data.nodeList"
+            :id="item.id"
+            :key="item.id"
+            :node="item"
+            @changeLineState="changeLineState"
+            @showNodeDetail="showNodeDetail"
+          />
         </div>
       </div>
-      <nodeDetail v-if="data.selectedNode" :node="data.selectedNode" @showNodeDetail="showNodeDetail"
-                  @updateNode="updateNode"/>
-      <flowLog v-if="logVisible" :log-content="logContent"/>
+      <nodeDetail
+        v-if="data.selectedNode"
+        :node="data.selectedNode"
+        @showNodeDetail="showNodeDetail"
+        @updateNode="updateNode"
+      />
+      <flowLog v-if="logVisible" :log-content="logContent" />
     </div>
   </div>
 </template>
 
 <script>
-import {nextTick, onBeforeUnmount, onMounted, reactive, ref} from 'vue';
-import {jsplumbSetting} from '../utils/jsplumbConfig.js';
-import {jsplumbConnectOptions, jsplumbSourceOptions, jsplumbTargetOptions} from "../utils/jsplumbConfig";
-import {ElMessage, ElMessageBox} from "element-plus";
-import {jsPlumb} from "jsplumb";
-import {generateUniqueID} from "../utils/util.js";
-import {getNodeTypes} from "../api/nodeType.js";
-import {executeNodeData, getNodeData, setNodeData, stopNodeData} from "../api/nodeData.js";
-import {onClose, onCloseLogs, onOpen, onOpenLogs} from "../utils/websocket.js";
+import { nextTick, onBeforeUnmount, onMounted, reactive, ref } from "vue";
+import { jsplumbSetting } from "../utils/jsplumbConfig.js";
+import {
+  jsplumbConnectOptions,
+  jsplumbSourceOptions,
+  jsplumbTargetOptions,
+} from "../utils/jsplumbConfig";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { jsPlumb } from "jsplumb";
+import { generateUniqueID } from "../utils/util.js";
+import { getNodeTypes } from "../api/nodeType.js";
+import {
+  executeNodeData,
+  getNodeData,
+  setNodeData,
+  stopNodeData,
+} from "../api/nodeData.js";
+import { onClose, onCloseLogs, onOpen, onOpenLogs } from "../api/ws.js";
 import panzoom from "panzoom";
-import toolbar from '../components/editor/Toolbar.vue';
+import toolbar from "../components/editor/Toolbar.vue";
 import flowNode from "../components/editor/FlowNode.vue";
 import nodeDetail from "../components/editor/NodeDetail.vue";
 import flowLog from "../components/editor/FlowLog.vue";
@@ -67,10 +129,10 @@ export default {
     flowNode,
     toolbar,
     nodeDetail,
-    flowLog
+    flowLog,
   },
   props: {
-    flowId: String
+    flowId: String,
   },
   setup(props) {
     // jsPlumb实例
@@ -80,13 +142,25 @@ export default {
       nodeTypeList: {},
       nodeList: [],
       lineList: [],
-      selectedNode: null
+      selectedNode: null,
     });
     // 对齐辅助线
-    const auxiliaryLine = reactive({isShowXLine: false, isShowYLine: false});
-    const auxiliaryLinePos = reactive({width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20});
+    const auxiliaryLine = reactive({ isShowXLine: false, isShowYLine: false });
+    const auxiliaryLinePos = reactive({
+      width: "100%",
+      height: "100%",
+      offsetX: 0,
+      offsetY: 0,
+      x: 20,
+      y: 20,
+    });
     // 展示节点类型的描述
-    let showDescription = reactive({show: false, data: '', left: '0px', top: '0px'});
+    let showDescription = reactive({
+      show: false,
+      data: "",
+      left: "0px",
+      top: "0px",
+    });
 
     // 初始化节点类型
     const initNodeType = async () => {
@@ -98,11 +172,11 @@ export default {
 
     // 初始化节点数据
     const initNode = async () => {
-      const res = await getNodeData({flowId: props.flowId});
+      const res = await getNodeData({ flowId: props.flowId });
       if (res) {
         const node = [];
         const line = [];
-        res.result.map(d => {
+        res.result.map((d) => {
           if (d.nodeName) {
             node.push(d);
           } else {
@@ -120,15 +194,15 @@ export default {
         // 导入默认配置
         jsPlumbInstance.importDefaults(jsplumbSetting);
         // 连线创建成功后，维护本地数据
-        jsPlumbInstance.bind("connection", evt => {
+        jsPlumbInstance.bind("connection", (evt) => {
           addLine(evt);
         });
         //连线双击删除事件
-        jsPlumbInstance.bind("dblclick", line => {
+        jsPlumbInstance.bind("dblclick", (line) => {
           confirmDeleteLine(line);
         });
         //断开连线后，维护本地数据
-        jsPlumbInstance.bind("connectionDetached", evt => {
+        jsPlumbInstance.bind("connectionDetached", (evt) => {
           deleteLine(evt);
         });
         // 加载流程图
@@ -146,17 +220,18 @@ export default {
       data.lineList.push({
         id: generateUniqueID(8),
         from: from,
-        to: to
+        to: to,
       });
     };
 
     const confirmDeleteLine = (line) => {
       ElMessageBox.confirm("确认删除该连线？", "提示", {
         type: "warning",
-      }).then(() => {
-        jsPlumbInstance.deleteConnection(line);
-      }).catch(() => {
-      });
+      })
+        .then(() => {
+          jsPlumbInstance.deleteConnection(line);
+        })
+        .catch(() => {});
     };
 
     const deleteLine = (line) => {
@@ -185,19 +260,19 @@ export default {
       for (let i = 0; i < data.lineList.length; i++) {
         let line = data.lineList[i];
         jsPlumbInstance.connect(
-            {
-              source: line.from,
-              target: line.to
-            },
-            jsplumbConnectOptions
+          {
+            source: line.from,
+            target: line.to,
+          },
+          jsplumbConnectOptions
         );
       }
       //注册连接事件
-      jsPlumbInstance.bind("connection", evt => {
+      jsPlumbInstance.bind("connection", (evt) => {
         data.lineList.push({
           id: generateUniqueID(8),
           from: evt.source.id,
-          to: evt.target.id
+          to: evt.target.id,
         });
       });
     };
@@ -210,21 +285,20 @@ export default {
         drag: (params) => {
           alignForLine(nodeId, params.pos);
         },
-        start: () => {
-        },
+        start: () => {},
         stop: (params) => {
           auxiliaryLine.isShowXLine = false;
           auxiliaryLine.isShowYLine = false;
           changeNodePosition(nodeId, params.pos);
-        }
+        },
       });
     };
 
     const changeNodePosition = (nodeId, pos) => {
-      data.nodeList.map(v => {
+      data.nodeList.map((v) => {
         if (nodeId === v.id) {
-          v.left = pos[0] + 'px';
-          v.top = pos[1] + 'px';
+          v.left = pos[0] + "px";
+          v.top = pos[1] + "px";
           return v;
         }
       });
@@ -234,16 +308,16 @@ export default {
     const alignForLine = (nodeId, position) => {
       let showXLine = false;
       let showYLine = false;
-      data.nodeList.some(el => {
-        if (el.id !== nodeId && el.left === position[0] + 'px') {
+      data.nodeList.some((el) => {
+        if (el.id !== nodeId && el.left === position[0] + "px") {
           auxiliaryLinePos.x = position[0] + 60;
           showYLine = true;
         }
-        if (el.id !== nodeId && el.top === position[1] + 'px') {
+        if (el.id !== nodeId && el.top === position[1] + "px") {
           auxiliaryLinePos.y = position[1] + 20;
           showXLine = true;
         }
-      })
+      });
       auxiliaryLine.isShowYLine = showYLine;
       auxiliaryLine.isShowXLine = showXLine;
     };
@@ -258,37 +332,46 @@ export default {
         bounds: true,
         zoomDoubleClickSpeed: 1,
         minZoom: 0.5,
-        maxZoom: 2
+        maxZoom: 2,
       });
       jsPlumbInstance.mainContainerWrap = mainContainerWrap;
       jsPlumbInstance.pan = pan;
-      pan.on("zoom", e => {
-        const {x, y, scale} = e.getTransform();
+      pan.on("zoom", (e) => {
+        const { x, y, scale } = e.getTransform();
         jsPlumbInstance.setZoom(scale);
         //根据缩放比例，缩放对齐辅助线长度和位置
-        auxiliaryLinePos.width = (1 / scale) * 100 + '%';
-        auxiliaryLinePos.height = (1 / scale) * 100 + '%';
+        auxiliaryLinePos.width = (1 / scale) * 100 + "%";
+        auxiliaryLinePos.height = (1 / scale) * 100 + "%";
         auxiliaryLinePos.offsetX = -(x / scale);
         auxiliaryLinePos.offsetY = -(y / scale);
       });
       pan.on("panend", (e) => {
-        const {x, y, scale} = e.getTransform();
-        auxiliaryLinePos.width = (1 / scale) * 100 + '%';
-        auxiliaryLinePos.height = (1 / scale) * 100 + '%';
+        const { x, y, scale } = e.getTransform();
+        auxiliaryLinePos.width = (1 / scale) * 100 + "%";
+        auxiliaryLinePos.height = (1 / scale) * 100 + "%";
         auxiliaryLinePos.offsetX = -(x / scale);
         auxiliaryLinePos.offsetY = -(y / scale);
       });
       // 平移时设置鼠标样式
       mainContainerWrap.style.cursor = "grab";
-      mainContainerWrap.addEventListener("mousedown", function wrapMousedown(style) {
-        style.cursor = "grabbing";
-        mainContainerWrap.addEventListener("mouseout", function wrapMouseout(style) {
+      mainContainerWrap.addEventListener(
+        "mousedown",
+        function wrapMousedown(style) {
+          style.cursor = "grabbing";
+          mainContainerWrap.addEventListener(
+            "mouseout",
+            function wrapMouseout(style) {
+              style.cursor = "grab";
+            }
+          );
+        }
+      );
+      mainContainerWrap.addEventListener(
+        "mouseup",
+        function wrapMouseup(style) {
           style.cursor = "grab";
-        });
-      });
-      mainContainerWrap.addEventListener("mouseup", function wrapMouseup(style) {
-        style.cursor = "grab";
-      });
+        }
+      );
     };
 
     let currentItem = null;
@@ -297,16 +380,18 @@ export default {
     };
 
     const drop = (event) => {
-      const containerRect = jsPlumbInstance.getContainer().getBoundingClientRect();
+      const containerRect = jsPlumbInstance
+        .getContainer()
+        .getBoundingClientRect();
       const scale = jsPlumbInstance.getZoom();
       let left = (event.pageX - containerRect.left - 60) / scale;
       let top = (event.pageY - containerRect.top - 20) / scale;
       let temp = {
         id: generateUniqueID(8),
         nodeName: currentItem.typeName,
-        top: (Math.round(top / 20)) * 20 + "px",
-        left: (Math.round(left / 20)) * 20 + "px",
-        nodeType: currentItem
+        top: Math.round(top / 20) * 20 + "px",
+        left: Math.round(left / 20) * 20 + "px",
+        nodeType: currentItem,
       };
       addNode(temp);
     };
@@ -340,8 +425,10 @@ export default {
         const temp = JSON.parse(JSON.stringify(clipboard));
         temp.id = generateUniqueID(8);
         // 粘贴的节点向右下方向各移动15px,30px
-        temp.left = parseFloat(temp.left.slice(0, temp.left.length - 2)) + 30 + 'px';
-        temp.top = parseFloat(temp.top.slice(0, temp.top.length - 2)) + 15 + 'px';
+        temp.left =
+          parseFloat(temp.left.slice(0, temp.left.length - 2)) + 30 + "px";
+        temp.top =
+          parseFloat(temp.top.slice(0, temp.top.length - 2)) + 15 + "px";
         addNode(temp);
         clipboard = temp;
       }
@@ -352,27 +439,28 @@ export default {
       if (node) {
         ElMessageBox.confirm("确认删除当前节点？", "提示", {
           type: "warning",
-        }).then(() => {
-          data.nodeList.map((v, index) => {
-            if (v.id === node.id) {
-              data.nodeList.splice(index, 1);
-              jsPlumbInstance.remove(v.id);
-              return v;
-            }
-          });
-          data.selectedNode = undefined;
-        }).catch(() => {
-        });
+        })
+          .then(() => {
+            data.nodeList.map((v, index) => {
+              if (v.id === node.id) {
+                data.nodeList.splice(index, 1);
+                jsPlumbInstance.remove(v.id);
+                return v;
+              }
+            });
+            data.selectedNode = undefined;
+          })
+          .catch(() => {});
       }
     };
 
     // 键盘事件操作节点
     const keyupNode = (e, node) => {
-      if (e.ctrlKey === false && e.key === 'Delete') {
+      if (e.ctrlKey === false && e.key === "Delete") {
         deleteNode(node);
-      } else if (e.ctrlKey && e.key === 'c') {
+      } else if (e.ctrlKey && e.key === "c") {
         copyNode(node);
-      } else if (e.ctrlKey && e.key === 'v') {
+      } else if (e.ctrlKey && e.key === "v") {
         pasteNode(node);
       }
     };
@@ -383,21 +471,21 @@ export default {
       const max = jsPlumbInstance.pan.getMaxZoom();
       const min = jsPlumbInstance.pan.getMinZoom();
       let temp;
-      if (e === 'in') {
+      if (e === "in") {
         if (scale < max) {
-          temp = scale + (scale * 0.25);
+          temp = scale + scale * 0.25;
         }
-      } else if (e === 'out') {
+      } else if (e === "out") {
         if (scale > min) {
-          temp = scale - (scale * 0.25);
+          temp = scale - scale * 0.25;
         }
-      } else if (e === 'full') {
+      } else if (e === "full") {
         if (!screenfull.isEnabled) {
           ElMessage.warning("您的浏览器不支持全屏");
           return false;
         }
         screenfull.request(document.getElementById("flow-content"));
-      } else if (e === 'reset') {
+      } else if (e === "reset") {
         temp = 1;
       }
       if (!temp) {
@@ -416,12 +504,12 @@ export default {
     //更改连线状态
     const changeLineState = (nodeId, val) => {
       let lines = jsPlumbInstance.getAllConnections();
-      lines.forEach(line => {
+      lines.forEach((line) => {
         if (line.targetId === nodeId || line.sourceId === nodeId) {
           if (val) {
-            line.canvas.classList.add('active');
+            line.canvas.classList.add("active");
           } else {
-            line.canvas.classList.remove('active');
+            line.canvas.classList.remove("active");
           }
         }
       });
@@ -431,12 +519,12 @@ export default {
     const moveDes = (e, type) => {
       showDescription.show = true;
       showDescription.data = type.description;
-      showDescription.left = (e.pageX - 165) + 'px';
-      showDescription.top = (e.pageY - 114) + 'px';
+      showDescription.left = e.pageX - 165 + "px";
+      showDescription.top = e.pageY - 114 + "px";
     };
     const hideDes = () => {
       showDescription.show = false;
-      showDescription.data = '';
+      showDescription.data = "";
     };
 
     // 右侧栏展示节点详情
@@ -445,14 +533,14 @@ export default {
       if (node) {
         setTimeout(() => {
           data.selectedNode = node;
-        }, 0)
+        }, 0);
       }
     };
 
     // 更新节点属性信息
     const updateNode = (node, params) => {
       data.selectedNode = node;
-      data.nodeList.map(v => {
+      data.nodeList.map((v) => {
         if (v.id === node.id) {
           v.nodeName = node.nodeName;
           v.remark = node.remark;
@@ -509,10 +597,10 @@ export default {
     const exportFlow = () => {
       const flow = {
         nodeList: data.nodeList,
-        lineList: data.lineList
-      }
+        lineList: data.lineList,
+      };
       navigator.clipboard.writeText(JSON.stringify(flow));
-    }
+    };
 
     // 展示/关闭流程实时运行日志
     const logVisible = ref(false);
@@ -561,7 +649,7 @@ export default {
       }
       // 封装节点数据参数
       let body = [];
-      data.nodeList.forEach(d => {
+      data.nodeList.forEach((d) => {
         const node = {
           id: d.id,
           nodeName: d.nodeName,
@@ -571,16 +659,16 @@ export default {
           left: d.left,
           remark: d.remark,
           params: d.params,
-          payload: d.payload
+          payload: d.payload,
         };
         body.push(node);
       });
-      data.lineList.forEach(l => {
+      data.lineList.forEach((l) => {
         const line = {
           id: l.id,
           flowId: props.flowId,
           from: l.from,
-          to: l.to
+          to: l.to,
         };
         body.push(line);
       });
@@ -591,7 +679,7 @@ export default {
 
     // 运行本流程
     const executeFlow = async () => {
-      data.nodeList.forEach(v => {
+      data.nodeList.forEach((v) => {
         v.status = undefined;
         v.error = undefined;
         v.output = undefined;
@@ -609,7 +697,7 @@ export default {
 
     // 停止流程
     const stopFlow = () => {
-      stopNodeData(props.flowId).then(res => {
+      stopNodeData(props.flowId).then((res) => {
         if (res) {
           ElMessage.success("操作成功");
         }
@@ -660,9 +748,9 @@ export default {
       logContent,
       showLogs,
       importFlow,
-      exportFlow
+      exportFlow,
     };
-  }
+  },
 };
 </script>
 
@@ -681,11 +769,11 @@ export default {
 
     .node {
       display: flex;
-      height: 40px;
       width: 120px;
+      height: 40px;
       margin: 5px auto;
-      border: 1px solid #ccc;
       line-height: 40px;
+      border: 1px solid #ccc;
 
       &:hover {
         cursor: grab;
@@ -701,35 +789,35 @@ export default {
       }
 
       .name {
-        font-size: 14px;
-        width: 0;
         flex-grow: 1;
-        text-align: center;
+        width: 0;
         padding-right: 6px;
+        font-size: 14px;
+        text-align: center;
       }
 
       .description {
-        font-size: 12px;
         position: absolute;
-        line-height: 32px;
-        height: 32px;
-        background-color: #dcdfe6;
-        text-align: left;
-        padding-left: 10px;
-        padding-right: 10px;
-        border-radius: 10px;
         z-index: 9999;
+        height: 32px;
+        padding-right: 10px;
+        padding-left: 10px;
+        font-size: 12px;
+        line-height: 32px;
+        text-align: left;
+        background-color: #dcdfe6;
+        border-radius: 10px;
       }
     }
   }
 
   .flow-wrap {
-    height: 100%;
     position: relative;
-    overflow: hidden;
-    outline: none !important;
     flex-grow: 1;
+    height: 100%;
+    overflow: hidden;
     background-image: url("../assets/img/point.png");
+    outline: none !important;
 
     #flow {
       position: relative;
@@ -738,14 +826,14 @@ export default {
 
       .auxiliary-line-x {
         position: absolute;
-        border: .5px dashed #2ab1e8;
         z-index: 9999;
+        border: 0.5px dashed #2ab1e8;
       }
 
       .auxiliary-line-y {
         position: absolute;
-        border: .5px dashed #2ab1e8;
         z-index: 9999;
+        border: 0.5px dashed #2ab1e8;
       }
     }
   }
@@ -754,9 +842,9 @@ export default {
 
 <style lang="less">
 .el-collapse-item__wrap .el-collapse-item__content {
-  background: #f0f0f0;
   padding-top: 5px;
   padding-bottom: 5px;
+  background: #f0f0f0;
 }
 
 .el-collapse-item .el-collapse-item__header {
@@ -768,12 +856,12 @@ export default {
   z-index: 9999;
 
   path {
-    stroke: #150042;
-    stroke-width: 1.5;
     animation: ring;
     animation-duration: 3s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
+    stroke: #150042;
+    stroke-width: 1.5;
     stroke-dasharray: 5;
   }
 }
