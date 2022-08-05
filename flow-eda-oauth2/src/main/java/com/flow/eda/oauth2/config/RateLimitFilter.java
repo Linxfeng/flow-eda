@@ -1,6 +1,9 @@
 package com.flow.eda.oauth2.config;
 
+import com.flow.eda.common.http.Result;
 import com.google.common.util.concurrent.RateLimiter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -25,8 +28,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         // 获取不到令牌，立即进入服务降级
         if (!limiter.tryAcquire()) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Rate limit exceeded");
-            // throw new AccessDeniedException("Rate limit exceeded");
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.getWriter().write(Result.failed("Rate limit exceeded").toJson());
+            return;
         }
         filterChain.doFilter(request, response);
     }
