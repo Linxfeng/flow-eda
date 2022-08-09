@@ -2,105 +2,114 @@
   <div class="toolbar">
     <el-tooltip content="导入" placement="bottom">
       <span class="command" @click="handle('import')">
-      <span class="icon-lx-import"/>
+        <span class="icon-lx-import" />
       </span>
     </el-tooltip>
     <el-tooltip content="导出" placement="bottom">
       <span class="command" @click="handle('export')">
-      <span class="icon-lx-export"/>
+        <span class="icon-lx-export" />
       </span>
     </el-tooltip>
-    <span class="separator"/>
+    <span class="separator" />
     <el-tooltip :content="logs" placement="bottom">
       <span class="command" @click="handle('logs')">
-      <span class="icon-lx-logs"/>
+        <span class="icon-lx-logs" />
       </span>
     </el-tooltip>
-    <span class="separator"/>
+    <el-tooltip content="存为版本" placement="bottom">
+      <span class="command" @click="handle('version')">
+        <span class="icon-lx-version" />
+      </span>
+    </el-tooltip>
+    <span class="separator" />
     <el-tooltip content="保存" placement="bottom">
       <span class="command" @click="handle('save')">
-      <span class="icon-lx-save"/>
+        <span class="icon-lx-save" />
       </span>
     </el-tooltip>
-    <el-tooltip v-if="status!=='RUNNING'" content="运行" placement="bottom">
+    <el-tooltip v-if="status !== 'RUNNING'" content="运行" placement="bottom">
       <span class="command" @click="handle('run')">
-      <span class="icon-lx-run"/>
+        <span class="icon-lx-run" />
       </span>
     </el-tooltip>
-    <el-tooltip v-if="status==='RUNNING'" content="停止" placement="bottom">
+    <el-tooltip v-if="status === 'RUNNING'" content="停止" placement="bottom">
       <span class="command" @click="handle('stop')">
-      <span class="icon-lx-stop"/>
+        <span class="icon-lx-stop" />
       </span>
     </el-tooltip>
-    <span class="separator"/>
+    <span class="separator" />
     <el-tooltip content="复制" placement="bottom">
       <span class="command" @click="handle('copy')">
-      <span class="icon-lx-copy"/>
+        <span class="icon-lx-copy" />
       </span>
     </el-tooltip>
     <el-tooltip content="粘贴" placement="bottom">
       <span class="command" @click="handle('paste')">
-      <span class="icon-lx-paste"/>
+        <span class="icon-lx-paste" />
       </span>
     </el-tooltip>
     <el-tooltip content="删除" placement="bottom">
       <span class="command" @click="handle('del')">
-      <span class="icon-lx-delete"/>
+        <span class="icon-lx-delete" />
       </span>
     </el-tooltip>
-    <span class="separator"/>
+    <span class="separator" />
     <el-tooltip content="放大" placement="bottom">
       <span class="command" @click="handle('zoom-in')">
-      <span class="icon-lx-zoomIn"/>
+        <span class="icon-lx-zoomIn" />
       </span>
     </el-tooltip>
     <el-tooltip content="缩小" placement="bottom">
       <span class="command" @click="handle('zoom-out')">
-      <span class="icon-lx-zoomOut"/>
+        <span class="icon-lx-zoomOut" />
       </span>
     </el-tooltip>
-    <span class="separator"/>
+    <span class="separator" />
     <el-tooltip content="全屏" placement="bottom">
       <span class="command" @click="handle('zoom-full')">
-      <span class="icon-lx-zoomFull"/>
+        <span class="icon-lx-zoomFull" />
       </span>
     </el-tooltip>
     <el-tooltip content="重置" placement="bottom">
       <span class="command" @click="handle('zoom-reset')">
-      <span class="icon-lx-zoomReset"/>
+        <span class="icon-lx-zoomReset" />
       </span>
     </el-tooltip>
-    <span class="separator"/>
   </div>
 </template>
 
 <script>
-import {ElMessage, ElMessageBox} from "element-plus";
-import {ref} from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { ref } from "vue";
 
 export default {
   name: "Toolbar",
   props: {
-    status: String
+    status: String,
   },
   setup(props, context) {
-
     const run = () => {
-      ElMessageBox.confirm("确认运行本流程？这将会保存本流程并覆盖之前的数据", "提示", {
-        type: "warning",
-      }).then(() => {
-        context.emit("executeFlow");
-      }).catch(() => {
-      });
+      ElMessageBox.confirm(
+        "确认运行本流程？这将会保存本流程并覆盖之前的数据",
+        "提示",
+        {
+          type: "warning",
+        }
+      )
+        .then(() => {
+          context.emit("executeFlow");
+        })
+        .catch(() => {});
     };
 
     const stop = () => {
       ElMessageBox.confirm("确认停止运行？这将会立即停止本流程的运行", "提示", {
         type: "warning",
-      }).then(() => {
-        context.emit("stopFlow");
-      }).catch(() => {
-      });
+      })
+        .then(() => {
+          context.emit("stopFlow");
+        })
+        .catch(() => {});
     };
 
     let logs = ref("查看日志");
@@ -108,14 +117,19 @@ export default {
 
     const handle = (command) => {
       if (command.startsWith("zoom")) {
-        context.emit("zoomNode", command.split('-')[1]);
+        context.emit("zoomNode", command.split("-")[1]);
       } else if (command === "import") {
-        ElMessageBox.confirm("确认导入流程？这将会从当前剪切板中读取内容生成新的流程图，完全覆盖本流程的数据", "提示", {
-          type: "warning",
-        }).then(() => {
-          context.emit("importFlow");
-        }).catch(() => {
-        });
+        ElMessageBox.confirm(
+          "确认导入流程？这将会从当前剪切板中读取内容生成新的流程图，完全覆盖本流程的数据",
+          "提示",
+          {
+            type: "warning",
+          }
+        )
+          .then(() => {
+            context.emit("importFlow");
+          })
+          .catch(() => {});
       } else if (command === "export") {
         context.emit("exportFlow");
         ElMessage.success("导出成功！内容已复制到剪切板");
@@ -146,20 +160,20 @@ export default {
 
     return {
       logs,
-      handle
-    }
-  }
+      handle,
+    };
+  },
 };
 </script>
 
 <style lang="less" scoped>
 .toolbar {
-  text-align: right;
   width: 100%;
   padding: 8px 0;
+  text-align: right;
   border-top: 1px solid #ccc;
-  border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
+  border-left: 1px solid #ccc;
   box-shadow: 0 8px 12px 0 rgba(0, 52, 107, 0.04);
 
   .command {
@@ -178,7 +192,7 @@ export default {
     }
 
     &:hover {
-      border: 1px solid #E9E9E9;
+      border: 1px solid #e9e9e9;
       cursor: pointer;
     }
   }
