@@ -1,5 +1,21 @@
 <template>
   <div class="toolbar">
+    <div style="float: left; padding-left: 20px; position: relative">
+      <span style="font-size: 13px">版本：</span>
+      <el-select
+        v-model="currentVersion"
+        class="m-2"
+        placeholder="请选择版本"
+        size="small"
+      >
+        <el-option
+          v-for="item in versions"
+          :key="item"
+          :label="item"
+          :value="item"
+        />
+      </el-select>
+    </div>
     <el-tooltip content="导入" placement="bottom">
       <span class="command" @click="handle('import')">
         <span class="icon-lx-import" />
@@ -88,6 +104,9 @@ export default {
     status: String,
   },
   setup(props, context) {
+    const versions = ["当前版本：最新版", "2022-08-10", "v1.0.1"];
+    const currentVersion = ref(versions[0]);
+
     const run = () => {
       ElMessageBox.confirm(
         "确认运行本流程？这将会保存本流程并覆盖之前的数据",
@@ -160,6 +179,8 @@ export default {
 
     return {
       logs,
+      versions,
+      currentVersion,
       handle,
     };
   },
