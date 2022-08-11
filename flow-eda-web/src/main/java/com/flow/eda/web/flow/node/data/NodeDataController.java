@@ -31,6 +31,13 @@ public class NodeDataController {
     }
 
     @OperationLog
+    @PostMapping("/node/data/version")
+    public Result<String> saveVersion(
+            @RequestParam String version, @RequestBody List<NodeData> data) {
+        return Result.ok();
+    }
+
+    @OperationLog
     @PostMapping("/node/data/run")
     public Result<String> runNodeData(@RequestParam("flowId") String flowId) {
         nodeDataService.runNodeData(flowId);
