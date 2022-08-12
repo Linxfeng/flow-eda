@@ -21,6 +21,11 @@ public interface NodeDataMapper {
     @Select("SELECT * FROM eda_flow_node_data WHERE flow_id=#{flowId} AND version IS NULL")
     List<NodeData> findByFlowId(String flowId);
 
+    @Select(
+            "SELECT version FROM eda_flow_node_data WHERE flow_id=#{flowId} "
+                    + "AND version IS NOT NULL GROUP BY version ORDER BY version DESC")
+    List<String> findVersionsByFlowId(String flowId);
+
     @Delete("DELETE FROM eda_flow_node_data WHERE flow_id=#{flowId}")
     void deleteByFlowId(String flowId);
 

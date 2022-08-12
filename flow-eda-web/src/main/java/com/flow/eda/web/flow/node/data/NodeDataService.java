@@ -36,6 +36,10 @@ public class NodeDataService {
                 .mergeS(NodeData::setNodeType);
     }
 
+    public List<String> getVersions(String flowId) {
+        return nodeDataMapper.findVersionsByFlowId(flowId);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public void updateNodeData(List<NodeData> data) {
         String flowId = data.get(0).getFlowId();

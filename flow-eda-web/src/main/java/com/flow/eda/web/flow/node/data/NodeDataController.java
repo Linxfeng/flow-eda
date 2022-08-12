@@ -18,7 +18,7 @@ public class NodeDataController {
 
     @OperationLog
     @GetMapping("/node/data")
-    public Result<List<NodeData>> getNodeData(@RequestParam("flowId") String flowId) {
+    public Result<List<NodeData>> getNodeData(@RequestParam String flowId) {
         return Result.of(nodeDataService.getNodeData(flowId));
     }
 
@@ -28,6 +28,12 @@ public class NodeDataController {
         this.check(data);
         nodeDataService.updateNodeData(data);
         return Result.ok();
+    }
+
+    @OperationLog
+    @GetMapping("/node/data/version")
+    public Result<List<String>> getVersions(@RequestParam String flowId) {
+        return Result.ok(nodeDataService.getVersions(flowId));
     }
 
     @OperationLog
@@ -42,14 +48,14 @@ public class NodeDataController {
 
     @OperationLog
     @PostMapping("/node/data/run")
-    public Result<String> runNodeData(@RequestParam("flowId") String flowId) {
+    public Result<String> runNodeData(@RequestParam String flowId) {
         nodeDataService.runNodeData(flowId);
         return Result.ok();
     }
 
     @OperationLog
     @PostMapping("/node/data/stop")
-    public Result<String> stopNodeData(@RequestParam("flowId") String flowId) {
+    public Result<String> stopNodeData(@RequestParam String flowId) {
         nodeDataService.stopNodeData(flowId);
         return Result.ok();
     }
