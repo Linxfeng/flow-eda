@@ -34,6 +34,9 @@ public class NodeDataController {
     @PostMapping("/node/data/version")
     public Result<String> saveVersion(
             @RequestParam String version, @RequestBody List<NodeData> data) {
+        this.check(data);
+        data.forEach(node -> node.setVersion(version));
+        nodeDataService.saveNodeData(data);
         return Result.ok();
     }
 

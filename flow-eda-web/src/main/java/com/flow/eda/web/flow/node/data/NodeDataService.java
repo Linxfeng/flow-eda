@@ -39,7 +39,11 @@ public class NodeDataService {
     @Transactional(rollbackFor = Exception.class)
     public void updateNodeData(List<NodeData> data) {
         String flowId = data.get(0).getFlowId();
-        nodeDataMapper.deleteByFlowId(flowId);
+        nodeDataMapper.deleteDataByFlowId(flowId);
+        nodeDataMapper.insert(data);
+    }
+
+    public void saveNodeData(List<NodeData> data) {
         nodeDataMapper.insert(data);
     }
 
