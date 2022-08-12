@@ -18,6 +18,15 @@ export function setNodeData(body) {
   });
 }
 
+// 获取流程数据版本
+export function getVersion(params) {
+  return request({
+    url: "/api/v1/node/data/version",
+    method: "get",
+    params: params,
+  });
+}
+
 // 保存流程数据版本
 export function saveVersion(version, body) {
   return request({
