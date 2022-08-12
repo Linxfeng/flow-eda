@@ -97,6 +97,7 @@
 <script>
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ref } from "vue";
+import Moment from "moment";
 
 export default {
   name: "Toolbar",
@@ -161,8 +162,21 @@ export default {
           context.emit("showLogs", false);
           logs.value = "查看日志";
         }
+      } else if (command === "version") {
+        const date = Moment().format("YYYYMMDD-HH:mm:ss");
+        ElMessageBox.prompt("请输入版本名称：", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          inputPattern: /^[\u4e00-\u9fa5_a-zA-Z0-9(.){\[\]}@:\-=—]+$/,
+          inputErrorMessage: "版本名称不能包含特殊字符和空格",
+          inputValue: date,
+        })
+          .then(({ value }) => {
+            context.emit("saveData", value);
+          })
+          .catch(() => {});
       } else if (command === "save") {
-        context.emit("saveData");
+        context.emit("saveData", null);
         ElMessage.success("保存成功");
       } else if (command === "run") {
         run();
