@@ -112,6 +112,7 @@ import { getNodeTypes } from "../api/nodeType.js";
 import {
   executeNodeData,
   getNodeData,
+  saveVersion,
   setNodeData,
   stopNodeData,
 } from "../api/nodeData.js";
@@ -642,7 +643,7 @@ export default {
     };
 
     // 保存流程图所有节点数据
-    const saveData = async () => {
+    const saveData = async (version) => {
       if (data.nodeList.length === 0) {
         ElMessage.error("请先绘制流程图");
         return false;
@@ -673,7 +674,15 @@ export default {
         body.push(line);
       });
       // 保存流程数据
-      await setNodeData(body);
+      if (version != null) {
+        // 保存版本数据，同时更新当前最新数据
+        await setNodeData(body);
+        body.forEach((d) => (d.id = generateUniqueID(8)));
+        await saveVersion(version, body);
+        ElMessage.success("保存成功");
+      } else {
+        await setNodeData(body);
+      }
       return true;
     };
 
