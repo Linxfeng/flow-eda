@@ -1,6 +1,7 @@
 <template>
   <div style="height: 100%">
     <toolbar
+      :flowId="flowId"
       :status="flowStatus"
       @copyNode="copyNode(data.selectedNode)"
       @deleteNode="deleteNode(data.selectedNode)"

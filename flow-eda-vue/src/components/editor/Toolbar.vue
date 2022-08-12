@@ -3,10 +3,11 @@
     <div style="float: left; padding-left: 20px; position: relative">
       <span style="font-size: 13px">版本：</span>
       <el-select
-        v-model="currentVersion"
+        v-model="selectedVersion"
         class="m-2"
         placeholder="请选择版本"
         size="small"
+        @change="switchVersion"
       >
         <el-option
           v-for="item in versions"
@@ -98,15 +99,30 @@
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ref } from "vue";
 import Moment from "moment";
+import { getVersion } from "../../api/nodeData";
 
 export default {
   name: "Toolbar",
   props: {
+    flowId: String,
     status: String,
   },
   setup(props, context) {
-    const versions = ["当前版本：最新版", "2022-08-10", "v1.0.1"];
-    const currentVersion = ref(versions[0]);
+    // 获取版本列表
+    const versions = ref([]);
+    const selectedVersion = ref(null);
+    getVersion({ flowId: props.flowId }).then(
+      (res) => (versions.value = ["当前最新版本", ...res.result])
+    );
+
+    // 切换版本
+    const switchVersion = () => {
+      if (selectedVersion.value === "当前最新版本") {
+        console.log("当前最新版本");
+      } else {
+        console.log(selectedVersion.value);
+      }
+    };
 
     const run = () => {
       ElMessageBox.confirm(
@@ -194,7 +210,8 @@ export default {
     return {
       logs,
       versions,
-      currentVersion,
+      selectedVersion,
+      switchVersion,
       handle,
     };
   },
