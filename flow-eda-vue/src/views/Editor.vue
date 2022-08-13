@@ -221,6 +221,18 @@ export default {
       initPanZoom();
     };
 
+    // 面板重绘，加载新的节点数据，重新绘制流程图
+    const resetFlowPanel = () => {
+      data.selectedNode = null;
+      setTimeout(() => {
+        jsPlumbInstance.cleanupListeners();
+        jsPlumbInstance.deleteEveryConnection();
+        jsPlumbInstance.deleteEveryEndpoint();
+        jsPlumbInstance.reset();
+        init();
+      }, 0);
+    };
+
     const addLine = (line) => {
       let from = line.source.id;
       let to = line.target.id;
@@ -583,13 +595,7 @@ export default {
           data.nodeList = flow.nodeList;
           data.lineList = flow.lineList;
           // 清除绘板实例，重新初始化
-          setTimeout(() => {
-            jsPlumbInstance.cleanupListeners();
-            jsPlumbInstance.deleteEveryConnection();
-            jsPlumbInstance.deleteEveryEndpoint();
-            jsPlumbInstance.reset();
-            init();
-          }, 0);
+          resetFlowPanel();
           ElMessage.success("导入成功！");
         } else {
           ElMessage.error("导入失败！剪切板内容不正确");
@@ -613,13 +619,7 @@ export default {
     const switchVersion = async (version) => {
       await initNode(version);
       // 清除绘板实例，重新初始化
-      setTimeout(() => {
-        jsPlumbInstance.cleanupListeners();
-        jsPlumbInstance.deleteEveryConnection();
-        jsPlumbInstance.deleteEveryEndpoint();
-        jsPlumbInstance.reset();
-        init();
-      }, 0);
+      resetFlowPanel();
     };
 
     // 展示/关闭流程实时运行日志
