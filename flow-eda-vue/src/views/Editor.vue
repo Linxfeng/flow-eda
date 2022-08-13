@@ -14,6 +14,7 @@
       @zoomNode="zoomNode"
       @importFlow="importFlow"
       @exportFlow="exportFlow"
+      @switchVersion="switchVersion"
     />
     <div id="flow-content" class="flow-content">
       <div class="nodes-wrap">
@@ -173,8 +174,12 @@ export default {
     };
 
     // 初始化节点数据
-    const initNode = async () => {
-      const res = await getNodeData({ flowId: props.flowId });
+    const initNode = async (version) => {
+      const params = { flowId: props.flowId };
+      if (version) {
+        params.version = version;
+      }
+      const res = await getNodeData(params);
       if (res) {
         const node = [];
         const line = [];
@@ -604,6 +609,19 @@ export default {
       navigator.clipboard.writeText(JSON.stringify(flow));
     };
 
+    // 切换版本
+    const switchVersion = async (version) => {
+      await initNode(version);
+      // 清除绘板实例，重新初始化
+      setTimeout(() => {
+        jsPlumbInstance.cleanupListeners();
+        jsPlumbInstance.deleteEveryConnection();
+        jsPlumbInstance.deleteEveryEndpoint();
+        jsPlumbInstance.reset();
+        init();
+      }, 0);
+    };
+
     // 展示/关闭流程实时运行日志
     const logVisible = ref(false);
     let logContent = ref("");
@@ -650,7 +668,8 @@ export default {
         return false;
       }
       // 封装节点数据参数
-      let body = [];
+      const nodes = [];
+      const lines = [];
       data.nodeList.forEach((d) => {
         const node = {
           id: d.id,
@@ -663,7 +682,7 @@ export default {
           params: d.params,
           payload: d.payload,
         };
-        body.push(node);
+        nodes.push(node);
       });
       data.lineList.forEach((l) => {
         const line = {
@@ -672,17 +691,24 @@ export default {
           from: l.from,
           to: l.to,
         };
-        body.push(line);
+        lines.push(line);
       });
-      // 保存流程数据
+      // 保存版本数据，同时更新当前最新数据
+      await setNodeData([...nodes, ...lines]);
       if (version != null) {
-        // 保存版本数据，同时更新当前最新数据
-        await setNodeData(body);
-        body.forEach((d) => (d.id = generateUniqueID(8)));
-        await saveVersion(version, body);
+        // 保证各版本的节点id不冲突
+        const tempId = {};
+        nodes.forEach((n) => {
+          tempId[n.id] = generateUniqueID(8);
+          n.id = tempId[n.id];
+        });
+        lines.forEach((n) => {
+          n.id = generateUniqueID(8);
+          n.from = tempId[n.from];
+          n.to = tempId[n.to];
+        });
+        await saveVersion(version, [...nodes, ...lines]);
         ElMessage.success("保存成功");
-      } else {
-        await setNodeData(body);
       }
       return true;
     };
@@ -717,7 +743,7 @@ export default {
     // 初始化页面数据，渲染流程图
     onMounted(async () => {
       await initNodeType();
-      await initNode();
+      await initNode(null);
       await nextTick(() => {
         init();
       });
@@ -759,6 +785,7 @@ export default {
       showLogs,
       importFlow,
       exportFlow,
+      switchVersion,
     };
   },
 };
