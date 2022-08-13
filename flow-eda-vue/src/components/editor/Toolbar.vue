@@ -130,6 +130,7 @@ export default {
       )
         .then(() => {
           context.emit("executeFlow");
+          selectedVersion.value = props.versions[0];
         })
         .catch(() => {});
     };
@@ -185,16 +186,15 @@ export default {
         })
           .then(({ value }) => {
             context.emit("saveData", value);
+            selectedVersion.value = props.versions[0];
           })
           .catch(() => {});
-        selectedVersion.value = props.versions[0];
       } else if (command === "save") {
         context.emit("saveData", null);
         ElMessage.success("保存成功");
         selectedVersion.value = props.versions[0];
       } else if (command === "run") {
         run();
-        selectedVersion.value = props.versions[0];
       } else if (command === "stop") {
         stop();
       } else if (command === "copy") {
