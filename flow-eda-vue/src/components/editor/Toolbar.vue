@@ -117,11 +117,11 @@ export default {
 
     // 切换版本
     const switchVersion = () => {
-      if (selectedVersion.value === "当前最新版本") {
-        console.log("当前最新版本");
-      } else {
-        console.log(selectedVersion.value);
+      let version = selectedVersion.value;
+      if (version === "当前最新版本") {
+        version = null;
       }
+      context.emit("switchVersion", version);
     };
 
     const run = () => {
