@@ -25,8 +25,8 @@ public class NodeDataService {
     @Autowired private NodeTypeService nodeTypeService;
     @Autowired private FlowService flowService;
 
-    public List<NodeData> getNodeData(String flowId) {
-        List<NodeData> list = nodeDataMapper.findByFlowId(flowId);
+    public List<NodeData> getNodeData(String flowId, String version) {
+        List<NodeData> list = nodeDataMapper.findByFlowId(flowId, version);
         if (isEmpty(list)) {
             return new ArrayList<>();
         }
@@ -51,8 +51,8 @@ public class NodeDataService {
         nodeDataMapper.insert(data);
     }
 
-    public void runNodeData(String flowId) {
-        List<NodeData> list = this.getNodeData(flowId);
+    public void runNodeData(String flowId, String version) {
+        List<NodeData> list = this.getNodeData(flowId, version);
         if (isEmpty(list)) {
             throw new InvalidStateException("The flow data is empty, cannot deploy");
         }

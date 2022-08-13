@@ -18,8 +18,9 @@ public class NodeDataController {
 
     @OperationLog
     @GetMapping("/node/data")
-    public Result<List<NodeData>> getNodeData(@RequestParam String flowId) {
-        return Result.of(nodeDataService.getNodeData(flowId));
+    public Result<List<NodeData>> getNodeData(
+            @RequestParam String flowId, @RequestParam(required = false) String version) {
+        return Result.of(nodeDataService.getNodeData(flowId, version));
     }
 
     @OperationLog
@@ -48,8 +49,9 @@ public class NodeDataController {
 
     @OperationLog
     @PostMapping("/node/data/run")
-    public Result<String> runNodeData(@RequestParam String flowId) {
-        nodeDataService.runNodeData(flowId);
+    public Result<String> runNodeData(
+            @RequestParam String flowId, @RequestParam(required = false) String version) {
+        nodeDataService.runNodeData(flowId, version);
         return Result.ok();
     }
 
