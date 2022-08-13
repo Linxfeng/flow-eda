@@ -104,11 +104,12 @@ export default {
   name: "Toolbar",
   props: {
     status: String,
-    versions: String,
+    versions: Array,
   },
   setup(props, context) {
     // 获取版本列表
     const selectedVersion = ref(null);
+    selectedVersion.value = props.versions[0];
 
     // 切换版本
     const switchVersion = () => {
@@ -186,11 +187,14 @@ export default {
             context.emit("saveData", value);
           })
           .catch(() => {});
+        selectedVersion.value = props.versions[0];
       } else if (command === "save") {
         context.emit("saveData", null);
         ElMessage.success("保存成功");
+        selectedVersion.value = props.versions[0];
       } else if (command === "run") {
         run();
+        selectedVersion.value = props.versions[0];
       } else if (command === "stop") {
         stop();
       } else if (command === "copy") {

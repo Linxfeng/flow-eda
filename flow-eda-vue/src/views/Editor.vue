@@ -664,11 +664,14 @@ export default {
     };
 
     // 获取版本列表
-    const versions = ref([]);
+    const versions = ref(["当前最新版本"]);
     const getVersions = async () => {
-      getVersion({ flowId: props.flowId }).then(
-        (res) => (versions.value = ["当前最新版本", ...res.result])
-      );
+      getVersion({ flowId: props.flowId }).then((res) => {
+        const v = res.result;
+        if (v.length > 0) {
+          versions.value = ["当前最新版本", ...v];
+        }
+      });
     };
 
     // 重新生成节点id，保证各版本的节点id不冲突
