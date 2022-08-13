@@ -18,8 +18,11 @@ public interface NodeDataMapper {
                     + "#{n.params}, #{n.payload}, #{n.from}, #{n.to}, #{n.version})</foreach></script>")
     void insert(List<NodeData> list);
 
-    @Select("SELECT * FROM eda_flow_node_data WHERE flow_id=#{flowId} AND version IS NULL")
-    List<NodeData> findByFlowId(String flowId);
+    @Select(
+            "<script>SELECT * FROM eda_flow_node_data WHERE flow_id=#{flowId} "
+                    + "<if test='version==null'>AND version IS NULL</if>"
+                    + "<if test='version!=null'>AND version=#{version}</if></script>")
+    List<NodeData> findByFlowId(String flowId, String version);
 
     @Select(
             "SELECT version FROM eda_flow_node_data WHERE flow_id=#{flowId} "
