@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%">
     <toolbar
-      :flowId="flowId"
+      :versions="versions"
       :status="flowStatus"
       @copyNode="copyNode(data.selectedNode)"
       @deleteNode="deleteNode(data.selectedNode)"
@@ -114,6 +114,7 @@ import { getNodeTypes } from "../api/nodeType.js";
 import {
   executeNodeData,
   getNodeData,
+  getVersion,
   saveVersion,
   setNodeData,
   stopNodeData,
@@ -620,6 +621,7 @@ export default {
       await initNode(version);
       // 清除绘板实例，重新初始化
       resetFlowPanel();
+      ElMessage.success("加载成功！");
     };
 
     // 展示/关闭流程实时运行日志
@@ -661,6 +663,29 @@ export default {
       });
     };
 
+    // 获取版本列表
+    const versions = ref([]);
+    const getVersions = async () => {
+      getVersion({ flowId: props.flowId }).then(
+        (res) => (versions.value = ["当前最新版本", ...res.result])
+      );
+    };
+
+    // 重新生成节点id，保证各版本的节点id不冲突
+    const generateNodeId = (nodes, lines) => {
+      const tempId = {};
+      nodes.forEach((n) => {
+        tempId[n.id] = generateUniqueID(8);
+        n.id = tempId[n.id];
+      });
+      lines.forEach((n) => {
+        n.id = generateUniqueID(8);
+        n.from = tempId[n.from];
+        n.to = tempId[n.to];
+      });
+      return [...nodes, ...lines];
+    };
+
     // 保存流程图所有节点数据
     const saveData = async (version) => {
       if (data.nodeList.length === 0) {
@@ -694,21 +719,12 @@ export default {
         lines.push(line);
       });
       // 保存版本数据，同时更新当前最新数据
-      await setNodeData([...nodes, ...lines]);
+      await setNodeData(generateNodeId(nodes, lines));
       if (version != null) {
-        // 保证各版本的节点id不冲突
-        const tempId = {};
-        nodes.forEach((n) => {
-          tempId[n.id] = generateUniqueID(8);
-          n.id = tempId[n.id];
-        });
-        lines.forEach((n) => {
-          n.id = generateUniqueID(8);
-          n.from = tempId[n.from];
-          n.to = tempId[n.to];
-        });
-        await saveVersion(version, [...nodes, ...lines]);
+        await saveVersion(version, generateNodeId(nodes, lines));
         ElMessage.success("保存成功");
+        // 产生了新的版本，需要重新加载版本列表
+        await getVersions();
       }
       return true;
     };
@@ -749,6 +765,8 @@ export default {
       });
       // 建立websocket连接
       getNodeStatus();
+      // 获取版本列表
+      await getVersions();
     });
 
     // 组件被销毁之前，关闭socket连接
@@ -761,6 +779,7 @@ export default {
     return {
       data,
       flowStatus,
+      versions,
       auxiliaryLine,
       auxiliaryLinePos,
       showDescription,

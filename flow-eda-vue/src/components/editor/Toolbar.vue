@@ -99,21 +99,16 @@
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ref } from "vue";
 import Moment from "moment";
-import { getVersion } from "../../api/nodeData";
 
 export default {
   name: "Toolbar",
   props: {
-    flowId: String,
     status: String,
+    versions: String,
   },
   setup(props, context) {
     // 获取版本列表
-    const versions = ref([]);
     const selectedVersion = ref(null);
-    getVersion({ flowId: props.flowId }).then(
-      (res) => (versions.value = ["当前最新版本", ...res.result])
-    );
 
     // 切换版本
     const switchVersion = () => {
@@ -209,7 +204,6 @@ export default {
 
     return {
       logs,
-      versions,
       selectedVersion,
       switchVersion,
       handle,
