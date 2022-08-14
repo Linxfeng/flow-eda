@@ -14,9 +14,7 @@ export function onOpen(id, callback) {
 
 // 关闭连接
 export function onClose(id) {
-  if (ws && ws[id]) {
-    close(ws[id]);
-  }
+  close(ws, id);
 }
 
 // 监听日志消息
@@ -28,9 +26,7 @@ export function onOpenLogs(id, callback) {
 }
 
 export function onCloseLogs(id) {
-  if (logWs && logWs[id]) {
-    close(logWs[id]);
-  }
+  close(logWs, id);
 }
 
 // 接收日志文件内容
@@ -42,14 +38,14 @@ export function onOpenLogDetail(path, callback) {
 }
 
 export function onCloseLogDetail(path) {
-  if (logContentWs && logContentWs[path]) {
-    close(logContentWs[path]);
-  }
+  close(logContentWs, path);
 }
 
-function close(socket) {
-  try {
-    socket.close();
-  } catch (ignore) {}
-  socket = null;
+function close(ws_obj, id) {
+  if (ws_obj && ws_obj[id]) {
+    try {
+      ws_obj[id].close();
+    } catch (ignore) {}
+    ws_obj[id] = null;
+  }
 }
