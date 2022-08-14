@@ -698,7 +698,11 @@ export default {
       // 封装节点数据参数
       const nodes = [];
       const lines = [];
+      // 重新生成节点id，并更新当前节点数据
+      const tempId = {};
       data.nodeList.forEach((d) => {
+        tempId[d.id] = generateUniqueID(8);
+        d.id = tempId[d.id];
         const node = {
           id: d.id,
           nodeName: d.nodeName,
@@ -713,6 +717,9 @@ export default {
         nodes.push(node);
       });
       data.lineList.forEach((l) => {
+        l.id = generateUniqueID(8);
+        l.from = tempId[l.from];
+        l.to = tempId[l.to];
         const line = {
           id: l.id,
           flowId: props.flowId,
@@ -721,9 +728,10 @@ export default {
         };
         lines.push(line);
       });
-      // 保存版本数据，同时更新当前最新数据
-      await setNodeData(generateNodeId(nodes, lines));
+      // 更新当前最新数据
+      await setNodeData([...nodes, ...lines]);
       if (version != null) {
+        // 保存版本数据
         await saveVersion(version, generateNodeId(nodes, lines));
         ElMessage.success("保存成功");
         // 产生了新的版本，需要重新加载版本列表
