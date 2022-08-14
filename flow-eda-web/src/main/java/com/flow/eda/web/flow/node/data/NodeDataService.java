@@ -10,6 +10,7 @@ import com.flow.eda.web.flow.node.type.NodeTypeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class NodeDataService {
     @Autowired private NodeTypeService nodeTypeService;
     @Autowired private FlowService flowService;
 
-    public List<NodeData> getNodeData(String flowId, String version) {
+    public List<NodeData> getNodeData(String flowId, @Nullable String version) {
         List<NodeData> list = nodeDataMapper.findByFlowId(flowId, version);
         if (isEmpty(list)) {
             return new ArrayList<>();
@@ -51,8 +52,8 @@ public class NodeDataService {
         nodeDataMapper.insert(data);
     }
 
-    public void runNodeData(String flowId, String version) {
-        List<NodeData> list = this.getNodeData(flowId, version);
+    public void runNodeData(String flowId) {
+        List<NodeData> list = this.getNodeData(flowId, null);
         if (isEmpty(list)) {
             throw new InvalidStateException("The flow data is empty, cannot deploy");
         }

@@ -49,9 +49,8 @@ public class NodeDataController {
 
     @OperationLog
     @PostMapping("/node/data/run")
-    public Result<String> runNodeData(
-            @RequestParam String flowId, @RequestParam(required = false) String version) {
-        nodeDataService.runNodeData(flowId, version);
+    public Result<String> runNodeData(@RequestParam String flowId) {
+        nodeDataService.runNodeData(flowId);
         return Result.ok();
     }
 

@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface NodeDataMapper {
             "<script>SELECT * FROM eda_flow_node_data WHERE flow_id=#{flowId} "
                     + "<if test='version==null'>AND version IS NULL</if>"
                     + "<if test='version!=null'>AND version=#{version}</if></script>")
-    List<NodeData> findByFlowId(String flowId, String version);
+    List<NodeData> findByFlowId(String flowId, @Nullable String version);
 
     @Select(
             "SELECT version FROM eda_flow_node_data WHERE flow_id=#{flowId} "
