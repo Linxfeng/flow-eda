@@ -5,7 +5,14 @@ import { changeLineState, setPanZoom, zoomPan } from '@/pages/FlowEditor/js/edit
 import { connectOptions, defaultSetting, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
 import FlowDetail from '@/pages/FlowEditor/NodeDetail';
 import ToolBar from '@/pages/FlowEditor/ToolBar/index';
-import { getFlowData, getNodeTypes, runFlow, setFlowData, stopFlow } from '@/services/api';
+import {
+  getFlowData,
+  getNodeTypes,
+  getVersion,
+  runFlow,
+  setFlowData,
+  stopFlow,
+} from '@/services/api';
 import { onCloseLogs, onCloseNode, onOpenLogs, onOpenNode } from '@/services/ws';
 import { generateUniqueID } from '@/utils/util';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -51,6 +58,7 @@ const FlowEditor: React.FC = () => {
   const [logVisible, setLogVisible] = useState<boolean>(false);
   const [logContent, setLogContent] = useState<string[]>([]);
   const [wsMessage, setWsMessage] = useState<string>();
+  const [versions, setVersions] = useState<string[]>([]);
 
   /** 移动节点时，动态显示对齐辅助线 */
   const alignForLine = (nodeId: string, position: number[]) => {
@@ -394,6 +402,18 @@ const FlowEditor: React.FC = () => {
     }
   };
 
+  /**获取版本列表*/
+  const getVersions = () => {
+    getVersion(id).then((res) => {
+      if (res?.result) {
+        const v = res.result;
+        if (v.length > 0) {
+          setVersions(['当前最新版本', ...v]);
+        }
+      }
+    });
+  };
+
   /** 保存流程图所有节点数据 */
   const saveData = async (): Promise<boolean> => {
     if (nodeList.length === 0) {
@@ -463,6 +483,8 @@ const FlowEditor: React.FC = () => {
     init();
     // 建立ws连接，实时获取流程状态和节点状态信息
     onOpenNode(id, (s) => setWsMessage(s));
+    // 获取版本列表
+    getVersions();
 
     // 销毁组件时关闭ws连接
     return () => {
@@ -511,6 +533,7 @@ const FlowEditor: React.FC = () => {
       <Card>
         <ToolBar
           status={flowStatus}
+          versions={versions}
           copyNode={copyNode}
           pasteNode={pasteNode}
           saveData={saveData}
