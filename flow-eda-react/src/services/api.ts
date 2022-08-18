@@ -70,10 +70,10 @@ export async function getNodeTypes() {
 }
 
 /** 获取流程节点数据 */
-export async function getFlowData(id: string) {
+export async function getFlowData(params: any) {
   return request<API.ApiResult>('/api/v1/node/data', {
     method: 'GET',
-    params: { flowId: id },
+    params: params,
   });
 }
 
