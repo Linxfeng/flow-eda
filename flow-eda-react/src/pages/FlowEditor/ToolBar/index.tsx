@@ -1,12 +1,14 @@
 import ConfirmModal from '@/components/ConfirmModal';
 import IconFont from '@/components/IconFont';
 import { useFormatMessage } from '@/hooks';
-import { message, Tooltip } from 'antd';
+import { message, Select, Tooltip } from 'antd';
+const { Option } = Select;
 import React, { useState } from 'react';
 import './index.less';
 
 const ToolBar: React.FC<{
   status: string;
+  versions: string[];
   copyNode: () => void;
   pasteNode: () => void;
   saveData: () => Promise<boolean>;
@@ -23,6 +25,7 @@ const ToolBar: React.FC<{
     formatMsg('pages.flowList.editor.showLog', '查看日志'),
   );
   const [openLog, setOpenLog] = useState<boolean>(false);
+  const [selectedVersion, setSelectedVersion] = useState<string>(props.versions[0]);
   const iconStyle = { width: '18px', height: '18px' };
 
   const handle = async (command: string) => {
@@ -41,6 +44,8 @@ const ToolBar: React.FC<{
         setSeeLog(formatMsg('pages.flowList.editor.closeLog', '关闭日志'));
       }
       setOpenLog(!openLog);
+    } else if (command === 'version') {
+      setSelectedVersion(props.versions[1]);
     } else if (command === 'save') {
       const save = await props.saveData();
       if (save) {
@@ -57,6 +62,18 @@ const ToolBar: React.FC<{
 
   return (
     <div className="toolbar">
+      <div className="version">
+        <span style={{ fontSize: '13px' }}>版本：</span>
+        <Select defaultValue={selectedVersion}>
+          {props.versions?.map((op: string) => {
+            return (
+              <Option value={op} key={op}>
+                {op}
+              </Option>
+            );
+          })}
+        </Select>
+      </div>
       <Tooltip title={formatMsg('pages.flowList.editor.import', '导入')} placement="bottom">
         <span className="command" onClick={() => handle('import')}>
           <IconFont type="icon-lx-import" style={iconStyle} />
@@ -71,6 +88,11 @@ const ToolBar: React.FC<{
       <Tooltip title={seeLog} placement="bottom">
         <span className="command" onClick={() => handle('logs')}>
           <IconFont type="icon-lx-logs" style={iconStyle} />
+        </span>
+      </Tooltip>
+      <Tooltip title={formatMsg('pages.flowList.editor.version', '存为版本')} placement="bottom">
+        <span className="command" onClick={() => handle('version')}>
+          <IconFont type="icon-lx-version" style={iconStyle} />
         </span>
       </Tooltip>
       <span className="separator" />
