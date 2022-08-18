@@ -144,8 +144,12 @@ const FlowEditor: React.FC = () => {
   };
 
   /** 初始化节点数据 */
-  const loadFlowData = () => {
-    getFlowData(id).then((res) => {
+  const loadFlowData = (version: string | null) => {
+    const params = { flowId: id };
+    if (version) {
+      params['version'] = version;
+    }
+    getFlowData(params).then((res) => {
       if (res?.result) {
         const nodes: API.Node[] = [];
         const lines: API.Node[] = [];
@@ -207,7 +211,7 @@ const FlowEditor: React.FC = () => {
         });
       });
       // 加载流程数据
-      loadFlowData();
+      loadFlowData(null);
       // 面板重绘
       jsPlumbInstance.setSuspendDrawing(false, true);
     });
@@ -219,6 +223,7 @@ const FlowEditor: React.FC = () => {
   const copyNode = () => {
     setClipboard(selectedNode);
   };
+
   /** 粘贴节点 */
   const pasteNode = () => {
     if (clipboard) {
@@ -387,6 +392,21 @@ const FlowEditor: React.FC = () => {
     message.success(formatMsg('pages.flowList.editor.exportFlow.success'));
   };
 
+  /** 切换版本 */
+  const switchVersion = async (version: string | null) => {
+    setSelectedNode(undefined);
+    // 清除编辑器实例，编辑面板重置重绘
+    setTimeout(() => {
+      jsPlumbInstance.cleanupListeners();
+      jsPlumbInstance.deleteEveryConnection();
+      jsPlumbInstance.deleteEveryEndpoint();
+      jsPlumbInstance.reset();
+      // 更新新的流程数据
+      loadFlowData(version);
+    }, 0);
+    message.success(formatMsg('pages.flowList.editor.switchVersion.success'));
+  };
+
   /** 展示运行日志 */
   const showLogs = (show: boolean) => {
     if (show) {
@@ -546,6 +566,7 @@ const FlowEditor: React.FC = () => {
           showLogs={showLogs}
           exportFlow={exportFlow}
           importFlow={importFlow}
+          switchVersion={switchVersion}
         />
         <div id="flow-content" className="flow-content">
           <div className="nodes-wrap">
