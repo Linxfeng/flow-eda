@@ -47,12 +47,14 @@ export default {
   'pages.flowList.editor.exportFlow.success': 'Export successful! Content copied to clipboard',
   'pages.flowList.editor.importFlow.failed': 'Import failed! Incorrect clipboard content',
   'pages.flowList.editor.importFlow.success': 'Import successful！',
+  'pages.flowList.editor.switchVersion.success': 'Load successful！',
 
   // Flow Editor-ToolBar
   'pages.flowList.editor.import': 'Import',
   'pages.flowList.editor.export': 'Export',
   'pages.flowList.editor.showLog': 'Show Log',
   'pages.flowList.editor.closeLog': 'Close Log',
+  'pages.flowList.editor.version': 'Save Version',
   'pages.flowList.editor.run': 'Run Flow',
   'pages.flowList.editor.stop': 'Stop Flow',
   'pages.flowList.editor.runConfirm':

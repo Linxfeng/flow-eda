@@ -44,12 +44,14 @@ export default {
   'pages.flowList.editor.exportFlow.success': '导出成功！内容已复制到剪切板',
   'pages.flowList.editor.importFlow.failed': '导入失败！剪切板内容不正确',
   'pages.flowList.editor.importFlow.success': '导入成功！',
+  'pages.flowList.editor.switchVersion.success': '加载成功！',
 
   // 流编辑器-工具栏
   'pages.flowList.editor.import': '导入',
   'pages.flowList.editor.export': '导出',
   'pages.flowList.editor.showLog': '查看日志',
   'pages.flowList.editor.closeLog': '关闭日志',
+  'pages.flowList.editor.version': '存为版本',
   'pages.flowList.editor.run': '运行',
   'pages.flowList.editor.stop': '停止',
   'pages.flowList.editor.runConfirm': '确认运行本流程？这将会保存本流程并覆盖之前的数据',
