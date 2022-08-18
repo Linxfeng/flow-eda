@@ -1,6 +1,6 @@
 <template>
   <div class="toolbar">
-    <div style="float: left; padding-left: 20px; position: relative">
+    <div class="version">
       <span style="font-size: 13px">版本：</span>
       <el-select
         v-model="selectedVersion"
@@ -225,6 +225,12 @@ export default {
   border-right: 1px solid #ccc;
   border-left: 1px solid #ccc;
   box-shadow: 0 8px 12px 0 rgba(0, 52, 107, 0.04);
+
+  .version {
+    position: relative;
+    float: left;
+    padding-left: 20px;
+  }
 
   .command {
     display: inline-block;
