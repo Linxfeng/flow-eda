@@ -19,6 +19,7 @@ const ToolBar: React.FC<{
   showLogs: (show: boolean) => void;
   importFlow: () => void;
   exportFlow: () => void;
+  switchVersion: (version: string | null) => void;
 }> = (props) => {
   const { formatMsg } = useFormatMessage();
   const [seeLog, setSeeLog] = useState<string>(
@@ -28,6 +29,17 @@ const ToolBar: React.FC<{
   const [selectedVersion, setSelectedVersion] = useState<string>(props.versions[0]);
   const iconStyle = { width: '18px', height: '18px' };
 
+  /** 切换版本 */
+  const switchVersion = (value: string) => {
+    setSelectedVersion(value);
+    let version: string | null = value;
+    if (version === '当前最新版本') {
+      version = null;
+    }
+    props.switchVersion(version);
+  };
+
+  /** 处理工具栏按钮功能 */
   const handle = async (command: string) => {
     if (command.startsWith('zoom')) {
       props.zoomNode(command.split('-')[1]);
@@ -45,7 +57,7 @@ const ToolBar: React.FC<{
       }
       setOpenLog(!openLog);
     } else if (command === 'version') {
-      setSelectedVersion(props.versions[1]);
+      console.log(selectedVersion);
     } else if (command === 'save') {
       const save = await props.saveData();
       if (save) {
@@ -64,7 +76,13 @@ const ToolBar: React.FC<{
     <div className="toolbar">
       <div className="version">
         <span style={{ fontSize: '13px' }}>版本：</span>
-        <Select defaultValue={selectedVersion}>
+        <Select
+          defaultValue={props.versions[0]}
+          value={selectedVersion}
+          key={props.versions[0]}
+          onChange={switchVersion}
+          style={{ width: 180, textAlign: 'left' }}
+        >
           {props.versions?.map((op: string) => {
             return (
               <Option value={op} key={op}>
