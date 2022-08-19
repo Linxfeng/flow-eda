@@ -10,6 +10,7 @@ import {
   getNodeTypes,
   getVersion,
   runFlow,
+  saveVersion,
   setFlowData,
   stopFlow,
 } from '@/services/api';
@@ -422,7 +423,7 @@ const FlowEditor: React.FC = () => {
     }
   };
 
-  /**获取版本列表*/
+  /** 获取版本列表 */
   const getVersions = () => {
     getVersion(id).then((res) => {
       if (res?.result) {
@@ -434,15 +435,39 @@ const FlowEditor: React.FC = () => {
     });
   };
 
+  /** 重新生成节点id，保证各版本的节点id不冲突 */
+  const generateNodeId = (nodes: API.Node[], lines: API.Node[]) => {
+    const tempId = {};
+    nodes.forEach((n) => {
+      tempId[n.id] = generateUniqueID(8);
+      n.id = tempId[n.id];
+    });
+    lines.forEach((l) => {
+      l.id = generateUniqueID(8);
+      if (l.from) {
+        l.from = tempId[l.from];
+      }
+      if (l.to) {
+        l.to = tempId[l.to];
+      }
+    });
+    return [...nodes, ...lines];
+  };
+
   /** 保存流程图所有节点数据 */
-  const saveData = async (): Promise<boolean> => {
+  const saveData = async (version: string | null): Promise<boolean> => {
     if (nodeList.length === 0) {
       message.error(formatMsg('pages.flowList.editor.checkFlow'));
       return false;
     }
-    // 流程节点数据参数
-    const body: API.Node[] = [];
+    // 封装节点数据参数
+    const nodes: API.Node[] = [];
+    const lines: API.Node[] = [];
+    // 重新生成节点id，并更新当前节点数据
+    const tempId: object = {};
     nodeList.forEach((d) => {
+      tempId[d.id] = generateUniqueID(8);
+      d.id = tempId[d.id];
       const node: API.Node = {
         id: d.id,
         nodeName: d.nodeName,
@@ -454,19 +479,32 @@ const FlowEditor: React.FC = () => {
         params: d.params,
         payload: d.payload,
       };
-      body.push(node);
+      nodes.push(node);
     });
     lineList.forEach((l) => {
+      l.id = generateUniqueID(8);
+      if (l.from) {
+        l.from = tempId[l.from];
+      }
+      if (l.to) {
+        l.to = tempId[l.to];
+      }
       const line: API.Node = {
         id: l.id,
         flowId: id,
         from: l.from,
         to: l.to,
       };
-      body.push(line);
+      lines.push(line);
     });
-    // 保存/更新流程节点数据
-    await setFlowData(body);
+    // 更新当前最新数据
+    await setFlowData([...nodes, ...lines]);
+    if (version != null) {
+      // 保存版本数据
+      await saveVersion(version, generateNodeId(nodes, lines));
+      // 产生了新的版本，需要重新加载版本列表
+      await getVersions();
+    }
     return true;
   };
 
@@ -478,7 +516,7 @@ const FlowEditor: React.FC = () => {
       n.output = undefined;
     });
     // 保存当前流程数据
-    const save = await saveData();
+    const save = await saveData(null);
     if (save) {
       // 运行本流程
       runFlow(id).then((res) => {
