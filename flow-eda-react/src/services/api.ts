@@ -93,6 +93,14 @@ export async function setFlowData(body: any) {
   });
 }
 
+/** 保存流程数据版本 */
+export async function saveVersion(version: string, body: any) {
+  return request<API.ApiResult>('/api/v1/node/data/version?version=' + version, {
+    method: 'POST',
+    data: body,
+  });
+}
+
 /** 运行流程 */
 export async function runFlow(id: string) {
   return request<API.ApiResult>('/api/v1/node/data/run?flowId=' + id, {
