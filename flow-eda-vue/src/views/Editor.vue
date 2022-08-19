@@ -748,7 +748,7 @@ export default {
         v.output = undefined;
       });
       // 先保存流程
-      const save = await saveData();
+      const save = await saveData(null);
       if (save) {
         // 运行流程
         const res = await executeNodeData(props.flowId);
