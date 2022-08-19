@@ -1,8 +1,9 @@
 import ConfirmModal from '@/components/ConfirmModal';
 import IconFont from '@/components/IconFont';
 import { useFormatMessage } from '@/hooks';
-import { message, Select, Tooltip } from 'antd';
+import { Form, Input, message, Modal, Select, Tooltip } from 'antd';
 const { Option } = Select;
+import Moment from 'moment';
 import React, { useState } from 'react';
 import './index.less';
 
@@ -11,7 +12,7 @@ const ToolBar: React.FC<{
   versions: string[];
   copyNode: () => void;
   pasteNode: () => void;
-  saveData: () => Promise<boolean>;
+  saveData: (version: string | null) => Promise<boolean>;
   deleteNode: () => void;
   executeFlow: () => void;
   stopFlow: () => void;
@@ -27,7 +28,10 @@ const ToolBar: React.FC<{
   );
   const [openLog, setOpenLog] = useState<boolean>(false);
   const [selectedVersion, setSelectedVersion] = useState<string>(props.versions[0]);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const iconStyle = { width: '18px', height: '18px' };
+  const [form] = Form.useForm();
 
   /** 切换版本 */
   const switchVersion = (value: string) => {
@@ -57,11 +61,12 @@ const ToolBar: React.FC<{
       }
       setOpenLog(!openLog);
     } else if (command === 'version') {
-      console.log(selectedVersion);
+      setModalVisible(true);
     } else if (command === 'save') {
-      const save = await props.saveData();
+      const save = await props.saveData(null);
       if (save) {
         message.success(formatMsg('component.message.success', '操作成功'));
+        setSelectedVersion(props.versions[0]);
       }
     } else if (command === 'copy') {
       props.copyNode();
@@ -74,6 +79,53 @@ const ToolBar: React.FC<{
 
   return (
     <div className="toolbar">
+      <Modal
+        visible={modalVisible}
+        title="提示"
+        confirmLoading={loading}
+        onCancel={() => {
+          setModalVisible(false);
+          setLoading(false);
+          form.resetFields();
+        }}
+        onOk={() => {
+          form
+            .validateFields()
+            .then(async (values) => {
+              setLoading(true);
+              const ok = await props.saveData(values.version);
+              if (ok) {
+                message.success(formatMsg('component.message.success', '操作成功'));
+                setSelectedVersion(props.versions[0]);
+                setModalVisible(false);
+                setLoading(false);
+                form.resetFields();
+              }
+            })
+            .catch(() => setLoading(false));
+        }}
+      >
+        <Form
+          form={form}
+          name="version_modal"
+          layout="vertical"
+          initialValues={{ version: Moment().format('YYYYMMDD-HH:mm:ss') }}
+        >
+          <Form.Item
+            name="version"
+            label="请输入版本名称"
+            rules={[
+              {
+                required: true,
+                pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9(.){\[\]}@:\-=—]+$/,
+                message: '版本名称不能为空，不能包含特殊字符和空格',
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
       <div className="version">
         <span style={{ fontSize: '13px' }}>版本：</span>
         <Select
@@ -124,7 +176,10 @@ const ToolBar: React.FC<{
           key="run"
           title={formatMsg('pages.flowList.editor.runConfirm')}
           danger={false}
-          onConfirm={async () => await props.executeFlow()}
+          onConfirm={async () => {
+            await props.executeFlow();
+            setSelectedVersion(props.versions[0]);
+          }}
         >
           <Tooltip title={formatMsg('pages.flowList.editor.run', '运行')} placement="bottom">
             <span className="command">
