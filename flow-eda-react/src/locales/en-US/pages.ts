@@ -48,6 +48,12 @@ export default {
   'pages.flowList.editor.importFlow.failed': 'Import failed! Incorrect clipboard content',
   'pages.flowList.editor.importFlow.success': 'Import successful！',
   'pages.flowList.editor.switchVersion.success': 'Load successful！',
+  'pages.flowList.editor.version.list': 'Version',
+  'pages.flowList.editor.version.latest': 'Current latest version',
+  'pages.flowList.editor.version.tips': 'Tips',
+  'pages.flowList.editor.version.input': 'Please input the version name',
+  'pages.flowList.editor.version.validate':
+    'Version name cannot be empty, cannot contain special characters and spaces',
 
   // Flow Editor-ToolBar
   'pages.flowList.editor.import': 'Import',

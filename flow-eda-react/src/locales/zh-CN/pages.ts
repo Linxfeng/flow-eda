@@ -45,6 +45,11 @@ export default {
   'pages.flowList.editor.importFlow.failed': '导入失败！剪切板内容不正确',
   'pages.flowList.editor.importFlow.success': '导入成功！',
   'pages.flowList.editor.switchVersion.success': '加载成功！',
+  'pages.flowList.editor.version.list': '版本',
+  'pages.flowList.editor.version.latest': '当前最新版本',
+  'pages.flowList.editor.version.tips': '提示',
+  'pages.flowList.editor.version.input': '请输入版本名称',
+  'pages.flowList.editor.version.validate': '版本名称不能为空，不能包含特殊字符和空格',
 
   // 流编辑器-工具栏
   'pages.flowList.editor.import': '导入',
