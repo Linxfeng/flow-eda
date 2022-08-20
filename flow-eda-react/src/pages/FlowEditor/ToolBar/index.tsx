@@ -1,5 +1,6 @@
 import ConfirmModal from '@/components/ConfirmModal';
 import IconFont from '@/components/IconFont';
+import { FormattedMessage } from 'umi';
 import { useFormatMessage } from '@/hooks';
 import { Form, Input, message, Modal, Select, Tooltip } from 'antd';
 const { Option } = Select;
@@ -37,7 +38,7 @@ const ToolBar: React.FC<{
   const switchVersion = (value: string) => {
     setSelectedVersion(value);
     let version: string | null = value;
-    if (version === '当前最新版本') {
+    if (version === formatMsg('pages.flowList.editor.version.latest')) {
       version = null;
     }
     props.switchVersion(version);
@@ -81,7 +82,7 @@ const ToolBar: React.FC<{
     <div className="toolbar">
       <Modal
         visible={modalVisible}
-        title="提示"
+        title={formatMsg('pages.flowList.editor.version.tips', '提示')}
         confirmLoading={loading}
         onCancel={() => {
           setModalVisible(false);
@@ -113,12 +114,15 @@ const ToolBar: React.FC<{
         >
           <Form.Item
             name="version"
-            label="请输入版本名称"
+            label={formatMsg('pages.flowList.editor.version.input', '请输入版本名称')}
             rules={[
               {
                 required: true,
                 pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9(.){\[\]}@:\-=—]+$/,
-                message: '版本名称不能为空，不能包含特殊字符和空格',
+                message: formatMsg(
+                  'pages.flowList.editor.version.validate',
+                  '版本名称不能为空，不能包含特殊字符和空格',
+                ),
               },
             ]}
           >
@@ -127,7 +131,9 @@ const ToolBar: React.FC<{
         </Form>
       </Modal>
       <div className="version">
-        <span style={{ fontSize: '13px' }}>版本：</span>
+        <span style={{ fontSize: '13px' }}>
+          <FormattedMessage id="pages.flowList.editor.version.list" defaultMessage="版本" />：
+        </span>
         <Select
           defaultValue={props.versions[0]}
           value={selectedVersion}
