@@ -35,13 +35,14 @@ const ToolBar: React.FC<{
   const [form] = Form.useForm();
 
   /** 切换版本 */
-  const switchVersion = (value: string) => {
+  const switchVersion = async (value: string) => {
     setSelectedVersion(value);
     let version: string | null = value;
     if (version === formatMsg('pages.flowList.editor.version.latest')) {
       version = null;
     }
-    props.switchVersion(version);
+    await props.switchVersion(version);
+    message.success(formatMsg('pages.flowList.editor.switchVersion.success'));
   };
 
   /** 处理工具栏按钮功能 */

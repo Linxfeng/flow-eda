@@ -405,7 +405,6 @@ const FlowEditor: React.FC = () => {
       // 更新新的流程数据
       loadFlowData(version);
     }, 0);
-    message.success(formatMsg('pages.flowList.editor.switchVersion.success'));
   };
 
   /** 展示运行日志 */
@@ -506,6 +505,8 @@ const FlowEditor: React.FC = () => {
       // 产生了新的版本，需要重新加载版本列表
       await getVersions();
     }
+    // 切换到当前最新版本
+    await switchVersion(null);
     return true;
   };
 
