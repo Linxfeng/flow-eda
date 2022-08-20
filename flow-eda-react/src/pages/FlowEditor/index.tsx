@@ -429,7 +429,8 @@ const FlowEditor: React.FC = () => {
       if (res?.result) {
         const v = res.result;
         if (v.length > 0) {
-          setVersions(['当前最新版本', ...v]);
+          const a: string = formatMsg('pages.flowList.editor.version.latest');
+          setVersions([a, ...v]);
         }
       }
     });
