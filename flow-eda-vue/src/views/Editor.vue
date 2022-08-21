@@ -737,6 +737,8 @@ export default {
         // 产生了新的版本，需要重新加载版本列表
         await getVersions();
       }
+      // 切换到当前最新版本
+      await switchVersion(null);
       return true;
     };
 
