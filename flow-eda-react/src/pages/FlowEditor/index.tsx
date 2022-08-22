@@ -133,6 +133,7 @@ const FlowEditor: React.FC = () => {
 
   /** 给面板上的节点连线 */
   const connectLines = (lines: API.Node[]) => {
+    jsPlumbInstance.deleteEveryConnection();
     lines.forEach((line) => {
       jsPlumbInstance.connect(
         {
@@ -396,15 +397,11 @@ const FlowEditor: React.FC = () => {
   /** 切换版本 */
   const switchVersion = async (version: string | null) => {
     setSelectedNode(undefined);
-    // 清除编辑器实例，编辑面板重置重绘
-    setTimeout(() => {
-      jsPlumbInstance.cleanupListeners();
-      jsPlumbInstance.deleteEveryConnection();
-      jsPlumbInstance.deleteEveryEndpoint();
-      jsPlumbInstance.reset();
-      // 更新新的流程数据
-      loadFlowData(version);
-    }, 0);
+    // 清除编辑器节点和连线数据
+    jsPlumbInstance.deleteEveryConnection();
+    jsPlumbInstance.deleteEveryEndpoint();
+    // 更新新的流程数据
+    loadFlowData(version);
   };
 
   /** 展示运行日志 */
