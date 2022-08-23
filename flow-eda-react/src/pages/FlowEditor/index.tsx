@@ -89,9 +89,7 @@ const FlowEditor: React.FC = () => {
     const to = evt.target.id;
     setLineList((lines) => {
       // 防止重复连线
-      const has = lines.some((l) => {
-        return l.from === from && l.to === to;
-      });
+      const has = lines.find((l) => l.from === from && l.to === to);
       if (has) {
         return lines;
       } else {
@@ -517,12 +515,15 @@ const FlowEditor: React.FC = () => {
     // 保存当前流程数据
     const save = await saveData(null);
     if (save) {
-      // 运行本流程
-      runFlow(id).then((res) => {
-        if (res) {
-          message.success(formatMsg('component.message.success'));
-        }
-      });
+      setTimeout(() => {
+        // 运行本流程
+        runFlow(id).then((res) => {
+          if (res) {
+            message.success(formatMsg('component.message.success'));
+          }
+        });
+        // 等待新的流程数据加载完毕后再运行
+      }, 10);
     }
   };
 
