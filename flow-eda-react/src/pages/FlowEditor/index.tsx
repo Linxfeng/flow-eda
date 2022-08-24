@@ -181,7 +181,16 @@ const FlowEditor: React.FC = () => {
       okText: formatMsg('component.modalForm.confirm'),
       cancelText: formatMsg('component.modalForm.cancel'),
       onOk() {
+        // 删除连线，并更新连线数据
         jsPlumbInstance.deleteConnection(line);
+        setLineList((lines) => {
+          lines.forEach((item, index) => {
+            if (item.from === line.sourceId && item.to === line.targetId) {
+              lines.splice(index, 1);
+            }
+          });
+          return lines;
+        });
       },
     });
   };
@@ -201,14 +210,6 @@ const FlowEditor: React.FC = () => {
       //连线双击删除事件
       jsPlumbInstance.bind('dblclick', (line) => {
         confirmDeleteLine(line);
-      });
-      //断开连线后，维护本地数据
-      jsPlumbInstance.bind('connectionDetached', (evt) => {
-        lineList.forEach((item, index) => {
-          if (item.from === evt.sourceId && item.to === evt.targetId) {
-            lineList.splice(index, 1);
-          }
-        });
       });
       // 加载流程数据
       loadFlowData(null);
