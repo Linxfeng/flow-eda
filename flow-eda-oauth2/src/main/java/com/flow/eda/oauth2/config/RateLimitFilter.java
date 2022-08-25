@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
-    /** guava令牌桶算法实现限流，限制每个IP每秒8个请求 */
+    /** guava令牌桶算法实现限流，限制每个IP每秒10个请求 */
     private final LoadingCache<String, RateLimiter> limiterLoadingCache =
             CacheBuilder.newBuilder()
                     .maximumSize(200)
@@ -32,7 +32,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
                             new CacheLoader<String, RateLimiter>() {
                                 @Override
                                 public RateLimiter load(String s) {
-                                    return RateLimiter.create(8.0);
+                                    return RateLimiter.create(10.0);
                                 }
                             });
 
