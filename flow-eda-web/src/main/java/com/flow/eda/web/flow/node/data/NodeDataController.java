@@ -42,6 +42,9 @@ public class NodeDataController {
     public Result<String> saveVersion(
             @RequestParam String version, @RequestBody List<NodeData> data) {
         this.check(data);
+        if (version.length() > 32) {
+            throw new InvalidStateException("The version name is too long");
+        }
         data.forEach(node -> node.setVersion(version));
         nodeDataService.saveNodeData(data);
         return Result.ok();
