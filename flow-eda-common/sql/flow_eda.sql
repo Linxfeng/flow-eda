@@ -77,6 +77,7 @@ CREATE TABLE `eda_flow_node_data`  (
   `payload` json NULL COMMENT '自定义参数',
   `from` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '连线起始点id',
   `to` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '连线结束点id',
+  `version` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '数据版本',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `index_flow_id`(`flow_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
