@@ -3,8 +3,8 @@ package com.flow.eda.web.flow.status;
 import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.web.flow.Flow;
 import com.flow.eda.web.flow.FlowMapper;
-import com.flow.eda.web.flow.node.data.FlowDataClient;
 import com.flow.eda.web.flow.FlowRequest;
+import com.flow.eda.web.flow.node.data.FlowDataClient;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -56,6 +56,6 @@ public class FlowStatusService {
         request.setStatus(Flow.Status.RUNNING);
         request.setUsername("test");
         List<Flow> flowList = flowMapper.findByRequest(request);
-        CollectionUtil.forEach(flowList, flow -> flowDataService.stopFlowData(flow.getId()));
+        CollectionUtil.forEach(flowList, flow -> flowDataClient.stopFlowData(flow.getId()));
     }
 }
