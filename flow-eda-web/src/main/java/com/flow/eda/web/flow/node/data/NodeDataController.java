@@ -18,8 +18,9 @@ public class NodeDataController {
 
     @OperationLog
     @GetMapping("/node/data")
-    public Result<List<NodeData>> getNodeData(@RequestParam("flowId") String flowId) {
-        return Result.of(nodeDataService.getNodeData(flowId));
+    public Result<List<NodeData>> getNodeData(
+            @RequestParam String flowId, @RequestParam(required = false) String version) {
+        return Result.of(nodeDataService.getNodeData(flowId, version));
     }
 
     @OperationLog
@@ -31,15 +32,34 @@ public class NodeDataController {
     }
 
     @OperationLog
+    @GetMapping("/node/data/version")
+    public Result<List<String>> getVersions(@RequestParam String flowId) {
+        return Result.ok(nodeDataService.getVersions(flowId));
+    }
+
+    @OperationLog
+    @PostMapping("/node/data/version")
+    public Result<String> saveVersion(
+            @RequestParam String version, @RequestBody List<NodeData> data) {
+        this.check(data);
+        if (version.length() > 32) {
+            throw new InvalidStateException("The version name is too long");
+        }
+        data.forEach(node -> node.setVersion(version));
+        nodeDataService.saveNodeData(data);
+        return Result.ok();
+    }
+
+    @OperationLog
     @PostMapping("/node/data/run")
-    public Result<String> runNodeData(@RequestParam("flowId") String flowId) {
+    public Result<String> runNodeData(@RequestParam String flowId) {
         nodeDataService.runNodeData(flowId);
         return Result.ok();
     }
 
     @OperationLog
     @PostMapping("/node/data/stop")
-    public Result<String> stopNodeData(@RequestParam("flowId") String flowId) {
+    public Result<String> stopNodeData(@RequestParam String flowId) {
         nodeDataService.stopNodeData(flowId);
         return Result.ok();
     }

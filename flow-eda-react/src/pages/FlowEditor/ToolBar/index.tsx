@@ -1,15 +1,19 @@
 import ConfirmModal from '@/components/ConfirmModal';
 import IconFont from '@/components/IconFont';
+import { FormattedMessage } from 'umi';
 import { useFormatMessage } from '@/hooks';
-import { message, Tooltip } from 'antd';
+import { Form, Input, message, Modal, Select, Tooltip } from 'antd';
+const { Option } = Select;
+import Moment from 'moment';
 import React, { useState } from 'react';
 import './index.less';
 
 const ToolBar: React.FC<{
   status: string;
+  versions: string[];
   copyNode: () => void;
   pasteNode: () => void;
-  saveData: () => Promise<boolean>;
+  saveData: (version: string | null) => Promise<boolean>;
   deleteNode: () => void;
   executeFlow: () => void;
   stopFlow: () => void;
@@ -17,14 +21,31 @@ const ToolBar: React.FC<{
   showLogs: (show: boolean) => void;
   importFlow: () => void;
   exportFlow: () => void;
+  switchVersion: (version: string | null) => void;
 }> = (props) => {
   const { formatMsg } = useFormatMessage();
   const [seeLog, setSeeLog] = useState<string>(
     formatMsg('pages.flowList.editor.showLog', '查看日志'),
   );
   const [openLog, setOpenLog] = useState<boolean>(false);
+  const [selectedVersion, setSelectedVersion] = useState<string>(props.versions[0]);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const iconStyle = { width: '18px', height: '18px' };
+  const [form] = Form.useForm();
 
+  /** 切换版本 */
+  const switchVersion = async (value: string) => {
+    setSelectedVersion(value);
+    let version: string | null = value;
+    if (version === formatMsg('pages.flowList.editor.version.latest')) {
+      version = null;
+    }
+    await props.switchVersion(version);
+    message.success(formatMsg('pages.flowList.editor.switchVersion.success'));
+  };
+
+  /** 处理工具栏按钮功能 */
   const handle = async (command: string) => {
     if (command.startsWith('zoom')) {
       props.zoomNode(command.split('-')[1]);
@@ -41,10 +62,13 @@ const ToolBar: React.FC<{
         setSeeLog(formatMsg('pages.flowList.editor.closeLog', '关闭日志'));
       }
       setOpenLog(!openLog);
+    } else if (command === 'version') {
+      setModalVisible(true);
     } else if (command === 'save') {
-      const save = await props.saveData();
+      const save = await props.saveData(null);
       if (save) {
         message.success(formatMsg('component.message.success', '操作成功'));
+        setSelectedVersion(props.versions[0]);
       }
     } else if (command === 'copy') {
       props.copyNode();
@@ -57,6 +81,76 @@ const ToolBar: React.FC<{
 
   return (
     <div className="toolbar">
+      <Modal
+        visible={modalVisible}
+        title={formatMsg('pages.flowList.editor.version.tips', '提示')}
+        confirmLoading={loading}
+        onCancel={() => {
+          setModalVisible(false);
+          setLoading(false);
+          form.resetFields();
+        }}
+        onOk={() => {
+          form
+            .validateFields()
+            .then(async (values) => {
+              setLoading(true);
+              const ok = await props.saveData(values.version);
+              if (ok) {
+                message.success(formatMsg('component.message.success', '操作成功'));
+                setSelectedVersion(props.versions[0]);
+                setModalVisible(false);
+                setLoading(false);
+                form.resetFields();
+              }
+            })
+            .catch(() => setLoading(false));
+        }}
+      >
+        <Form
+          form={form}
+          name="version_modal"
+          layout="vertical"
+          initialValues={{ version: Moment().format('YYYYMMDD-HH:mm:ss') }}
+        >
+          <Form.Item
+            name="version"
+            label={formatMsg('pages.flowList.editor.version.input', '请输入版本名称')}
+            rules={[
+              {
+                required: true,
+                pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9(.){\[\]}@:\-=—]+$/,
+                message: formatMsg(
+                  'pages.flowList.editor.version.validate',
+                  '版本名称不能为空，不能包含特殊字符和空格',
+                ),
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <div className="version">
+        <span style={{ fontSize: '13px' }}>
+          <FormattedMessage id="pages.flowList.editor.version.list" defaultMessage="版本" />：
+        </span>
+        <Select
+          defaultValue={props.versions[0]}
+          value={selectedVersion}
+          key={props.versions[0]}
+          onChange={switchVersion}
+          style={{ width: 180, textAlign: 'left' }}
+        >
+          {props.versions?.map((op: string) => {
+            return (
+              <Option value={op} key={op}>
+                {op}
+              </Option>
+            );
+          })}
+        </Select>
+      </div>
       <Tooltip title={formatMsg('pages.flowList.editor.import', '导入')} placement="bottom">
         <span className="command" onClick={() => handle('import')}>
           <IconFont type="icon-lx-import" style={iconStyle} />
@@ -73,6 +167,11 @@ const ToolBar: React.FC<{
           <IconFont type="icon-lx-logs" style={iconStyle} />
         </span>
       </Tooltip>
+      <Tooltip title={formatMsg('pages.flowList.editor.version', '存为版本')} placement="bottom">
+        <span className="command" onClick={() => handle('version')}>
+          <IconFont type="icon-lx-version" style={iconStyle} />
+        </span>
+      </Tooltip>
       <span className="separator" />
       <Tooltip title={formatMsg('component.option.save', '保存')} placement="bottom">
         <span className="command" onClick={() => handle('save')}>
@@ -84,7 +183,10 @@ const ToolBar: React.FC<{
           key="run"
           title={formatMsg('pages.flowList.editor.runConfirm')}
           danger={false}
-          onConfirm={async () => await props.executeFlow()}
+          onConfirm={async () => {
+            await props.executeFlow();
+            setSelectedVersion(props.versions[0]);
+          }}
         >
           <Tooltip title={formatMsg('pages.flowList.editor.run', '运行')} placement="bottom">
             <span className="command">

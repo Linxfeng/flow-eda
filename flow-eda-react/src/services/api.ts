@@ -1,6 +1,6 @@
 // @ts-ignore
-import type { Key } from 'react';
 import { request } from 'umi';
+import type { Key } from 'react';
 
 /** 获取流程列表 */
 export async function getFlowList(params: any) {
@@ -70,8 +70,16 @@ export async function getNodeTypes() {
 }
 
 /** 获取流程节点数据 */
-export async function getFlowData(id: string) {
+export async function getFlowData(params: any) {
   return request<API.ApiResult>('/api/v1/node/data', {
+    method: 'GET',
+    params: params,
+  });
+}
+
+/** 获取流程数据版本 */
+export async function getVersion(id: string) {
+  return request<API.ApiResult>('/api/v1/node/data/version', {
     method: 'GET',
     params: { flowId: id },
   });
@@ -80,6 +88,14 @@ export async function getFlowData(id: string) {
 /** 更新流程节点数据 */
 export async function setFlowData(body: any) {
   return request<API.ApiResult>('/api/v1/node/data', {
+    method: 'POST',
+    data: body,
+  });
+}
+
+/** 保存流程数据版本 */
+export async function saveVersion(version: string, body: any) {
+  return request<API.ApiResult>('/api/v1/node/data/version?version=' + version, {
     method: 'POST',
     data: body,
   });

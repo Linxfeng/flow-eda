@@ -1,13 +1,17 @@
 package com.flow.eda.web.flow.status;
 
+import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.web.flow.Flow;
 import com.flow.eda.web.flow.FlowMapper;
 import com.flow.eda.web.flow.node.data.FlowDataClient;
+import com.flow.eda.web.flow.FlowRequest;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -43,5 +47,15 @@ public class FlowStatusService {
                 flowDataClient.clearFlowData(flowId);
             }
         }
+    }
+
+    /** 测试账号的定时任务：每日0点测试账号数据重置之前(1分钟)，停止正在运行中的流程 */
+    @Scheduled(cron = "0 1 0 * * ?")
+    public void stopRunningFlow() {
+        FlowRequest request = new FlowRequest();
+        request.setStatus(Flow.Status.RUNNING);
+        request.setUsername("test");
+        List<Flow> flowList = flowMapper.findByRequest(request);
+        CollectionUtil.forEach(flowList, flow -> flowDataService.stopFlowData(flow.getId()));
     }
 }

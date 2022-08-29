@@ -1,5 +1,5 @@
+import { FormattedMessage } from 'umi';
 import { useFormatMessage } from '@/hooks';
-import { FormattedMessage } from '@@/plugin-locale/localeExports';
 import { Button, Form, Input, Select } from 'antd';
 import React, { useEffect } from 'react';
 import ReactJson from 'react-json-view';

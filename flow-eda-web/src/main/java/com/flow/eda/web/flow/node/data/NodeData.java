@@ -29,4 +29,6 @@ public class NodeData {
     private String from;
     /** 连线结束点id */
     private String to;
+    /** 数据版本 */
+    private String version;
 }

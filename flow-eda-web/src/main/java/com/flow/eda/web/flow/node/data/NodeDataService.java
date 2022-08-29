@@ -8,6 +8,7 @@ import com.flow.eda.web.flow.node.type.NodeType;
 import com.flow.eda.web.flow.node.type.NodeTypeService;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +24,8 @@ public class NodeDataService {
     @Autowired private NodeTypeService nodeTypeService;
     @Autowired private FlowService flowService;
 
-    public List<NodeData> getNodeData(String flowId) {
-        List<NodeData> list = nodeDataMapper.findByFlowId(flowId);
+    public List<NodeData> getNodeData(String flowId, @Nullable String version) {
+        List<NodeData> list = nodeDataMapper.findByFlowId(flowId, version);
         if (isEmpty(list)) {
             return new ArrayList<>();
         }
@@ -34,15 +35,23 @@ public class NodeDataService {
                 .mergeS(NodeData::setNodeType);
     }
 
+    public List<String> getVersions(String flowId) {
+        return nodeDataMapper.findVersionsByFlowId(flowId);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public void updateNodeData(List<NodeData> data) {
         String flowId = data.get(0).getFlowId();
-        nodeDataMapper.deleteByFlowId(flowId);
+        nodeDataMapper.deleteDataByFlowId(flowId);
+        nodeDataMapper.insert(data);
+    }
+
+    public void saveNodeData(List<NodeData> data) {
         nodeDataMapper.insert(data);
     }
 
     public void runNodeData(String flowId) {
-        List<NodeData> list = this.getNodeData(flowId);
+        List<NodeData> list = this.getNodeData(flowId, null);
         if (isEmpty(list)) {
             throw new InvalidStateException("The flow data is empty, cannot deploy");
         }

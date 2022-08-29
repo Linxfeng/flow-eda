@@ -1,8 +1,15 @@
 <template>
   <div id="log-detail" class="log-detail">
-    <Codemirror v-model:value="logContent"
-                :options="{mode: 'javascript', styleActiveLine: true, theme: 'dracula', readOnly: true}"
-                style="font-size: 14px;"/>
+    <Codemirror
+      v-model:value="logContent"
+      :options="{
+        mode: 'javascript',
+        styleActiveLine: true,
+        theme: 'dracula',
+        readOnly: true,
+      }"
+      style="font-size: 14px"
+    />
   </div>
 </template>
 
@@ -10,28 +17,31 @@
 import Codemirror from "codemirror-editor-vue3";
 import "codemirror/mode/javascript/javascript.js";
 import "codemirror/theme/dracula.css";
-import {onBeforeUnmount, ref, watch} from "vue";
-import {onCloseLogDetail, onOpenLogDetail} from "../utils/websocket.js";
+import { onBeforeUnmount, ref, watch } from "vue";
+import { onCloseLogDetail, onOpenLogDetail } from "../api/ws.js";
 
 export default {
   name: "LogDetail",
   props: {
-    path: String
+    path: String,
   },
   components: {
-    Codemirror
+    Codemirror,
   },
   setup(props) {
-
     const logContent = ref("");
 
     // 监听参数变化，加载新数据，关闭旧连接
     watch(
-        () => props.path,
-        (n, o) => {
-          getData(n);
-          onCloseLogDetail(o);
+      () => props.path,
+      (n, o) => {
+        if (n) {
+          if (n !== o) {
+            onCloseLogDetail(o);
+            getData(n);
+          }
         }
+      }
     );
 
     // 获取日志内容
@@ -51,15 +61,15 @@ export default {
     });
 
     return {
-      logContent
+      logContent,
     };
-  }
+  },
 };
 </script>
 
 <style>
 .log-detail {
-  height: 100%;
   width: 100%;
+  height: 100%;
 }
 </style>

@@ -5,7 +5,15 @@ import { changeLineState, setPanZoom, zoomPan } from '@/pages/FlowEditor/js/edit
 import { connectOptions, defaultSetting, makeOptions } from '@/pages/FlowEditor/js/jsplumbConfig';
 import FlowDetail from '@/pages/FlowEditor/NodeDetail';
 import ToolBar from '@/pages/FlowEditor/ToolBar/index';
-import { getFlowData, getNodeTypes, runFlow, setFlowData, stopFlow } from '@/services/api';
+import {
+  getFlowData,
+  getNodeTypes,
+  getVersion,
+  runFlow,
+  saveVersion,
+  setFlowData,
+  stopFlow,
+} from '@/services/api';
 import { onCloseLogs, onCloseNode, onOpenLogs, onOpenNode } from '@/services/ws';
 import { generateUniqueID } from '@/utils/util';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
@@ -51,6 +59,7 @@ const FlowEditor: React.FC = () => {
   const [logVisible, setLogVisible] = useState<boolean>(false);
   const [logContent, setLogContent] = useState<string[]>([]);
   const [wsMessage, setWsMessage] = useState<string>();
+  const [versions, setVersions] = useState<string[]>([]);
 
   /** 移动节点时，动态显示对齐辅助线 */
   const alignForLine = (nodeId: string, position: number[]) => {
@@ -80,9 +89,7 @@ const FlowEditor: React.FC = () => {
     const to = evt.target.id;
     setLineList((lines) => {
       // 防止重复连线
-      const has = lines.some((l) => {
-        return l.from === from && l.to === to;
-      });
+      const has = lines.find((l) => l.from === from && l.to === to);
       if (has) {
         return lines;
       } else {
@@ -124,6 +131,7 @@ const FlowEditor: React.FC = () => {
 
   /** 给面板上的节点连线 */
   const connectLines = (lines: API.Node[]) => {
+    jsPlumbInstance.deleteEveryConnection();
     lines.forEach((line) => {
       jsPlumbInstance.connect(
         {
@@ -136,8 +144,12 @@ const FlowEditor: React.FC = () => {
   };
 
   /** 初始化节点数据 */
-  const loadFlowData = () => {
-    getFlowData(id).then((res) => {
+  const loadFlowData = (version: string | null) => {
+    const params = { flowId: id };
+    if (version) {
+      params['version'] = version;
+    }
+    getFlowData(params).then((res) => {
       if (res?.result) {
         const nodes: API.Node[] = [];
         const lines: API.Node[] = [];
@@ -169,7 +181,16 @@ const FlowEditor: React.FC = () => {
       okText: formatMsg('component.modalForm.confirm'),
       cancelText: formatMsg('component.modalForm.cancel'),
       onOk() {
+        // 删除连线，并更新连线数据
         jsPlumbInstance.deleteConnection(line);
+        setLineList((lines) => {
+          lines.forEach((item, index) => {
+            if (item.from === line.sourceId && item.to === line.targetId) {
+              lines.splice(index, 1);
+            }
+          });
+          return lines;
+        });
       },
     });
   };
@@ -190,16 +211,8 @@ const FlowEditor: React.FC = () => {
       jsPlumbInstance.bind('dblclick', (line) => {
         confirmDeleteLine(line);
       });
-      //断开连线后，维护本地数据
-      jsPlumbInstance.bind('connectionDetached', (evt) => {
-        lineList.forEach((item, index) => {
-          if (item.from === evt.sourceId && item.to === evt.targetId) {
-            lineList.splice(index, 1);
-          }
-        });
-      });
       // 加载流程数据
-      loadFlowData();
+      loadFlowData(null);
       // 面板重绘
       jsPlumbInstance.setSuspendDrawing(false, true);
     });
@@ -211,6 +224,7 @@ const FlowEditor: React.FC = () => {
   const copyNode = () => {
     setClipboard(selectedNode);
   };
+
   /** 粘贴节点 */
   const pasteNode = () => {
     if (clipboard) {
@@ -379,6 +393,16 @@ const FlowEditor: React.FC = () => {
     message.success(formatMsg('pages.flowList.editor.exportFlow.success'));
   };
 
+  /** 切换版本 */
+  const switchVersion = async (version: string | null) => {
+    setSelectedNode(undefined);
+    // 清除编辑器节点和连线数据
+    jsPlumbInstance.deleteEveryConnection();
+    jsPlumbInstance.deleteEveryEndpoint();
+    // 更新新的流程数据
+    loadFlowData(version);
+  };
+
   /** 展示运行日志 */
   const showLogs = (show: boolean) => {
     if (show) {
@@ -394,15 +418,52 @@ const FlowEditor: React.FC = () => {
     }
   };
 
+  /** 获取版本列表 */
+  const getVersions = () => {
+    getVersion(id).then((res) => {
+      if (res?.result) {
+        const v = res.result;
+        if (v.length > 0) {
+          const a: string = formatMsg('pages.flowList.editor.version.latest');
+          setVersions([a, ...v]);
+        }
+      }
+    });
+  };
+
+  /** 重新生成节点id，保证各版本的节点id不冲突 */
+  const generateNodeId = (nodes: API.Node[], lines: API.Node[]) => {
+    const tempId = {};
+    nodes.forEach((n) => {
+      tempId[n.id] = generateUniqueID(8);
+      n.id = tempId[n.id];
+    });
+    lines.forEach((l) => {
+      l.id = generateUniqueID(8);
+      if (l.from) {
+        l.from = tempId[l.from];
+      }
+      if (l.to) {
+        l.to = tempId[l.to];
+      }
+    });
+    return [...nodes, ...lines];
+  };
+
   /** 保存流程图所有节点数据 */
-  const saveData = async (): Promise<boolean> => {
+  const saveData = async (version: string | null): Promise<boolean> => {
     if (nodeList.length === 0) {
       message.error(formatMsg('pages.flowList.editor.checkFlow'));
       return false;
     }
-    // 流程节点数据参数
-    const body: API.Node[] = [];
+    // 封装节点数据参数
+    const nodes: API.Node[] = [];
+    const lines: API.Node[] = [];
+    // 重新生成节点id，并更新当前节点数据
+    const tempId: object = {};
     nodeList.forEach((d) => {
+      tempId[d.id] = generateUniqueID(8);
+      d.id = tempId[d.id];
       const node: API.Node = {
         id: d.id,
         nodeName: d.nodeName,
@@ -414,19 +475,34 @@ const FlowEditor: React.FC = () => {
         params: d.params,
         payload: d.payload,
       };
-      body.push(node);
+      nodes.push(node);
     });
     lineList.forEach((l) => {
+      l.id = generateUniqueID(8);
+      if (l.from) {
+        l.from = tempId[l.from];
+      }
+      if (l.to) {
+        l.to = tempId[l.to];
+      }
       const line: API.Node = {
         id: l.id,
         flowId: id,
         from: l.from,
         to: l.to,
       };
-      body.push(line);
+      lines.push(line);
     });
-    // 保存/更新流程节点数据
-    await setFlowData(body);
+    // 更新当前最新数据
+    await setFlowData([...nodes, ...lines]);
+    if (version != null) {
+      // 保存版本数据
+      await saveVersion(version, generateNodeId(nodes, lines));
+      // 产生了新的版本，需要重新加载版本列表
+      await getVersions();
+    }
+    // 切换到当前最新版本
+    await switchVersion(null);
     return true;
   };
 
@@ -438,14 +514,17 @@ const FlowEditor: React.FC = () => {
       n.output = undefined;
     });
     // 保存当前流程数据
-    const save = await saveData();
+    const save = await saveData(null);
     if (save) {
-      // 运行本流程
-      runFlow(id).then((res) => {
-        if (res) {
-          message.success(formatMsg('component.message.success'));
-        }
-      });
+      setTimeout(() => {
+        // 运行本流程
+        runFlow(id).then((res) => {
+          if (res) {
+            message.success(formatMsg('component.message.success'));
+          }
+        });
+        // 等待新的流程数据加载完毕后再运行
+      }, 10);
     }
   };
 
@@ -463,6 +542,8 @@ const FlowEditor: React.FC = () => {
     init();
     // 建立ws连接，实时获取流程状态和节点状态信息
     onOpenNode(id, (s) => setWsMessage(s));
+    // 获取版本列表
+    getVersions();
 
     // 销毁组件时关闭ws连接
     return () => {
@@ -511,6 +592,7 @@ const FlowEditor: React.FC = () => {
       <Card>
         <ToolBar
           status={flowStatus}
+          versions={versions}
           copyNode={copyNode}
           pasteNode={pasteNode}
           saveData={saveData}
@@ -523,6 +605,7 @@ const FlowEditor: React.FC = () => {
           showLogs={showLogs}
           exportFlow={exportFlow}
           importFlow={importFlow}
+          switchVersion={switchVersion}
         />
         <div id="flow-content" className="flow-content">
           <div className="nodes-wrap">

@@ -2,56 +2,130 @@
   <div>
     <div class="container">
       <div class="handle-box">
-        <el-input v-model="params.name" class="handle-input mr10" placeholder="名称"/>
-        <el-select v-model="params.status" class="handle-select mr10" placeholder="状态">
-          <el-option key="INIT" label="未运行" value="INIT"/>
-          <el-option key="RUNNING" label="运行中" value="RUNNING"/>
-          <el-option key="FINISHED" label="运行完成" value="FINISHED"/>
-          <el-option key="FAILED" label="运行失败" value="FAILED"/>
+        <el-input
+          v-model="params.name"
+          class="handle-input mr10"
+          placeholder="名称"
+        />
+        <el-select
+          v-model="params.status"
+          class="handle-select mr10"
+          placeholder="状态"
+        >
+          <el-option key="INIT" label="未运行" value="INIT" />
+          <el-option key="RUNNING" label="运行中" value="RUNNING" />
+          <el-option key="FINISHED" label="运行完成" value="FINISHED" />
+          <el-option key="FAILED" label="运行失败" value="FAILED" />
         </el-select>
-        <el-button icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
-        <el-button icon="el-icon-refresh" type="primary" @click="cleanSearch">重置</el-button>
-        <el-button :disabled="!hasSelection" icon="el-icon-delete" style="float: right" type="primary"
-                   @click="delAllSelection">批量删除
+        <el-button icon="el-icon-search" type="primary" @click="handleSearch"
+          >查询</el-button
+        >
+        <el-button icon="el-icon-refresh" type="primary" @click="cleanSearch"
+          >重置</el-button
+        >
+        <el-button
+          :disabled="!hasSelection"
+          icon="el-icon-delete"
+          style="float: right"
+          type="primary"
+          @click="delAllSelection"
+          >批量删除
         </el-button>
-        <el-button icon="el-icon-plus" style="float: right" type="primary" @click="handleAdd">新增</el-button>
+        <el-button
+          icon="el-icon-plus"
+          style="float: right"
+          type="primary"
+          @click="handleAdd"
+          >新增</el-button
+        >
       </div>
-      <el-table ref="multipleTable"
-                :data="tableData"
-                border
-                class="table"
-                header-cell-class-name="table-header"
-                size="small"
-                @selection-change="handleSelectionChange">
-        <el-table-column align="center" type="selection" width="45"/>
-        <el-table-column label="名称" prop="name" show-overflow-tooltip width="210"/>
-        <el-table-column :formatter="statusFormat" label="状态" prop="status" width="120"/>
-        <el-table-column label="描述" prop="description" show-overflow-tooltip/>
-        <el-table-column :formatter="dateFormat" label="创建时间" prop="createDate" width="170"/>
-        <el-table-column :formatter="dateFormat" label="更新时间" prop="updateDate" width="170"/>
+      <el-table
+        ref="multipleTable"
+        :data="tableData"
+        border
+        class="table"
+        header-cell-class-name="table-header"
+        size="small"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column align="center" type="selection" width="45" />
+        <el-table-column
+          label="名称"
+          prop="name"
+          show-overflow-tooltip
+          width="210"
+        />
+        <el-table-column
+          :formatter="statusFormat"
+          label="状态"
+          prop="status"
+          width="120"
+        />
+        <el-table-column
+          label="描述"
+          prop="description"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          :formatter="dateFormat"
+          label="创建时间"
+          prop="createDate"
+          width="170"
+        />
+        <el-table-column
+          :formatter="dateFormat"
+          label="更新时间"
+          prop="updateDate"
+          width="170"
+        />
         <el-table-column align="center" label="操作" width="255">
           <template #default="scope">
-            <el-button icon="el-icon-search" type="text" @click="handleShow(scope.row.id)">查看</el-button>
-            <el-button icon="el-icon-edit" type="text" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-            <el-button icon="el-icon-tickets" type="text" @click="handleLogs(scope.row.id)">日志</el-button>
-            <el-button icon="el-icon-delete" style="color: #ff0000" type="text" @click="handleDelete(scope.row.id)">删除
+            <el-button
+              icon="el-icon-search"
+              type="text"
+              @click="handleShow(scope.row.id)"
+              >查看</el-button
+            >
+            <el-button
+              icon="el-icon-edit"
+              type="text"
+              @click="handleEdit(scope.$index, scope.row)"
+              >修改</el-button
+            >
+            <el-button
+              icon="el-icon-tickets"
+              type="text"
+              @click="handleLogs(scope.row.id)"
+              >日志</el-button
+            >
+            <el-button
+              icon="el-icon-delete"
+              style="color: #ff0000"
+              type="text"
+              @click="handleDelete(scope.row.id)"
+              >删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
       <div class="pagination">
-        <el-pagination :current-page="params.page" :total="pageTotal" background layout="total, prev, pager, next"
-                       @current-change="handlePageChange"/>
+        <el-pagination
+          :current-page="params.page"
+          :total="pageTotal"
+          background
+          layout="total, prev, pager, next"
+          @current-change="handlePageChange"
+        />
       </div>
     </div>
     <!-- 新增/编辑弹出框 -->
     <el-dialog v-model="dialogVisible" :title="form.title" center width="30%">
       <el-form label-width="70px">
         <el-form-item label="名称">
-          <el-input v-model="form.name"/>
+          <el-input v-model="form.name" />
         </el-form-item>
         <el-form-item label="描述">
-          <el-input v-model="form.description"/>
+          <el-input v-model="form.description" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -65,24 +139,24 @@
 </template>
 
 <script>
-import {computed, reactive, ref} from "vue";
-import {ElMessage, ElMessageBox} from "element-plus";
+import { computed, reactive, ref } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 import Moment from "moment";
-import {addFlow, deleteFlow, listFlow, updateFlow} from "../api/flow";
-import {generateUniqueID} from "../utils/util.js";
-import {useRouter} from "vue-router";
-import {useStore} from "vuex";
+import { addFlow, deleteFlow, listFlow, updateFlow } from "../api/flow";
+import { generateUniqueID } from "../utils/util.js";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
   name: "Flows",
   setup() {
-    const params = reactive({page: 1});
+    const params = reactive({ page: 1 });
     const tableData = ref([]);
     const pageTotal = ref(0);
 
     // 查询流程列表
     const getData = () => {
-      listFlow(params).then(res => {
+      listFlow(params).then((res) => {
         if (res) {
           tableData.value = res.result;
           pageTotal.value = res.total;
@@ -125,18 +199,25 @@ export default {
     const handleShow = (id) => {
       const path = "/flows/editor?flowId=";
       // 是否已经存在打开的编辑器页面
-      const tags = tagsList.value.filter(i => i.path.startsWith(path));
+      const tags = tagsList.value.filter((i) => i.path.startsWith(path));
       if (tags.length > 0 && tags[0].path.split("=")[1] !== id.toString()) {
-        ElMessageBox.confirm("您有未关闭编辑页，是否打开新的编辑页？这将会丢失未保存的数据！", "提示", {
-          type: "warning",
-        }).then(() => {
-          // 先销毁，再重新加载组件
-          store.commit("delTagsItem", {index: tagsList.value.indexOf(tags[0])});
-          router.push({path: path + id, query: {flowId: id}});
-        }).catch(err => {
-        });
+        ElMessageBox.confirm(
+          "您有未关闭编辑页，是否打开新的编辑页？这将会丢失未保存的数据！",
+          "提示",
+          {
+            type: "warning",
+          }
+        )
+          .then(() => {
+            // 先销毁，再重新加载组件
+            store.commit("delTagsItem", {
+              index: tagsList.value.indexOf(tags[0]),
+            });
+            router.push({ path: path + id, query: { flowId: id } });
+          })
+          .catch((err) => {});
       } else {
-        router.push({path: path + id, query: {flowId: id}});
+        router.push({ path: path + id, query: { flowId: id } });
       }
     };
     // 编辑操作
@@ -152,11 +233,11 @@ export default {
       let body = {
         id: form.value.id,
         name: form.value.name,
-        description: form.value.description
-      }
+        description: form.value.description,
+      };
       if (form.value.title === "新增流程") {
         body.id = generateUniqueID(8);
-        addFlow(body).then(res => {
+        addFlow(body).then((res) => {
           if (res) {
             ElMessage.success("操作成功");
             dialogVisible.value = false;
@@ -164,7 +245,7 @@ export default {
           }
         });
       } else {
-        updateFlow(body).then(res => {
+        updateFlow(body).then((res) => {
           if (res) {
             ElMessage.success("操作成功");
             dialogVisible.value = false;
@@ -176,16 +257,16 @@ export default {
 
     // 查看流程日志
     const handleLogs = (id) => {
-      const date = Moment().format('YYYY-MM-DD');
+      const date = Moment().format("YYYY-MM-DD");
       const path = "/logs/running/" + id + "/" + date + ".log";
-      router.push({name: "LogDetail", params: {path: path}});
+      router.push({ name: "LogDetail", params: { path: path } });
     };
 
     // 多选操作
     let multipleSelection = [];
     let hasSelection = ref(false);
     const handleSelectionChange = (val) => {
-      multipleSelection = val.map(i => i.id);
+      multipleSelection = val.map((i) => i.id);
       hasSelection.value = multipleSelection.length > 0;
     };
 
@@ -204,35 +285,36 @@ export default {
     const deleteBatch = (msg, ids) => {
       ElMessageBox.confirm(msg, "提示", {
         type: "warning",
-      }).then(() => {
-        deleteFlow(ids).then(res => {
-          if (res) {
-            ElMessage.success("操作成功");
-            params.page = 1;
-            multipleSelection = [];
-            getData();
-          }
-        });
-      }).catch(err => {
-      });
+      })
+        .then(() => {
+          deleteFlow(ids).then((res) => {
+            if (res) {
+              ElMessage.success("操作成功");
+              params.page = 1;
+              multipleSelection = [];
+              getData();
+            }
+          });
+        })
+        .catch((err) => {});
     };
 
     // 状态字段转换
     const statusFormat = (row) => {
-      if (row.status === 'INIT') {
+      if (row.status === "INIT") {
         return "未运行";
-      } else if (row.status === 'RUNNING') {
+      } else if (row.status === "RUNNING") {
         return "运行中";
-      } else if (row.status === 'FINISHED') {
+      } else if (row.status === "FINISHED") {
         return "运行完成";
-      } else if (row.status === 'FAILED') {
+      } else if (row.status === "FAILED") {
         return "运行失败";
       }
     };
 
     // 日期格式化
     const dateFormat = (row, column) => {
-      return Moment(row[column.property]).format('YYYY-MM-DD HH:mm:ss');
+      return Moment(row[column.property]).format("YYYY-MM-DD HH:mm:ss");
     };
 
     return {
@@ -254,7 +336,7 @@ export default {
       delAllSelection,
       submitForm,
       statusFormat,
-      dateFormat
+      dateFormat,
     };
   },
 };
@@ -270,8 +352,8 @@ export default {
 }
 
 .handle-input {
-  width: 255px;
   display: inline-block;
+  width: 255px;
 }
 
 .table {

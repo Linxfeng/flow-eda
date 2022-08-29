@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.authentication.BearerTokenExtractor;
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 
 @Configuration
@@ -29,6 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired private LoginSuccessHandler loginSuccessHandler;
     @Autowired private LoginFailureHandler loginFailureHandler;
     @Autowired private LogoutSuccessHandler logoutSuccessHandler;
+    @Autowired private RateLimitFilter rateLimitFilter;
 
     @Bean
     @Override
@@ -47,6 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf()
                 .disable()
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 // 处理跨域请求中的Preflight请求
                 .antMatchers(HttpMethod.OPTIONS)
