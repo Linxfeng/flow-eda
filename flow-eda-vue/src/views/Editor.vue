@@ -90,6 +90,7 @@
       </div>
       <nodeDetail
         v-if="data.selectedNode"
+        :flow-id="flowId"
         :node="data.selectedNode"
         @showNodeDetail="showNodeDetail"
         @updateNode="updateNode"

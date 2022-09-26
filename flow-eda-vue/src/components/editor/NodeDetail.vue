@@ -27,6 +27,10 @@
           <el-select v-if="p.inType==='select' && !p.placeholder" v-model="detailForm[p.key]" clearable class="input">
             <el-option v-for="op in p.option.split(',')" :key="op" :label="op" :value="op"></el-option>
           </el-select>
+          <el-select v-if="p.inType==='api'" v-model="detailForm[p.key]" clearable class="input">
+            <el-option v-if="optionFlows.length" v-for="op in optionFlows" :key="op.id" :label="op.name"
+                       :value="op.id"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item class="item" prop="payload">
           <span class="span-box">
@@ -51,10 +55,12 @@
 import {reactive, ref} from "vue";
 import {ElMessage} from "element-plus";
 import JsonViewer from 'vue-json-viewer';
+import {listFlow} from "../../api/flow";
 
 export default {
   name: "NodeDetail",
   props: {
+    flowId: String,
     node: Object
   },
   components: {
@@ -75,6 +81,7 @@ export default {
     }
     const detailForm = reactive(form);
     const detailFormRef = ref(null);
+    const optionFlows = reactive([]);
 
     // 校验输入的字符串是否是json格式
     const checkJson = (rule, value, callback) => {
@@ -106,6 +113,19 @@ export default {
           } else {
             form[p.key + '-o'] = p.placeholder.split(',')[1];
           }
+        }
+        // 处理子流程等外部API调用结果
+        if (p.inType === 'api') {
+          listFlow({page: 1, limit: 1000}).then((res) => {
+            if (res) {
+              // 请求流程列表，排除自己
+              res.result.forEach(f => {
+                if (f.id !== props.flowId) {
+                  optionFlows.push({id: f.id, name: f.name});
+                }
+              });
+            }
+          });
         }
         // 参数必填规则
         if (p.required === true) {
@@ -153,6 +173,7 @@ export default {
       detailForm,
       rules,
       detailFormRef,
+      optionFlows,
       submitNode
     };
   }
