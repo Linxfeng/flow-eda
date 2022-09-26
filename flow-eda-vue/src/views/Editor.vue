@@ -739,7 +739,8 @@ export default {
         await getVersions();
       }
       // 切换到当前最新版本
-      await switchVersion(null);
+      await initNode(null);
+      resetFlowPanel();
       return true;
     };
 
