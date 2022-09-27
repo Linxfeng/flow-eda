@@ -18,6 +18,7 @@ import com.flow.eda.runner.node.sequence.SequenceNode;
 import com.flow.eda.runner.node.splice.SpliceNode;
 import com.flow.eda.runner.node.split.SplitNode;
 import com.flow.eda.runner.node.start.StartNode;
+import com.flow.eda.runner.node.subflow.SubflowNode;
 import com.flow.eda.runner.node.timer.TimerNode;
 import com.flow.eda.runner.node.ws.client.WsClientNode;
 import com.flow.eda.runner.node.ws.server.WsServerNode;
@@ -52,6 +53,8 @@ public enum NodeTypeEnum {
     MYSQL("mysql", MysqlNode.class),
     MONGODB("mongodb", MongodbNode.class),
     REDIS("redis", RedisNode.class),
+    /** 子流程节点 */
+    SUBFLOW("subflow", SubflowNode.class),
     ;
     private final String type;
     private final Class<? extends Node> clazz;
