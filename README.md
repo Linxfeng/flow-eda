@@ -107,6 +107,7 @@ React 版本[在线 DEMO](http://120.48.9.40:90)
 | RabbitMQ        | 3.9.15   | 消息队列             |
 | Spring Security | 5.6.2    | 认证和授权框架       |
 | Security Oauth2 | 2.3.6    | 认证和授权框架       |
+| Guava           | 31.0.1   | 限流组件             |
 
 ### 发行版本
 
