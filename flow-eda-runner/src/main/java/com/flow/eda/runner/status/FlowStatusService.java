@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import static com.flow.eda.common.utils.CollectionUtil.*;
 
@@ -24,6 +25,8 @@ public class FlowStatusService {
     private final Map<String, Set<String>> nodeMap = new ConcurrentHashMap<>();
     /** 正在运行的节点 */
     private final Map<String, Set<String>> runMap = new ConcurrentHashMap<>();
+    /** 流程运行结束后会发起通知 */
+    private final Map<String, Consumer<String>> noticeMap = new ConcurrentHashMap<>();
 
     @DubboReference private FlowInfoService flowInfoService;
 
@@ -80,10 +83,26 @@ public class FlowStatusService {
         return null;
     }
 
+    /** 获取流程节点数据 */
+    public List<FlowData> getFlowData(String flowId) {
+        return flowInfoService.getFlowData(flowId);
+    }
+
     /** 清理缓存数据 */
     public void clear(String flowId) {
         this.nodeMap.remove(flowId);
         this.runMap.remove(flowId);
+
+        // 流程运行结束后，发起通知
+        if (noticeMap.containsKey(flowId)) {
+            noticeMap.get(flowId).accept(flowId);
+            noticeMap.remove(flowId);
+        }
+    }
+
+    /** 注册通知服务，流程运行结束后会发起通知 */
+    public void registerNotice(String flowId, Consumer<String> consumer) {
+        noticeMap.put(flowId, consumer);
     }
 
     /** 解析出所有要执行的节点 */
