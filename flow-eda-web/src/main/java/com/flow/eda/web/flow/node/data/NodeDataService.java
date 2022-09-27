@@ -53,14 +53,17 @@ public class NodeDataService {
     }
 
     public void runNodeData(String flowId) {
+        flowDataService.runFlowData(this.queryNodeData(flowId));
+    }
+
+    public List<FlowData> queryNodeData(String flowId) {
         List<NodeData> list = this.getNodeData(flowId, null);
         if (isEmpty(list)) {
             throw new InvalidStateException("The flow data is empty, cannot deploy");
         }
-        // 调用远程接口，运行当前流数据
         List<FlowData> data = new ArrayList<>();
-        list.forEach(n -> data.add(convert(n)));
-        flowDataService.runFlowData(data);
+        list.forEach(n -> data.add(this.convert(n)));
+        return data;
     }
 
     /** 停止运行当前流程 */
