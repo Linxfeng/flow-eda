@@ -59,7 +59,7 @@ public class NodeDataService {
     public List<FlowData> queryNodeData(String flowId) {
         List<NodeData> list = this.getNodeData(flowId, null);
         if (isEmpty(list)) {
-            throw new InvalidStateException("The flow data is empty, cannot deploy");
+            throw new InvalidStateException("The flow data is empty, cannot be run");
         }
         List<FlowData> data = new ArrayList<>();
         list.forEach(n -> data.add(this.convert(n)));
