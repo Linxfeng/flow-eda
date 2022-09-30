@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 public class SubflowNode extends AbstractNode {
     /** 子流程的id */
     private String subflow;
+    /** 本节点的输入参数 */
+    private Document input;
 
     public SubflowNode(Document params) {
         super(params);
@@ -19,7 +21,7 @@ public class SubflowNode extends AbstractNode {
     @Override
     public void run(NodeFunction callback) {
         // 运行子流程
-        SubFlowRuntime.startRunSubFlow(subflow);
+        SubFlowRuntime.startRunSubFlow(subflow, input);
         // 阻塞等待子流程运行完成
         while (SubFlowRuntime.SUB_FLOW_MAP.get(subflow)) {
             try {
@@ -37,5 +39,7 @@ public class SubflowNode extends AbstractNode {
     protected void verify(Document params) {
         this.subflow = params.getString("subflow");
         NodeVerify.notNull(subflow, "subflow");
+
+        this.input = getInput();
     }
 }
