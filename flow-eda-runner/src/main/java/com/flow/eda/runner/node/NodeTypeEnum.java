@@ -19,6 +19,8 @@ import com.flow.eda.runner.node.splice.SpliceNode;
 import com.flow.eda.runner.node.split.SplitNode;
 import com.flow.eda.runner.node.start.StartNode;
 import com.flow.eda.runner.node.subflow.SubflowNode;
+import com.flow.eda.runner.node.subflow.input.SubInputNode;
+import com.flow.eda.runner.node.subflow.output.OutInputNode;
 import com.flow.eda.runner.node.timer.TimerNode;
 import com.flow.eda.runner.node.ws.client.WsClientNode;
 import com.flow.eda.runner.node.ws.server.WsServerNode;
@@ -55,6 +57,8 @@ public enum NodeTypeEnum {
     REDIS("redis", RedisNode.class),
     /** 子流程节点 */
     SUBFLOW("subflow", SubflowNode.class),
+    SUB_INPUT("sub_input", SubInputNode.class),
+    SUB_OUTPUT("sub_output", OutInputNode.class),
     ;
     private final String type;
     private final Class<? extends Node> clazz;
