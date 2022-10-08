@@ -1,6 +1,7 @@
 package com.flow.eda.oauth2.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Date;
+
 /** 自定义UserDetailsService实现 */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -25,6 +28,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private OauthUserMapper oauthUserMapper;
     @Autowired private JdbcClientDetailsService jdbcClientDetailsService;
+
+    @Value("${flow.oauth2.client_id}")
+    private String clientId;
+
+    @Value("${flow.oauth2.client_secret}")
+    private String clientSecret;
+
+    @Value("${flow.oauth2.authorities}")
+    private String authorities;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -68,5 +80,35 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new BadClientCredentialsException();
         }
         return clientDetails.getClientId();
+    }
+
+    public void saveNewSocialOAuth2User(String userName,String email,AuthProvider provider ) {
+        OauthUser user = new OauthUser();
+        user.setUsername(userName);
+        user.setEmail(email);
+        user.setPassword(null);
+        user.setClientId(clientId);
+        user.setAuthorities(authorities);
+        user.setRegisterIp(null);
+        user.setStatus(true);
+        user.setCreateDate(new Date());
+        user.setUpdateDate(new Date());
+        user.setProvider(provider);
+        oauthUserMapper.insert(user);
+    }
+
+    public void updateSocialOAuth2User(String userName,String email,AuthProvider provider ){
+        OauthUser user = new OauthUser();
+        user.setUsername(userName);
+        user.setEmail(email);
+        user.setPassword(null);
+        user.setClientId(clientId);
+        user.setAuthorities(authorities);
+        user.setRegisterIp(null);
+        user.setStatus(true);
+        user.setCreateDate(new Date());
+        user.setUpdateDate(new Date());
+        user.setProvider(provider);
+        oauthUserMapper.update(user);
     }
 }

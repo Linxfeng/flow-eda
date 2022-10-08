@@ -48,4 +48,6 @@ public class OauthUserDetails implements UserDetails {
     public boolean isEnabled() {
         return oauthUser.getStatus();
     }
+
+
 }

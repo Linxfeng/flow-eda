@@ -3,11 +3,21 @@ server:
 spring:
   application:
     name: flow-eda-oauth2
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: 8487373eb30452309d6f
+            client-secret: 6db3e9accbe530d99fcea55e516cb57a3984969b
+          google:
+            client-id: 305150693408-b6iffqq5mg3fj4lc54t5vc2thtpiaa7m.apps.googleusercontent.com
+            client-secret: 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
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/flow_eda_oauth2?useSSL=false&useUnicode=true&characterEncoding=utf-8
     username: root
-    password: 123456
+    password: root
     hikari:
       max-lifetime: 60000
       connection-timeout: 10000

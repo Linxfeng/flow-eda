@@ -3,6 +3,8 @@ package com.flow.eda.oauth2.config;
 import com.flow.eda.oauth2.handler.LoginFailureHandler;
 import com.flow.eda.oauth2.handler.LoginSuccessHandler;
 import com.flow.eda.oauth2.handler.LogoutSuccessHandler;
+import com.flow.eda.oauth2.oauth2User.SocialOAuth2UserService;
+import com.flow.eda.oauth2.oauth2User.SocialOAuthSuccessHandler;
 import com.flow.eda.oauth2.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,6 +34,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired private LogoutSuccessHandler logoutSuccessHandler;
     @Autowired private RateLimitFilter rateLimitFilter;
 
+    @Autowired
+    private SocialOAuth2UserService socialOAuth2UserService;
+
+    @Autowired
+    private SocialOAuthSuccessHandler SocialSuccessHandler;
+
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -45,26 +53,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors()
-                .and()
-                .csrf()
-                .disable()
-                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                // 处理跨域请求中的Preflight请求
-                .antMatchers(HttpMethod.OPTIONS)
-                .permitAll()
-                .requestMatchers(CorsUtils::isPreFlightRequest)
-                .permitAll()
-                .antMatchers("/oauth/**")
-                .permitAll()
-                .and()
+
+
+        http.authorizeRequests().antMatchers("/oauth2/**")
+                        .permitAll().antMatchers("/oauth/**").authenticated()
+                        .anyRequest().permitAll().and()
+
                 .formLogin()
                 .loginProcessingUrl("/oauth/login")
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler)
+                .and()
+                .oauth2Login().loginProcessingUrl("/oauth/login").
+                userInfoEndpoint().userService(socialOAuth2UserService)
+                .and()
+                .successHandler(SocialSuccessHandler)
                 .and()
                 .logout()
                 .invalidateHttpSession(true)

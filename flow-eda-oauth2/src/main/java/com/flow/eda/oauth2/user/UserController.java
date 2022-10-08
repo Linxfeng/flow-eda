@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.TokenExtractor;
 import org.springframework.security.oauth2.provider.token.TokenStore;
@@ -22,7 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -99,5 +104,10 @@ public class UserController {
     private String getIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Real-IP");
         return ip != null ? ip : request.getRemoteAddr();
+    }
+
+    @GetMapping("/oauth/users")
+    public String getUser(Principal  principal){
+        return principal.toString();
     }
 }

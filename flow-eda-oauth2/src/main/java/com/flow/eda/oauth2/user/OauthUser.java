@@ -18,4 +18,5 @@ public class OauthUser implements Serializable {
     private Boolean status;
     private Date createDate;
     private Date updateDate;
+    private AuthProvider provider;
 }
