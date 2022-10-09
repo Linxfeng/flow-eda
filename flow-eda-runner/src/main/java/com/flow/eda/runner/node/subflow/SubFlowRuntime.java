@@ -17,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SubFlowRuntime {
     /** 子流程运行状态：运行中true，运行完成false */
     public static final Map<String, Boolean> SUB_FLOW_MAP = new ConcurrentHashMap<>();
+    /** 子流程的输出 */
+    public static final Map<String, Document> SUB_OUTPUT = new ConcurrentHashMap<>();
 
     /** 开始运行子流程 */
     public static void startRunSubFlow(String flowId, Document input) {
@@ -53,5 +55,12 @@ public class SubFlowRuntime {
                             params.append("subInput", input);
                             f.setParams(params);
                         });
+    }
+
+    /** 设置子流程的输出参数 */
+    public static void setSubOutput(String flowId, Document output) {
+        if (SUB_FLOW_MAP.containsKey(flowId)) {
+            SUB_OUTPUT.put(flowId, output);
+        }
     }
 }

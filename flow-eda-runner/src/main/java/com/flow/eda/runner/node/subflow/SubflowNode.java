@@ -32,7 +32,13 @@ public class SubflowNode extends AbstractNode {
         // 子流程运行结束
         SubFlowRuntime.SUB_FLOW_MAP.remove(subflow);
         setStatus(Status.FINISHED);
-        callback.callback(output());
+        // 获取子流程的输出
+        Document output = output();
+        if (SubFlowRuntime.SUB_OUTPUT.containsKey(subflow)) {
+            output = SubFlowRuntime.SUB_OUTPUT.get(subflow);
+            SubFlowRuntime.SUB_OUTPUT.remove(subflow);
+        }
+        callback.callback(output);
     }
 
     @Override
