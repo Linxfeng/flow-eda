@@ -60,7 +60,6 @@ import {listFlow} from "../../api/flow";
 export default {
   name: "NodeDetail",
   props: {
-    flowId: String,
     node: Object
   },
   components: {
@@ -120,7 +119,7 @@ export default {
             if (res) {
               // 请求流程列表，排除自己
               res.result.forEach(f => {
-                if (f.id !== props.flowId) {
+                if (f.id !== props.node.flowId) {
                   optionFlows.push({id: f.id, name: f.name});
                 }
               });
