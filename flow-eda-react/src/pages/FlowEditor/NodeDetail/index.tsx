@@ -1,8 +1,9 @@
-import { FormattedMessage } from 'umi';
 import { useFormatMessage } from '@/hooks';
+import { getFlowList } from '@/services/api';
 import { Button, Form, Input, Select } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
+import { FormattedMessage } from 'umi';
 import './index.less';
 const { Option } = Select;
 
@@ -12,6 +13,7 @@ const FlowDetail: React.FC<{
 }> = (props) => {
   const { formatMsg } = useFormatMessage();
   const [form] = Form.useForm();
+  const [optionFlows, setOptionFlows] = useState<API.Flow[]>([]);
 
   /** 根据节点信息初始化表单内容*/
   useEffect(() => {
@@ -35,6 +37,21 @@ const FlowDetail: React.FC<{
           } else {
             detail[p.key + '-o'] = p.placeholder.split(',')[1];
           }
+        }
+        // 处理子流程等外部API调用结果
+        if (p.inType === 'api') {
+          getFlowList({ current: 1, pageSize: 1000 }).then(({ data }) => {
+            if (data) {
+              // 请求流程列表，排除自己
+              const arr: API.Flow[] = [];
+              data.forEach((f: API.Flow) => {
+                if (f.id && f.id !== props.node.flowId) {
+                  arr.push({ id: f.id, name: f.name });
+                }
+              });
+              setOptionFlows(arr);
+            }
+          });
         }
       });
     }
@@ -170,6 +187,25 @@ const FlowDetail: React.FC<{
                         return (
                           <Option value={op} key={op}>
                             {op}
+                          </Option>
+                        );
+                      })}
+                    </Select>
+                  </Form.Item>
+                )}
+                {p.inType === 'api' && (
+                  <Form.Item
+                    label={p.name}
+                    className="item"
+                    name={p.key}
+                    key={p.key}
+                    rules={[{ required: p.required }]}
+                  >
+                    <Select allowClear={true} className="input">
+                      {optionFlows?.map((op: API.Flow) => {
+                        return (
+                          <Option value={op.id} key={op.id}>
+                            {op.name}
                           </Option>
                         );
                       })}
