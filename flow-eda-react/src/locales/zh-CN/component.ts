@@ -2,6 +2,8 @@ export default {
   'component.modalForm.confirm': '确认',
   'component.modalForm.cancel': '取消',
   'component.modalForm.confirm.title': '确认要删除吗？删除后将无法恢复！',
+  'component.modalForm.tips': '提示',
+  'component.modalForm.close.confirm.title': '确定关闭编辑器页面？关闭后未保存的数据将丢失',
   'component.message.loading': '操作中...',
   'component.message.success': '操作成功',
   'component.option': '操作',
