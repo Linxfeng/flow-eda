@@ -131,11 +131,18 @@ React 版本[在线 DEMO](http://120.48.9.40:90)
 - [ ] 由于流程是并行运行，而且非阻塞节点运行速度很快，这就导致使用 websocket 在同一个 session 下推送消息会报错，目前采用的是加锁的形式避免问题，后期考虑使用 EMQX 替代 websocket 进行消息推送
 - [ ] 由于部署在线 demo 云服务器的资源限制（穷！），本项目全部线上部署目前占用总内存 4G 左右，导致很多中间件引入进来后服务器资源不够部署，后期考虑等服务器资源足够后，引入 redis 做分布式缓存，将 mysql 进行读写分离，引入 Prometheus+Grafana 实现项目监控，采用 k8s 部署等一系列优化（等买的起新的服务器再说-.-）
 
-PS：由于现有的服务器资源已经无法支撑后续开发的项目部署，如果你觉得此项目对您有帮助，可以进行 [捐赠](https://gitee.com/Linxff/flow-eda#%E4%BA%A4%E6%B5%81%E7%BE%A4) ，捐赠所得会全部用于项目开发，感谢！
-
 ### 交流群
 
-若需要技术支持或者想进行技术交流，可以扫码添加本人微信或者微信群，也可以进群提开发要求，我会尽可能进行扩展开发。欢迎加群进行技术交流！
+若需要技术支持或者想进行技术交流，可以扫码添加作者本人微信或者项目交流微信群，也可以进群提开发要求，我会尽可能进行扩展开发。欢迎加群进行技术交流！
 
 ![image](https://gitee.com/Linxff/flow-eda/raw/master/docs/img/weixin.jpg)
 ![image](https://gitee.com/Linxff/flow-eda/raw/master/docs/img/group.jpg)
+
+### 捐赠
+
+由于现有的服务器资源已经无法支撑后续开发的项目部署，如果你觉得此项目对您有帮助，可以进行捐赠，捐赠所得会全部用于项目开发，感谢！
+
+![image](https://gitee.com/Linxff/flow-eda/raw/master/docs/img/wx.png)
+![image](https://gitee.com/Linxff/flow-eda/raw/master/docs/img/zfb.jpg)
+
+开源不易，感谢！
