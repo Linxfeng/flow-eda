@@ -50,3 +50,12 @@ flow-eda 项目是一种基于事件驱动的流式低代码编程应用程序�
 
 ![image](img/weixin.jpg)
 ![image](img/group.jpg)
+
+### 捐赠
+
+由于现有的服务器资源已经无法支撑后续开发的项目部署，如果你觉得此项目对您有帮助，可以进行捐赠，捐赠所得会全部用于项目开发，感谢！
+
+![image](img/wx.png)
+![image](img/zfb.jpg)
+
+开源不易，感谢！
