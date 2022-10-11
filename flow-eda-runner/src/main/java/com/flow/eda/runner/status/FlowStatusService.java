@@ -80,7 +80,7 @@ public class FlowStatusService {
 
     /** 获取流程节点数据 */
     public List<FlowData> getFlowData(String flowId) {
-        return flowInfoService.getFlowData(flowId);
+        return flowStatusClient.getFlowData(flowId).getResult();
     }
 
     /** 清理缓存数据 */
