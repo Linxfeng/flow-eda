@@ -30,6 +30,9 @@ public class ConditionNode extends AbstractNode {
                 output.append("params", input);
             }
             output.putAll(output());
+            if (output.containsKey("input")) {
+                output.put("params", output.get("input"));
+            }
             output.remove("input");
             output.remove("payload");
 

@@ -2,6 +2,9 @@ export default {
   'component.modalForm.confirm': 'Confirm',
   'component.modalForm.cancel': 'Cancel',
   'component.modalForm.confirm.title': 'Are you sure delete?it cannot be recovered!',
+  'component.modalForm.tips': 'Tips',
+  'component.modalForm.close.confirm.title':
+    'Are you sure close this page? Unsaved data will be lost after closing',
   'component.message.loading': 'Operating...',
   'component.message.success': 'Successful operation',
   'component.option': 'Option',

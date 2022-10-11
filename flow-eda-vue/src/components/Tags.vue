@@ -24,9 +24,10 @@
 </template>
 
 <script>
-import {computed} from "vue";
-import {useStore} from "vuex";
-import {onBeforeRouteUpdate, useRoute, useRouter} from "vue-router";
+import { computed } from "vue";
+import { useStore } from "vuex";
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { ElMessageBox } from "element-plus";
 
 export default {
   setup() {
@@ -44,10 +45,27 @@ export default {
     // 关闭单个标签
     const closeTags = (index) => {
       const delItem = tagsList.value[index];
-      store.commit("delTagsItem", {index});
+      // 关闭编辑器页面时，弹出提示
+      if (delItem.name === "Editor") {
+        ElMessageBox.confirm(
+          "确定关闭编辑器页面？关闭后未保存的数据将丢失",
+          "提示",
+          {
+            type: "warning",
+          }
+        )
+          .then(() => closeTag(index, delItem))
+          .catch((err) => {});
+      } else {
+        closeTag(index, delItem);
+      }
+    };
+
+    const closeTag = (index, delItem) => {
+      store.commit("delTagsItem", { index });
       const item = tagsList.value[index]
-          ? tagsList.value[index]
-          : tagsList.value[index - 1];
+        ? tagsList.value[index]
+        : tagsList.value[index - 1];
       if (item) {
         delItem.path === route.fullPath && router.push(item.path);
       } else {
@@ -65,7 +83,7 @@ export default {
       });
       if (!isExist) {
         if (tagsList.value.length >= 8) {
-          store.commit("delTagsItem", {index: 0});
+          store.commit("delTagsItem", { index: 0 });
         }
         store.commit("setTagsItem", {
           name: route.name,
@@ -82,7 +100,7 @@ export default {
 
     // 关闭当前标签
     const closeMe = () => {
-      const index = tagsList.value.findIndex(i => i.path === route.fullPath);
+      const index = tagsList.value.findIndex((i) => i.path === route.fullPath);
       closeTags(index);
     };
 
@@ -109,14 +127,13 @@ export default {
 };
 </script>
 
-
 <style lang="less">
 .tags {
   position: relative;
   height: 30px;
+  padding-right: 120px;
   overflow: hidden;
   background: #fff;
-  padding-right: 120px;
   box-shadow: 0 5px 10px #ddd;
 
   ul {
@@ -128,29 +145,29 @@ export default {
 
 .tags-li {
   float: left;
-  margin: 3px 5px 2px 3px;
-  border-radius: 3px;
-  font-size: 12px;
-  overflow: hidden;
-  cursor: pointer;
   height: 23px;
-  line-height: 23px;
-  border: 1px solid #e9eaec;
-  background: #fff;
+  margin: 3px 5px 2px 3px;
   padding: 0 5px 0 12px;
-  vertical-align: middle;
+  overflow: hidden;
   color: #666;
+  font-size: 12px;
+  line-height: 23px;
+  vertical-align: middle;
+  background: #fff;
+  border: 1px solid #e9eaec;
+  border-radius: 3px;
+  cursor: pointer;
   transition: all 0.3s ease-in;
 }
 
 .tags-li-title {
   float: left;
   max-width: 80px;
+  margin-right: 5px;
   overflow: hidden;
+  color: #666;
   white-space: nowrap;
   text-overflow: ellipsis;
-  margin-right: 5px;
-  color: #666;
 }
 
 .tags-li.active .tags-li-title {
@@ -158,19 +175,19 @@ export default {
 }
 
 .tags-li.active {
-  border: 1px solid #409EFF;
-  background-color: #409EFF;
+  background-color: #409eff;
+  border: 1px solid #409eff;
 }
 
 .tags-close-box {
   position: absolute;
-  right: 0;
   top: 0;
+  right: 0;
   box-sizing: border-box;
-  padding-top: 1px;
-  text-align: center;
   width: 110px;
   height: 30px;
+  padding-top: 1px;
+  text-align: center;
   background: #fff;
   box-shadow: -3px 0 15px 3px rgba(0, 0, 0, 0.1);
 }

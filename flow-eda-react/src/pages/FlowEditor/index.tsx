@@ -21,7 +21,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Collapse, message, Modal } from 'antd';
 import { jsPlumb } from 'jsplumb';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'umi';
+import { history, Prompt, useParams } from 'umi';
 import './index.less';
 const { Panel } = Collapse;
 
@@ -60,6 +60,7 @@ const FlowEditor: React.FC = () => {
   const [logContent, setLogContent] = useState<string[]>([]);
   const [wsMessage, setWsMessage] = useState<string>();
   const [versions, setVersions] = useState<string[]>([]);
+  const [closeTips, setCloseTips] = useState<boolean>(true);
 
   /** 移动节点时，动态显示对齐辅助线 */
   const alignForLine = (nodeId: string, position: number[]) => {
@@ -589,6 +590,33 @@ const FlowEditor: React.FC = () => {
 
   return (
     <PageContainer title={false}>
+      <Prompt
+        when={closeTips}
+        message={(location, action) => {
+          Modal.confirm({
+            title: formatMsg('component.modalForm.tips', '提示'),
+            content: formatMsg(
+              'component.modalForm.close.confirm.title',
+              '确定关闭编辑器页面？关闭后未保存的数据将丢失',
+            ),
+            okText: formatMsg('component.modalForm.confirm', '确定'),
+            cancelText: formatMsg('component.modalForm.cancel', '取消'),
+            onOk() {
+              setTimeout(() => {
+                if (action === 'POP') {
+                  history.goBack();
+                } else if (action === 'PUSH') {
+                  history.push(location.pathname);
+                } else {
+                  history.replace(location.pathname);
+                }
+              }, 0);
+              setCloseTips(false);
+            },
+          });
+          return false;
+        }}
+      />
       <Card>
         <ToolBar
           status={flowStatus}

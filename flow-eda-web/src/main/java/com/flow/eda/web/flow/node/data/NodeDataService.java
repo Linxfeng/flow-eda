@@ -1,11 +1,13 @@
 package com.flow.eda.web.flow.node.data;
 
+import com.flow.eda.common.dubbo.api.FlowDataService;
+import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InvalidStateException;
-import com.flow.eda.common.model.FlowData;
 import com.flow.eda.common.utils.MergeBuilder;
 import com.flow.eda.web.flow.FlowService;
 import com.flow.eda.web.flow.node.type.NodeType;
 import com.flow.eda.web.flow.node.type.NodeTypeService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
@@ -19,7 +21,7 @@ import static com.flow.eda.common.utils.CollectionUtil.isEmpty;
 
 @Service
 public class NodeDataService {
-    @Autowired private FlowDataClient flowDataClient;
+    @DubboReference private FlowDataService flowDataService;
     @Autowired private NodeDataMapper nodeDataMapper;
     @Autowired private NodeTypeService nodeTypeService;
     @Autowired private FlowService flowService;
@@ -51,14 +53,17 @@ public class NodeDataService {
     }
 
     public void runNodeData(String flowId) {
+        flowDataService.runFlowData(this.queryNodeData(flowId));
+    }
+
+    public List<FlowData> queryNodeData(String flowId) {
         List<NodeData> list = this.getNodeData(flowId, null);
         if (isEmpty(list)) {
-            throw new InvalidStateException("The flow data is empty, cannot deploy");
+            throw new InvalidStateException("The flow data is empty, cannot be run");
         }
-        // 调用远程接口，运行当前流数据
         List<FlowData> data = new ArrayList<>();
-        list.forEach(n -> data.add(convert(n)));
-        flowDataClient.runFlowData(data);
+        list.forEach(n -> data.add(this.convert(n)));
+        return data;
     }
 
     /** 停止运行当前流程 */
