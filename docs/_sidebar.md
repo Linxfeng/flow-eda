@@ -28,3 +28,7 @@
 
   - [版本说明](version/version.md)
   - [更新日志](version/changelog.md)
+
+- 常见问题
+
+  - [常见问题汇总](issues/issues.md)
