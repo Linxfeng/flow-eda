@@ -12,8 +12,8 @@ import com.flow.eda.runner.node.mqtt.pub.PubMqttNode;
 import com.flow.eda.runner.node.mqtt.sub.SubMqttNode;
 import com.flow.eda.runner.node.mysql.MysqlNode;
 import com.flow.eda.runner.node.output.OutputNode;
-import com.flow.eda.runner.node.parser.ParserNode;
 import com.flow.eda.runner.node.parser.html.HtmlParserNode;
+import com.flow.eda.runner.node.parser.json.JsonParserNode;
 import com.flow.eda.runner.node.redis.RedisNode;
 import com.flow.eda.runner.node.sequence.SequenceNode;
 import com.flow.eda.runner.node.splice.SpliceNode;
@@ -35,14 +35,17 @@ public enum NodeTypeEnum {
     OUTPUT("output", OutputNode.class),
     TIMER("timer", TimerNode.class),
     DELAY("delay", DelayNode.class),
+
     /** 运算节点 */
     CONDITION("condition", ConditionNode.class),
     SEQUENCE("sequence", SequenceNode.class),
     SPLICE("splice", SpliceNode.class),
     SPLIT("split", SplitNode.class),
+
     /** 解析节点 */
-    PARSER("parser", ParserNode.class),
+    PARSER("json_parser", JsonParserNode.class),
     HTML_PARSER("html_parser", HtmlParserNode.class),
+
     /** 网络节点 */
     HTTP_REQUEST("http_request", HttpRequestNode.class),
     HTTP_RECEIVE("http_receive", HttpReceiveNode.class),
@@ -51,10 +54,12 @@ public enum NodeTypeEnum {
     WS_CLIENT("ws_client", WsClientNode.class),
     MQTT_SUB("mqtt_sub", SubMqttNode.class),
     MQTT_PUB("mqtt_pub", PubMqttNode.class),
+
     /** 数据库节点 */
     MYSQL("mysql", MysqlNode.class),
     MONGODB("mongodb", MongodbNode.class),
     REDIS("redis", RedisNode.class),
+
     /** 子流程节点 */
     SUBFLOW("subflow", SubflowNode.class),
     SUB_INPUT("sub_input", SubInputNode.class),

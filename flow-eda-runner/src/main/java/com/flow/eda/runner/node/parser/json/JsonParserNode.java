@@ -1,4 +1,4 @@
-package com.flow.eda.runner.node.parser;
+package com.flow.eda.runner.node.parser.json;
 
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
@@ -12,12 +12,12 @@ import java.util.List;
 import static com.flow.eda.runner.node.NodeVerify.isTrue;
 import static com.flow.eda.runner.node.NodeVerify.notNull;
 
-/** 解析器节点，用于解析上一个节点的输出参数 */
-public class ParserNode extends AbstractNode {
+/** JSON 解析器节点，用于解析上一个节点的输出参数 */
+public class JsonParserNode extends AbstractNode {
     private List<String> keys;
     private Document payload;
 
-    public ParserNode(Document params) {
+    public JsonParserNode(Document params) {
         super(params);
     }
 
