@@ -13,6 +13,7 @@ import com.flow.eda.runner.node.mqtt.sub.SubMqttNode;
 import com.flow.eda.runner.node.mysql.MysqlNode;
 import com.flow.eda.runner.node.output.OutputNode;
 import com.flow.eda.runner.node.parser.ParserNode;
+import com.flow.eda.runner.node.parser.html.HtmlParserNode;
 import com.flow.eda.runner.node.redis.RedisNode;
 import com.flow.eda.runner.node.sequence.SequenceNode;
 import com.flow.eda.runner.node.splice.SpliceNode;
@@ -26,9 +27,7 @@ import com.flow.eda.runner.node.ws.client.WsClientNode;
 import com.flow.eda.runner.node.ws.server.WsServerNode;
 import lombok.Getter;
 
-/***
- * 节点类型
- */
+/** 节点类型 */
 @Getter
 public enum NodeTypeEnum {
     /** 基础节点 */
@@ -43,6 +42,7 @@ public enum NodeTypeEnum {
     SPLIT("split", SplitNode.class),
     /** 解析节点 */
     PARSER("parser", ParserNode.class),
+    HTML_PARSER("html_parser", HtmlParserNode.class),
     /** 网络节点 */
     HTTP_REQUEST("http_request", HttpRequestNode.class),
     HTTP_RECEIVE("http_receive", HttpReceiveNode.class),
