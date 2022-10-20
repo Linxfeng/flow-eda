@@ -113,13 +113,18 @@ public class HttpRequestNode extends AbstractNode {
         // 获取结果并返回
         if (response != null && response.getEntity() != null) {
             String res = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-            // 处理返回html格式
+            // 根据返回结果类型对应解析
             Header[] headers = response.getHeaders(contentType);
-            if (headers != null
-                    && headers[0] != null
-                    && headers[0].getValue() != null
-                    && headers[0].getValue().startsWith("text/html")) {
-                return new Document("html", res);
+            if (headers != null && headers[0] != null && headers[0].getValue() != null) {
+                String value = headers[0].getValue();
+                // 处理返回html格式
+                if (value.startsWith("text/html")) {
+                    return new Document("html", res);
+                }
+                // 处理返回xml格式
+                if (value.startsWith("application/xml")) {
+                    return new Document("xml", res);
+                }
             }
             // 处理返回json格式
             try {
