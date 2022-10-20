@@ -14,6 +14,7 @@ import com.flow.eda.runner.node.mysql.MysqlNode;
 import com.flow.eda.runner.node.output.OutputNode;
 import com.flow.eda.runner.node.parser.html.HtmlParserNode;
 import com.flow.eda.runner.node.parser.json.JsonParserNode;
+import com.flow.eda.runner.node.parser.xml.XmlParserNode;
 import com.flow.eda.runner.node.redis.RedisNode;
 import com.flow.eda.runner.node.sequence.SequenceNode;
 import com.flow.eda.runner.node.splice.SpliceNode;
@@ -43,8 +44,9 @@ public enum NodeTypeEnum {
     SPLIT("split", SplitNode.class),
 
     /** 解析节点 */
-    PARSER("json_parser", JsonParserNode.class),
+    JSON_PARSER("json_parser", JsonParserNode.class),
     HTML_PARSER("html_parser", HtmlParserNode.class),
+    XML_PARSER("xml_parser", XmlParserNode.class),
 
     /** 网络节点 */
     HTTP_REQUEST("http_request", HttpRequestNode.class),
