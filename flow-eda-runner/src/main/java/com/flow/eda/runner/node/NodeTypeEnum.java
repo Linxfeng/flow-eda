@@ -4,6 +4,7 @@ import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.runner.node.condition.ConditionNode;
 import com.flow.eda.runner.node.delay.DelayNode;
+import com.flow.eda.runner.node.email.EmailNode;
 import com.flow.eda.runner.node.http.receive.HttpReceiveNode;
 import com.flow.eda.runner.node.http.request.HttpRequestNode;
 import com.flow.eda.runner.node.http.response.HttpResponseNode;
@@ -56,6 +57,7 @@ public enum NodeTypeEnum {
     WS_CLIENT("ws_client", WsClientNode.class),
     MQTT_SUB("mqtt_sub", SubMqttNode.class),
     MQTT_PUB("mqtt_pub", PubMqttNode.class),
+    EMAIL("email", EmailNode.class),
 
     /** 数据库节点 */
     MYSQL("mysql", MysqlNode.class),
