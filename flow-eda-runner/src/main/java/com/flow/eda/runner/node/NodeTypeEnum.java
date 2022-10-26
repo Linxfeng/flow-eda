@@ -16,6 +16,7 @@ import com.flow.eda.runner.node.output.OutputNode;
 import com.flow.eda.runner.node.parser.html.HtmlParserNode;
 import com.flow.eda.runner.node.parser.json.JsonParserNode;
 import com.flow.eda.runner.node.parser.xml.XmlParserNode;
+import com.flow.eda.runner.node.postgresql.PostgresqlNode;
 import com.flow.eda.runner.node.redis.RedisNode;
 import com.flow.eda.runner.node.sequence.SequenceNode;
 import com.flow.eda.runner.node.splice.SpliceNode;
@@ -63,6 +64,7 @@ public enum NodeTypeEnum {
     MYSQL("mysql", MysqlNode.class),
     MONGODB("mongodb", MongodbNode.class),
     REDIS("redis", RedisNode.class),
+    POSTGRESQL("postgresql", PostgresqlNode.class),
 
     /** 子流程节点 */
     SUBFLOW("subflow", SubflowNode.class),
