@@ -9,7 +9,7 @@
  Target Server Version : 80027
  File Encoding         : 65001
 
- Date: 26/10/2022 15:47:51
+ Date: 26/10/2022 17:22:19
 */
 
 SET NAMES utf8mb4;
@@ -53,6 +53,7 @@ INSERT INTO `eda_flow` VALUES ('3wccjaqq9y0000', '拼接节点示例', '使用�
 INSERT INTO `eda_flow` VALUES ('41as9fmikt8000', '中止运行示例', '可在流程运行过程中，点击停止运行按钮，中止运行', 'test', 'FINISHED', '2022-05-09 17:47:20', '2022-05-09 17:47:20');
 INSERT INTO `eda_flow` VALUES ('48r380g6qc4000', '解析器示例', '包含开始-解析器-输出等节点', 'test', 'FINISHED', '2022-05-09 15:11:38', '2022-05-09 15:11:38');
 INSERT INTO `eda_flow` VALUES ('4d3es9ekt6m000', '分割节点示例', '使用分割节点对数据进行分割并输出', 'test', 'FINISHED', '2022-06-09 16:40:38', '2022-07-09 16:40:38');
+INSERT INTO `eda_flow` VALUES ('4o7jgmb2n6g000', 'PostgreSQL节点使用示例', '使用PostgreSQL节点连接至指定的PostgreSQL数据库，并执行自定义sql语句，查看执行结果。前置条件：需要具备或已知PostgreSQL数据库地址，更新到节点URL属性上再运行流程', 'test', 'FINISHED', '2022-06-07 16:52:41', '2022-10-26 16:53:18');
 INSERT INTO `eda_flow` VALUES ('4ufazyee92c000', 'Mysql节点使用示例', '使用Mysql节点连接至指定的mysql数据库，并执行自定义sql语句，查看执行结果。前置条件：需要具备或已知mysql数据库地址，更新到节点URL属性上再运行流程', 'test', 'FAILED', '2022-06-04 18:11:50', '2022-06-04 18:20:14');
 INSERT INTO `eda_flow` VALUES ('4z9vdqsd5kg000', '增删改查-接口请求模型示例', '通过发送HTTP请求，对用户做增删改查操作的业务模型。前置条件：需要先运行流程[接口服务模型示例]', 'test', 'FINISHED', '2022-07-04 14:48:43', '2022-07-09 16:32:32');
 INSERT INTO `eda_flow` VALUES ('5czjn0rra74000', '增删改查-接口服务模型示例', '展示了用户增删改查接口服务的业务模型。（先运行此流程后，再运行接口请求模型示例）', 'test', 'FINISHED', '2022-07-03 10:48:40', '2022-07-09 16:35:14');
@@ -108,6 +109,7 @@ INSERT INTO `eda_flow_node_data` VALUES ('18ungqluatj400', NULL, '1pdye9g349ls00
 INSERT INTO `eda_flow_node_data` VALUES ('18yvqfdjxqio00', NULL, '5epeyaoy9ac000', NULL, NULL, NULL, NULL, NULL, NULL, '411ip98he9m000', '5bzdqxyeypw000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('19bxchzilodc00', NULL, '5czjn0rra74000', NULL, NULL, NULL, NULL, NULL, NULL, '1dfxnb4vcxfk00', '498r7jvg1xq000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('19iwhrcrtxy800', '输出', '18rwqz520iio00', 4, '205px', '410px', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `eda_flow_node_data` VALUES ('19ts2y73u77k00', NULL, '4o7jgmb2n6g000', NULL, NULL, NULL, NULL, NULL, NULL, '5hvc73ofa28000', '5g70oscquf8000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('1acrzdqrg8g000', '异常输出', '5czjn0rra74000', 4, '405px', '645px', NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('1ai2eg1oclsw00', '输出', '4d3es9ekt6m000', 4, '380px', '555px', NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('1ap72p9gkadc00', NULL, '4z9vdqsd5kg000', NULL, NULL, NULL, NULL, NULL, NULL, '1uvffcb7y6v400', '34rhcpn8azc000', NULL);
@@ -193,6 +195,7 @@ INSERT INTO `eda_flow_node_data` VALUES ('2h0b5raks2s000', '开始2', 'm6o3aghqf
 INSERT INTO `eda_flow_node_data` VALUES ('2h13acff68e00', NULL, '1pdye9g349ls00', NULL, NULL, NULL, NULL, NULL, NULL, '4nc3gc5i8zy000', '3fk8iqt33l0000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('2hgaqx0klnq000', '删除数据', '5czjn0rra74000', 51, '480px', '490px', NULL, '{\"sql\": \"DELETE FROM t_user WHERE `id`=\'${id}\';\", \"url\": \"jdbc:mysql://127.0.0.1:3306/flow_eda_test\", \"password\": \"123456\", \"username\": \"root\"}', NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('2ht62wzl5qg000', NULL, '4z9vdqsd5kg000', NULL, NULL, NULL, NULL, NULL, NULL, '55g0z7vdyrk000', '76jspatw86800', NULL);
+INSERT INTO `eda_flow_node_data` VALUES ('2ieu1zti4t2000', '开始', '4o7jgmb2n6g000', 1, '155px', '150px', NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('2it9oviuhxa000', NULL, 'nm8hriar4ds00', NULL, NULL, NULL, NULL, NULL, NULL, '2tkojjhfr6k000', '4ujp6bqblq0000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('2j3i3kzpzfc000', NULL, 'm6o3aghqfrk00', NULL, NULL, NULL, NULL, NULL, NULL, '29cput2xohwk00', '5pxuhe3ufy8000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('2j6e6bbqmnm00', '定时器', '18rwqz520iio00', 2, '125px', '120px', NULL, '{\"times\": \"3\", \"period\": \"10,SECONDS\", \"timestamp\": \"HH:mm:ss\"}', NULL, NULL, NULL, NULL);
@@ -297,6 +300,7 @@ INSERT INTO `eda_flow_node_data` VALUES ('3y3gd69qage000', NULL, '5czjn0rra74000
 INSERT INTO `eda_flow_node_data` VALUES ('3yml93th2ai000', NULL, 'ihvivrh5j1k00', NULL, NULL, NULL, NULL, NULL, NULL, '17lf5km6vn2800', '1wq99npn0scg00', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('3zs0yhk0r8q000', NULL, '10j5nc7cz5k000', NULL, NULL, NULL, NULL, NULL, NULL, '27s1wzggeb400', '2m9tp4kwxka000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('3zvkwj9xxz6000', '发送邮件--公开环境中请勿留下授权码，建议自己新建流程测试', '395ecb7kvk8000', 39, '95px', '455px', NULL, '{\"text\": \"${html}\", \"isHtml\": \"HTML格式\", \"subject\": \"测试邮件-主题\"}', NULL, NULL, NULL, NULL);
+INSERT INTO `eda_flow_node_data` VALUES ('40trl3pznw2000', NULL, '4o7jgmb2n6g000', NULL, NULL, NULL, NULL, NULL, NULL, '2ieu1zti4t2000', '5hvc73ofa28000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('411ip98he9m000', 'HTTP请求', '5epeyaoy9ac000', 31, '145px', '320px', NULL, '{\"url\": \"/${q}/test1\", \"method\": \"GET\", \"params\": \"name=张三\"}', '{\"p\": \"http请求test1\"}', NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('4186ftn260o000', 'a=xxx', 'nm8hriar4ds00', 5, '260px', '215px', NULL, '{\"field\": \"params.a\", \"value\": \"xxx\", \"condition\": \"=\"}', NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('41amqxi2fmg000', NULL, 'm6o3aghqfrk00', NULL, NULL, NULL, NULL, NULL, NULL, '1js10mqz518g00', '3g6glxdv31k000', NULL);
@@ -406,10 +410,12 @@ INSERT INTO `eda_flow_node_data` VALUES ('5ecbdq2qilw000', NULL, '2fnllj4jorfo00
 INSERT INTO `eda_flow_node_data` VALUES ('5erg81rz21s000', 'HTTP请求', '34224hnftcm000', 31, '195px', '350px', NULL, '{\"url\": \"https://blog.csdn.net/community/home-api/v1/get-business-list\", \"header\": \"Accept:application/json\", \"method\": \"GET\", \"params\": \"page=1&size=20&businessType=blog&orderby=&noMore=false&year=&month=&username=Lin_xiaofeng\"}', '{\"b\": \"${a}-b\"}', NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5fpd25a8r98000', NULL, 'nm8hriar4ds00', NULL, NULL, NULL, NULL, NULL, NULL, '2ojyy2yxe6g000', '290zgf5i43r400', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5fvm2s3j5yw000', '开始', '5pubb7joxmc000', 1, '145px', '75px', NULL, NULL, '{\"name\": \"test-sub\"}', NULL, NULL, NULL);
+INSERT INTO `eda_flow_node_data` VALUES ('5g70oscquf8000', '输出', '4o7jgmb2n6g000', 4, '160px', '480px', NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5grdto48m4w000', NULL, '41as9fmikt8000', NULL, NULL, NULL, NULL, NULL, NULL, '54cqiur37zo000', '5bhkyaxsw7o000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5guhby5zjh4000', NULL, '1geaido0ecww00', NULL, NULL, NULL, NULL, NULL, NULL, 'q3gss728upc00', '5chegqfj09w000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5gy6u69jvs4000', '开始', '1geaido0ecww00', 1, '280px', '80px', NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5hnp0jfza90000', NULL, '3uldr6qij5o000', NULL, NULL, NULL, NULL, NULL, NULL, '4nhpgowo3mg000', '2bk45mph7xno00', NULL);
+INSERT INTO `eda_flow_node_data` VALUES ('5hvc73ofa28000', 'PostgreSQL', '4o7jgmb2n6g000', 54, '250px', '330px', NULL, '{\"sql\": \"SELECT * FROM test WHERE id=1\", \"url\": \"jdbc:postgresql://localhost:5432/postgres\", \"password\": \"123456\", \"username\": \"postgres\"}', NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5i8x7z1xkfs000', NULL, '4z9vdqsd5kg000', NULL, NULL, NULL, NULL, NULL, NULL, '76jspatw86800', '3tvncu69hpm000', NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5ipjxxvv0co000', '输出', '2fnllj4jorfo00', 4, '120px', '325px', NULL, NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `eda_flow_node_data` VALUES ('5jrc3awcj5k000', NULL, '4z9vdqsd5kg000', NULL, NULL, NULL, NULL, NULL, NULL, '5d4whpuzl5k000', '3bwq386g87g000', NULL);
@@ -537,6 +543,7 @@ INSERT INTO `eda_flow_node_type` VALUES (39, 'email', '发送邮件', '网络', 
 INSERT INTO `eda_flow_node_type` VALUES (51, 'mysql', 'Mysql', '数据库', '/svg/mysql.svg', 'rgb(220 180 50 / 50%)', 'Mysql节点，可连接mysql数据库，执行自定义sql语句，支持任意类型的多条sql语句，输出每条语句的执行结果和内容');
 INSERT INTO `eda_flow_node_type` VALUES (52, 'mongodb', 'MongoDB', '数据库', '/svg/mongodb.svg', 'rgb(230 170 60 / 70%)', 'MongoDB节点，可连接MongoDB数据库，执行自定义命令语句，输出执行结果和内容');
 INSERT INTO `eda_flow_node_type` VALUES (53, 'redis', 'Redis', '数据库', '/svg/redis.svg', 'rgb(235 180 10 / 50%)', 'Redis节点，可连接redis服务器，执行自定义操作，输出执行结果和内容');
+INSERT INTO `eda_flow_node_type` VALUES (54, 'postgresql', 'PostgreSQL', '数据库', '/svg/postgresql.svg', 'rgb(220 180 50 / 50%)', 'PostgreSQL节点，可连接PostgreSQL数据库，执行自定义sql语句，支持任意类型的多条sql语句，输出每条语句的执行结果和内容');
 INSERT INTO `eda_flow_node_type` VALUES (100, 'subflow', '子流程', '子流程', '/svg/subflow.svg', 'rgb(200 70 180 / 62%)', '子流程节点，可选择其他流程作为子流程来执行，本节点的输入参数可传递至子流程中的[子输入节点]，子流程中的[子输出节点]可将输出参数返回至本节点作为输出参数');
 INSERT INTO `eda_flow_node_type` VALUES (101, 'sub_input', '子输入', '子流程', '/svg/sub_input.svg', 'rgb(190 70 50 / 42%)', '子流程输入节点，用于子流程中，可接收关联的[子流程节点]的输入参数');
 INSERT INTO `eda_flow_node_type` VALUES (102, 'sub_output', '子输出', '子流程', '/svg/sub_output.svg', 'rgb(120 150 90 / 42%)', '子流程输出节点，用于子流程中，可将本节点的输出参数传递给关联的[子流程节点]作为输出参数');
@@ -635,5 +642,9 @@ INSERT INTO `eda_flow_node_type_param` VALUES (72, 39, 'text', '邮件正文', 1
 INSERT INTO `eda_flow_node_type_param` VALUES (73, 39, 'isHtml', '发送格式（默认文本格式）', 0, 'select', '文本格式,HTML格式', NULL);
 INSERT INTO `eda_flow_node_type_param` VALUES (74, 39, 'ccEmail', '抄送邮箱', 0, 'input', NULL, '多个邮箱之间使用,分隔');
 INSERT INTO `eda_flow_node_type_param` VALUES (75, 39, 'bccEmail', '密送邮箱', 0, 'input', NULL, '多个邮箱之间使用,分隔');
+INSERT INTO `eda_flow_node_type_param` VALUES (76, 54, 'url', 'URL地址', 1, 'input', NULL, 'jdbc:postgresql://localhost:5432/postgres');
+INSERT INTO `eda_flow_node_type_param` VALUES (77, 54, 'username', '用户名', 1, 'input', NULL, 'postgres');
+INSERT INTO `eda_flow_node_type_param` VALUES (78, 54, 'password', '密码', 1, 'input', NULL, NULL);
+INSERT INTO `eda_flow_node_type_param` VALUES (79, 54, 'sql', '执行SQL语句', 1, 'input', NULL, '支持单条或多条sql语句，多条语句之间使用分号相隔');
 
 SET FOREIGN_KEY_CHECKS = 1;
