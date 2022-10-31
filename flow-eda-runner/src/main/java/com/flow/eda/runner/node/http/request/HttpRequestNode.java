@@ -6,6 +6,7 @@ import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
+import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -91,12 +92,17 @@ public class HttpRequestNode extends AbstractNode {
     private Document executeHttpRequest() throws Exception {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpRequestExpand request = new HttpRequestExpand(url, method);
-        request.addHeader("Content-Type", "application/json;charset=utf-8");
+        final String contentType = "Content-Type";
         // 添加请求header
         if (headers != null) {
             for (String[] header : headers) {
                 request.addHeader(header[0], header[1]);
             }
+        }
+        // 默认返回json格式
+        Header[] requestHeaders = request.getHeaders(contentType);
+        if (requestHeaders == null || requestHeaders.length == 0) {
+            request.addHeader(contentType, "application/json;charset=utf-8");
         }
         // 添加请求内容
         if (body != null) {
@@ -107,7 +113,25 @@ public class HttpRequestNode extends AbstractNode {
         // 获取结果并返回
         if (response != null && response.getEntity() != null) {
             String res = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-            return new ObjectMapper().readValue(res, Document.class);
+            // 根据返回结果类型对应解析
+            Header[] headers = response.getHeaders(contentType);
+            if (headers != null && headers[0] != null && headers[0].getValue() != null) {
+                String value = headers[0].getValue();
+                // 处理返回html格式
+                if (value.startsWith("text/html")) {
+                    return new Document("html", res);
+                }
+                // 处理返回xml格式
+                if (value.startsWith("application/xml")) {
+                    return new Document("xml", res);
+                }
+            }
+            // 处理返回json格式
+            try {
+                return new ObjectMapper().readValue(res, Document.class);
+            } catch (Exception ignored) {
+                throw new FlowException("The http response result is not in json or html format");
+            }
         }
         throw new InternalException("The http request has no response.");
     }
