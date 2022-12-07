@@ -2,7 +2,7 @@
   <div id="flow-log" class="flow-log">
     <div v-dragging class="drag-box"></div>
     <Codemirror
-        v-model:value="logContent"
+        :value="logContent"
         :options="{mode: 'javascript', styleActiveLine: true, theme: 'dracula', readOnly: true}"
         style="font-size: 14px;"
         @change="onChange"
