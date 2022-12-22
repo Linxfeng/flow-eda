@@ -65,7 +65,7 @@ const routes = [
           title: "日志详情",
         },
         component: LogDetail,
-        props: (route) => ({ path: route.params.path }),
+        props: (route) => ({ path: route.query.path }),
       },
     ],
   },
