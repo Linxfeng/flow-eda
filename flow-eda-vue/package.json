@@ -8,6 +8,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.0.10",
     "axios": "0.24.0",
     "click-outside-vue3": "^4.0.1",
     "codemirror-editor-vue3": "^2.0.6",
