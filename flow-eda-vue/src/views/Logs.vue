@@ -144,7 +144,7 @@ export default {
 
     // 查看详情，打开日志详情页
     const handleShow = (path) => {
-      router.push({ name: "LogDetail", params: { path: path } });
+      router.push({ path: "/logs/detail", query: { path: path } });
     };
 
     // 多选操作
