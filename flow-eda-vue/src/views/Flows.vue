@@ -264,7 +264,7 @@ export default {
     const handleLogs = (id) => {
       const date = Moment().format("YYYY-MM-DD");
       const path = "/logs/running/" + id + "/" + date + ".log";
-      router.push({ name: "LogDetail", params: { path: path } });
+      router.push({ path: "/logs/detail", query: { path } });
     };
 
     // 多选操作

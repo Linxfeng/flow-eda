@@ -8,7 +8,6 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.0.10",
     "axios": "0.24.0",
     "click-outside-vue3": "^4.0.1",
     "codemirror-editor-vue3": "^2.0.6",
@@ -26,9 +25,9 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^1.2.3",
-    "@vue/compiler-sfc": "^3.2.45",
-    "vite": "2.3.7"
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vitejs/plugin-vue-jsx": "^3.0.0",
+    "vite": "^4.0.3"
   },
   "browserslist": [
     "> 1%",
