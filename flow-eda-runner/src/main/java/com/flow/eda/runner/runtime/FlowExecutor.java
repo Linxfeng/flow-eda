@@ -26,6 +26,9 @@ public class FlowExecutor {
     private final FlowNodeWebsocket flowNodeWebsocket;
     /** 当前流程的id */
     private final String flowId;
+    /** 流程状态服务 */
+    private final FlowStatusService flowStatusService =
+            ApplicationContextUtil.getBean(FlowStatusService.class);
 
     public FlowExecutor(List<FlowData> flowData, FlowNodeWebsocket ws) {
         this.flowData = flowData;
@@ -50,24 +53,22 @@ public class FlowExecutor {
         currentNode.getParams().append("flowId", flowId).append("nodeId", currentNode.getId());
         try {
             Node nodeInstance = getInstance(currentNode);
-            // 更新节点运行状态
-            if (nodeInstance.status() != null) {
-                sendNodeStatus(
-                        currentNode.getId(), new Document("status", nodeInstance.status().name()));
-                info(flowId, "start running [{}] node. input:{}", type, input);
-            } else {
-                // 当前节点中断后，更新流程状态
-                FlowStatusService service = ApplicationContextUtil.getBean(FlowStatusService.class);
-                service.removeNextNode(flowData, currentNode);
-                if (service.isFinished(flowId)) {
-                    flowNodeWebsocket.sendMessage(
-                            String.valueOf(flowId),
-                            new Document("flowStatus", Node.Status.FINISHED.name()));
-                }
-            }
             // 处理阻塞节点
             if (nodeInstance instanceof FlowBlockNodePool.BlockNode) {
                 FlowBlockNodePool.addBlockNode(flowId, (FlowBlockNodePool.BlockNode) nodeInstance);
+            }
+            // 更新节点运行状态
+            if (nodeInstance.status() != null) {
+                sendNodeStatus(currentNode, new Document("status", nodeInstance.status().name()));
+                info(flowId, "start running [{}] node. input:{}", type, input);
+            } else {
+                // 当前节点中断后，更新流程状态
+                flowStatusService.removeRunningNode(flowId, currentNode.getId());
+                if (flowStatusService.isFinished(flowId)) {
+                    flowNodeWebsocket.sendMessage(
+                            flowId, new Document("flowStatus", Node.Status.FINISHED.name()));
+                    return;
+                }
             }
             // 执行节点
             nodeInstance.run(
@@ -83,7 +84,7 @@ public class FlowExecutor {
                 message = FlowException.wrap(e).getMessage();
             }
             Document status = new Document("status", Node.Status.FAILED.name());
-            sendNodeStatus(currentNode.getId(), status.append("error", message));
+            sendNodeStatus(currentNode, status.append("error", message));
             FlowLogs.error(flowId, "run [{}] node failed. error:{}", type, message);
         }
     }
@@ -94,8 +95,7 @@ public class FlowExecutor {
         if (NodeTypeEnum.OUTPUT.getType().equals(currentNode.getType())) {
             sendOutput(currentNode, p);
         } else if (Node.Status.FINISHED.equals(nodeInstance.status())) {
-            sendNodeStatus(
-                    currentNode.getId(), new Document("status", Node.Status.FINISHED.name()));
+            sendNodeStatus(currentNode, new Document("status", Node.Status.FINISHED.name()));
         }
         // 多个下游节点，需要并行执行
         List<FlowData> nextNodes = getNextNode(currentNode);
@@ -144,11 +144,19 @@ public class FlowExecutor {
         output.remove("input");
         output.remove("payload");
         Document msg = new Document("status", Node.Status.FINISHED.name()).append("output", output);
-        sendNodeStatus(currentNode.getId(), msg);
+        sendNodeStatus(currentNode, msg);
     }
 
-    private void sendNodeStatus(String nodeId, Document msg) {
-        msg.append("nodeId", nodeId);
-        flowNodeWebsocket.sendMessage(String.valueOf(flowId), msg);
+    /** 推送节点状态 */
+    private void sendNodeStatus(FlowData currentNode, Document msg) {
+        String status = msg.getString("status");
+        // 若当前节点已运行完成，则检查NextNode
+        if (Node.Status.FINISHED.name().equals(status)) {
+            forEach(
+                    getNextNode(currentNode),
+                    node -> flowStatusService.addRunningNode(flowId, node.getId()));
+        }
+        msg.append("nodeId", currentNode.getId());
+        flowNodeWebsocket.sendMessage(flowId, msg);
     }
 }
