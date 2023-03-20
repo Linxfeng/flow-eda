@@ -117,7 +117,9 @@ public class FlowExecutor {
             // 获取节点的构造函数，默认每个节点都有含参构造，获取不到时抛出异常
             Class<? extends Node> clazz = NodeTypeEnum.getClazzByNode(currentNode);
             // 初始化实例时会进行参数校验，校验不通过则会抛出异常
-            return clazz.getConstructor(Document.class).newInstance(currentNode.getParams());
+            Document params = new Document();
+            params.putAll(currentNode.getParams());
+            return clazz.getConstructor(Document.class).newInstance(params);
         } catch (Exception e) {
             throw FlowException.wrap(e);
         }
