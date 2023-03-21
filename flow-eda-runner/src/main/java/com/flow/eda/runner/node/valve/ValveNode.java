@@ -3,6 +3,7 @@ package com.flow.eda.runner.node.valve;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
+import com.flow.eda.runner.utils.NodeParamsUtil;
 import lombok.Getter;
 import org.bson.Document;
 
@@ -14,17 +15,14 @@ public class ValveNode extends AbstractNode {
     private final AtomicInteger count = new AtomicInteger(0);
     private Integer times;
     private Long period;
-    private Document output;
+    private NodeParamsUtil nodeParams;
 
     public ValveNode(Document params) {
         super(params);
 
         // 注册阀门节点，若注册失败，则节点状态置为空
         if (ValveNodeManager.register(this)) {
-            this.output = new Document();
-            this.output.putAll(params);
-            this.output.remove("times");
-            this.output.remove("period");
+            this.nodeParams = new NodeParamsUtil(params).remove("times", "period");
         } else {
             setStatus(null);
         }
@@ -32,24 +30,15 @@ public class ValveNode extends AbstractNode {
 
     @Override
     public void run(NodeFunction callback) {
-        if (output == null) {
-            return;
+        if (this.nodeParams != null) {
+            Document output = this.nodeParams.output(this).get();
+            Runnable command =
+                    () -> {
+                        setStatus(Status.FINISHED);
+                        callback.callback(output);
+                    };
+            ValveNodeManager.run(this, command);
         }
-        if (!getInput().isEmpty()) {
-            output.append("params", getInput());
-        }
-        output.putAll(output());
-        if (output.containsKey("input")) {
-            output.put("params", output.get("input"));
-        }
-        output.remove("input");
-        output.remove("payload");
-        Runnable command =
-                () -> {
-                    setStatus(Status.FINISHED);
-                    callback.callback(output);
-                };
-        ValveNodeManager.run(this, command);
     }
 
     @Override

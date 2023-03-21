@@ -3,6 +3,7 @@ package com.flow.eda.runner.node.parser.json;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
+import com.flow.eda.runner.utils.NodeParamsUtil;
 import com.flow.eda.runner.utils.PlaceholderUtil;
 import org.bson.Document;
 
@@ -23,12 +24,8 @@ public class JsonParserNode extends AbstractNode {
 
     @Override
     public void run(NodeFunction callback) {
-        Document result = PlaceholderUtil.parse(payload, keys);
-        Document input = getInput();
-        if (!input.isEmpty()) {
-            result.append("params", input);
-        }
-        result.putAll(output());
+        Document result =
+                new NodeParamsUtil(PlaceholderUtil.parse(payload, keys)).output(this).get();
         setStatus(Status.FINISHED);
         callback.callback(result);
     }
@@ -40,9 +37,11 @@ public class JsonParserNode extends AbstractNode {
             // eg: httpResult.result.$0.type, params.a
             String parseKey = params.getString("parseKey");
             notNull(parseKey);
+
             String[] parseKeys = parseKey.split(",");
             this.keys = Arrays.asList(parseKeys);
             isTrue(!keys.isEmpty());
+
             this.payload = new Document(params).append("params", getInput());
         } catch (Exception ignore) {
             NodeVerify.throwWithName("parseKey");
