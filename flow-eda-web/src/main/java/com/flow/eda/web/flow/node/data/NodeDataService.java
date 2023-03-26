@@ -77,6 +77,7 @@ public class NodeDataService {
         FlowData flowData = new FlowData();
         flowData.setId(nodeData.getId());
         flowData.setFlowId(nodeData.getFlowId());
+        flowData.setNodeName(nodeData.getNodeName());
         if (nodeData.getNodeType() != null) {
             flowData.setType(nodeData.getNodeType().getType());
         }
