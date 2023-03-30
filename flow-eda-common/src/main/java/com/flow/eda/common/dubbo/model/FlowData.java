@@ -11,6 +11,8 @@ public class FlowData implements Serializable {
     private String id;
     /** 流id */
     private String flowId;
+    /** 节点名称 */
+    private String nodeName;
     /** 节点类型 */
     private String type;
     /** 节点属性参数 */

@@ -44,7 +44,7 @@ public class FlowExecutor {
 
     /** 执行当前节点 */
     private void run(FlowData currentNode) {
-        String type = currentNode.getType();
+        String nodeName = currentNode.getNodeName();
         // 处理节点参数，设置flowId和nodeId
         if (currentNode.getParams() == null) {
             currentNode.setParams(new Document());
@@ -60,7 +60,7 @@ public class FlowExecutor {
             // 更新节点运行状态
             if (nodeInstance.status() != null) {
                 sendNodeStatus(currentNode, new Document("status", nodeInstance.status().name()));
-                info(flowId, "start running [{}] node. input:{}", type, input);
+                info(flowId, "start running [{}] node. input:{}", nodeName, input);
             } else {
                 // 当前节点中断后，更新流程状态
                 flowStatusService.removeRunningNode(flowId, currentNode.getId());
@@ -73,7 +73,7 @@ public class FlowExecutor {
             // 执行节点
             nodeInstance.run(
                     (p) -> {
-                        info(flowId, "run [{}] node finished. output:{}", type, p.toJson());
+                        info(flowId, "run [{}] node finished. output:{}", nodeName, p.toJson());
                         runNext(currentNode, nodeInstance, p);
                     });
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class FlowExecutor {
             }
             Document status = new Document("status", Node.Status.FAILED.name());
             sendNodeStatus(currentNode, status.append("error", message));
-            FlowLogs.error(flowId, "run [{}] node failed. error:{}", type, message);
+            FlowLogs.error(flowId, "run [{}] node failed. error:{}", nodeName, message);
         }
     }
 
