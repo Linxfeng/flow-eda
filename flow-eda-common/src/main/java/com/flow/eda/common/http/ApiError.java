@@ -3,15 +3,10 @@ package com.flow.eda.common.http;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-
-import java.io.IOException;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -28,29 +23,12 @@ public class ApiError {
     public static final String INVALID_PARAMETER = "invalid_parameter";
     public static final String INVALID_VERIFY = "invalid_verify_token";
     public static final String INVALID_STATE = "invalid_state";
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private String error;
     private int status = 200;
     private String message;
-    private List<SubError> errors;
     private String path;
     private String description;
-
-    public static ApiError parse(String source) {
-        try {
-            return OBJECT_MAPPER.readValue(source, ApiError.class);
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("invalid json object to convert to ApiError");
-        }
-    }
-
-    public static ApiError parse(byte[] source) {
-        try {
-            return OBJECT_MAPPER.readValue(source, ApiError.class);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("invalid json object to convert to ApiError");
-        }
-    }
 
     public ApiError error(String error) {
         this.error = error;
@@ -100,11 +78,5 @@ public class ApiError {
     public ApiError status(int status) {
         this.status = status;
         return this;
-    }
-
-    @Data
-    public static class SubError {
-        private String field;
-        private String error;
     }
 }
