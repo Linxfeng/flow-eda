@@ -20,6 +20,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.OK.value());
         response.getWriter().write(Result.success().toJson());
     }

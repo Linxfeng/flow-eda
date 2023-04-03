@@ -55,14 +55,14 @@ public class AccessTokenConfig {
         DefaultTokenServices tokenServices = new DefaultTokenServices();
         // 设置ClientDetailsService为jdbc实现方式
         tokenServices.setClientDetailsService(jdbcClientDetailsService());
-        // 允许支持refreshToken
-        tokenServices.setSupportRefreshToken(true);
-        // 不重用refreshToken
-        tokenServices.setReuseRefreshToken(false);
         // 设置token存储方式
         tokenServices.setTokenStore(tokenStore());
         // 设置自定义TokenEnhancer
         tokenServices.setTokenEnhancer(tokenEnhancerChain());
+        // 允许支持refreshToken
+        tokenServices.setSupportRefreshToken(true);
+        // 不重用refreshToken
+        tokenServices.setReuseRefreshToken(false);
         return tokenServices;
     }
 }

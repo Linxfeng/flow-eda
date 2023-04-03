@@ -22,6 +22,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
             AuthenticationException exception)
             throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.getWriter().write(Result.failed(exception.getMessage()).toJson());
     }

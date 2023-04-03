@@ -1,6 +1,7 @@
 package com.flow.eda.oauth2.config;
 
 import com.flow.eda.common.http.Result;
+import com.flow.eda.common.utils.RequestUtil;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -42,7 +43,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        String ip = this.getIp(request);
+        String ip = RequestUtil.getIp(request);
         try {
             boolean acquire = this.limiterLoadingCache.get(ip).tryAcquire();
             // 获取不到令牌，立即进入服务降级
@@ -56,10 +57,5 @@ public class RateLimitFilter extends OncePerRequestFilter {
             log.error("get limiterLoadingCache error: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
-    }
-
-    private String getIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Real-IP");
-        return ip != null ? ip : request.getRemoteAddr();
     }
 }

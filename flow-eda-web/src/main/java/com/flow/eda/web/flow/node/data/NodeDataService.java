@@ -48,6 +48,7 @@ public class NodeDataService {
         nodeDataMapper.insert(data);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void saveNodeData(List<NodeData> data) {
         nodeDataMapper.insert(data);
     }

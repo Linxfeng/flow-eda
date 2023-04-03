@@ -1,8 +1,9 @@
 package com.flow.eda.web.flow.node.data;
 
+import com.flow.eda.common.exception.InvalidParameterException;
 import com.flow.eda.common.exception.InvalidStateException;
-import com.flow.eda.common.exception.MissingPropertyException;
 import com.flow.eda.common.http.Result;
+import com.flow.eda.common.utils.CheckFieldUtil;
 import com.flow.eda.web.log.OperationLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +44,7 @@ public class NodeDataController {
             @RequestParam String version, @RequestBody List<NodeData> data) {
         this.check(data);
         if (version.length() > 32) {
-            throw new InvalidStateException("The version name is too long");
+            throw new InvalidParameterException("The version name is too long");
         }
         data.forEach(node -> node.setVersion(version));
         nodeDataService.saveNodeData(data);
@@ -71,12 +72,8 @@ public class NodeDataController {
         }
         // 校验必填参数
         for (NodeData node : data) {
-            if (node.getId() == null) {
-                throw new MissingPropertyException("id");
-            }
-            if (node.getFlowId() == null) {
-                throw new MissingPropertyException("flowId");
-            }
+            CheckFieldUtil.missingProperty("id", node.getId());
+            CheckFieldUtil.missingProperty("flowId", node.getFlowId());
         }
     }
 }
