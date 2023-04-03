@@ -10,6 +10,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 public class OauthUser implements Serializable {
+    private static final long serialVersionUID = 5822365438252241772L;
     private String username;
     private String password;
     private String clientId;

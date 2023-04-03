@@ -36,6 +36,7 @@ public class AccessTokenConfig {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        // 对称加密，设置私钥
         converter.setSigningKey(jwtSigningKey);
         return converter;
     }
