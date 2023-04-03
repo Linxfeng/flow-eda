@@ -9,11 +9,11 @@ spring:
     username: root
     password: 123456
     hikari:
-      max-lifetime: 60000
-      connection-timeout: 10000
-      validation-timeout: 3000
-      maximum-pool-size: 10
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
       minimum-idle: 5
+      maximum-pool-size: 20
 mybatis:
   type-handlers-package: com.flow.eda.web.mybatis
   configuration:
@@ -24,6 +24,3 @@ flow:
     client_id: 1df7b0c1-aac0-148a14c7cba8
     client_secret: zcUaT32GlwIjz4yBJjYZIIMvzf
     authorities: ROLE_API,ROLE_WS
-logging:
-  level:
-    org.springframework.security.oauth2.provider.token.store.JdbcTokenStore: warn
