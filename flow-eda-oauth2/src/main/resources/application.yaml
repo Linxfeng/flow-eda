@@ -15,7 +15,6 @@ spring:
       minimum-idle: 5
       maximum-pool-size: 20
 mybatis:
-  type-handlers-package: com.flow.eda.web.mybatis
   configuration:
     map-underscore-to-camel-case: true
 flow:
