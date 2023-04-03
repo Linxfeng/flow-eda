@@ -23,3 +23,6 @@ flow:
     client_id: 1df7b0c1-aac0-148a14c7cba8
     client_secret: zcUaT32GlwIjz4yBJjYZIIMvzf
     authorities: ROLE_API,ROLE_WS
+logging:
+  level:
+    org.springframework.security.oauth2.provider.token.store.JdbcTokenStore: warn

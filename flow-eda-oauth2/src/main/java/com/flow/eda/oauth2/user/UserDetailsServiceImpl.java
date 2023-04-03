@@ -28,12 +28,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // 从请求信息中获取clientId
         String clientId;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication != null && authentication.getPrincipal() != null) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof OauthUserDetails) {
-                getClientIdByRequest();
                 return (OauthUserDetails) principal;
             } else if (principal instanceof User) {
                 clientId = ((User) principal).getUsername();
@@ -41,7 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 throw new UnsupportedOperationException();
             }
         } else {
-            clientId = getClientIdByRequest();
+            clientId = this.getClientIdByRequest();
         }
         OauthUser oauthUser = oauthUserMapper.loadUserByUsername(username, clientId);
         if (oauthUser == null) {
