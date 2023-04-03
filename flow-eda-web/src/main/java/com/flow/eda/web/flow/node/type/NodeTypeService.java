@@ -3,6 +3,7 @@ package com.flow.eda.web.flow.node.type;
 import com.flow.eda.web.flow.node.type.param.NodeTypeParam;
 import com.flow.eda.web.flow.node.type.param.NodeTypeParamMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -21,6 +22,7 @@ public class NodeTypeService {
     @Autowired private NodeTypeMapper nodeTypeMapper;
     @Autowired private NodeTypeParamMapper nodeTypeParamMapper;
 
+    @Cacheable(value = "default", key = "#name != null ? #name : 'null'")
     public Map<String, List<NodeType>> getNodeTypes(String name) {
         Map<String, List<NodeType>> map = new LinkedHashMap<>();
         List<NodeType> list = nodeTypeMapper.findByName(name);
