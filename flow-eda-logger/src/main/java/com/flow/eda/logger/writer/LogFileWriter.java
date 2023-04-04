@@ -3,10 +3,10 @@ package com.flow.eda.logger.writer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,28 +33,11 @@ public class LogFileWriter {
         }
     }
 
-    public static void write(String path, String message) {
-        FileWriter fw = null;
-        PrintWriter pw = null;
-        try {
-            fw = new FileWriter(path, true);
-            pw = new PrintWriter(fw);
-            pw.print(message);
-            pw.flush();
-            fw.flush();
+    public static void write(String filePath, String message) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
+            bw.write(message);
         } catch (IOException e) {
             log.error(e.getMessage());
-        } finally {
-            try {
-                if (pw != null) {
-                    pw.close();
-                }
-                if (fw != null) {
-                    fw.close();
-                }
-            } catch (IOException e) {
-                log.error(e.getMessage());
-            }
         }
     }
 

@@ -1,7 +1,5 @@
 package com.flow.eda.oauth2.config;
 
-import com.flow.eda.oauth2.handler.LoginFailureHandler;
-import com.flow.eda.oauth2.handler.LoginSuccessHandler;
 import com.flow.eda.oauth2.handler.LogoutSuccessHandler;
 import com.flow.eda.oauth2.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +25,6 @@ import org.springframework.web.cors.CorsUtils;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Lazy @Autowired private UserDetailsServiceImpl userDetailsService;
-    @Autowired private LoginSuccessHandler loginSuccessHandler;
-    @Autowired private LoginFailureHandler loginFailureHandler;
     @Autowired private LogoutSuccessHandler logoutSuccessHandler;
     @Autowired private RateLimitFilter rateLimitFilter;
 
@@ -58,13 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/oauth/**")
                 .permitAll()
-                .and()
-                .formLogin()
-                .loginProcessingUrl("/oauth/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .successHandler(loginSuccessHandler)
-                .failureHandler(loginFailureHandler)
                 .and()
                 .logout()
                 .invalidateHttpSession(true)

@@ -17,6 +17,7 @@ import java.io.IOException;
 @Component
 public class LogoutSuccessHandler
         implements org.springframework.security.web.authentication.logout.LogoutSuccessHandler {
+
     @Lazy @Autowired private ConsumerTokenServices consumerTokenServices;
 
     @Override
@@ -30,6 +31,7 @@ public class LogoutSuccessHandler
             consumerTokenServices.revokeToken(token);
         }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.OK.value());
         response.getWriter().write(Result.success().toJson());
     }

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import ReactJson from 'react-json-view';
 import { FormattedMessage } from 'umi';
 import './index.less';
+
 const { Option } = Select;
 
 const FlowDetail: React.FC<{
@@ -223,7 +224,7 @@ const FlowDetail: React.FC<{
             tooltip="参数为json格式，可传递至下一节点，使用${xx}接收，例如${httpResult.$0.name}"
             rules={[{ validator: checkJson }]}
           >
-            <Input.TextArea autoSize={true} className="input" placeholder="{'a':'xx','b':'123'}" />
+            <Input.TextArea autoSize={true} className="input" placeholder={`{"a":"xx","b":123}`} />
           </Form.Item>
           <Form.Item
             className="item"

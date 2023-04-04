@@ -4,17 +4,16 @@ import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
+import com.flow.eda.runner.utils.NodeParamsUtil;
 import org.bson.Document;
 
 import java.util.concurrent.TimeUnit;
-
-import static com.flow.eda.runner.node.NodeVerify.isTrue;
-import static com.flow.eda.runner.node.NodeVerify.notNull;
 
 /** 延时器，延迟指定时间后继续执行 */
 public class DelayNode extends AbstractNode {
     private Long delay;
     private TimeUnit unit;
+    private NodeParamsUtil nodeParams;
 
     public DelayNode(Document params) {
         super(params);
@@ -25,7 +24,7 @@ public class DelayNode extends AbstractNode {
         try {
             unit.sleep(delay);
             setStatus(Status.FINISHED);
-            callback.callback(output());
+            callback.callback(this.nodeParams.output(this).get());
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 throw FlowException.wrap(e, e.getMessage());
@@ -37,15 +36,19 @@ public class DelayNode extends AbstractNode {
     @Override
     protected void verify(Document params) {
         try {
-            notNull(params);
             String d = params.getString("delay");
-            notNull(d);
-            isTrue(d.contains(","));
+            NodeVerify.notNull(d);
+
+            NodeVerify.isTrue(d.contains(","));
             this.delay = Long.parseLong(d.split(",")[0]);
+
+            NodeVerify.notNull(delay);
+            NodeVerify.isTrue(delay > 0);
+
             this.unit = TimeUnit.valueOf(d.split(",")[1]);
-            notNull(delay);
-            notNull(unit);
-            isTrue(delay > 0);
+            NodeVerify.notNull(unit);
+
+            this.nodeParams = new NodeParamsUtil(params).remove("delay");
         } catch (Exception ignore) {
             NodeVerify.throwWithName("delay");
         }

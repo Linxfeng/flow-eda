@@ -1,16 +1,15 @@
 package com.flow.eda.oauth2.user;
 
-import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.common.exception.InternalException;
 import com.flow.eda.common.exception.InvalidVerifyTokenException;
-import com.flow.eda.common.exception.MissingPropertyException;
-import com.flow.eda.common.http.ApiError;
+import com.flow.eda.common.exception.ResourceAlreadyExistsException;
 import com.flow.eda.common.http.Result;
+import com.flow.eda.common.utils.CheckFieldUtil;
+import com.flow.eda.common.utils.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -22,13 +21,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 
 @Slf4j
 @RestController
 public class UserController {
     @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private OauthUserMapper oauthUserMapper;
+    @Autowired private OauthUserService oauthUserService;
     @Autowired private TokenExtractor tokenExtractor;
     @Autowired private TokenStore tokenStore;
 
@@ -44,30 +42,22 @@ public class UserController {
     @PostMapping("/oauth/register")
     public Result<String> userRegister(@RequestBody Document body, HttpServletRequest request) {
         String username = body.getString("username");
-        if (username == null) {
-            throw new MissingPropertyException("username");
-        }
+        CheckFieldUtil.missingProperty("username", username);
+
         String password = body.getString("password");
-        if (password == null) {
-            throw new MissingPropertyException("password");
-        }
-        Object exist = oauthUserMapper.existUsername(username);
+        CheckFieldUtil.missingProperty("password", password);
+
+        String exist = oauthUserService.existUsername(username);
         if (exist != null) {
-            throw new FlowException(
-                    HttpStatus.BAD_REQUEST, ApiError.RESOURCE_ALREADY_EXISTS, "用户名已存在");
+            throw new ResourceAlreadyExistsException("username already exists");
         }
         // 创建用户，保存
         try {
-            OauthUser user = new OauthUser();
-            user.setUsername(username);
-            user.setPassword(passwordEncoder.encode(password));
+            OauthUser user = new OauthUser(username, passwordEncoder.encode(password));
             user.setClientId(clientId);
             user.setAuthorities(authorities);
-            user.setRegisterIp(getIp(request));
-            user.setStatus(true);
-            user.setCreateDate(new Date());
-            user.setUpdateDate(new Date());
-            oauthUserMapper.insert(user);
+            user.setRegisterIp(RequestUtil.getIp(request));
+            oauthUserService.insert(user);
             log.info("Register user {} success", username);
         } catch (Exception e) {
             log.error("Register user {} failed: {}", username, e.getMessage());
@@ -88,16 +78,11 @@ public class UserController {
         } catch (Exception e) {
             log.error("Get current user info failed: {}", e.getMessage());
         }
-        throw new InvalidVerifyTokenException("Invalid token");
+        throw new InvalidVerifyTokenException("invalid token");
     }
 
     @GetMapping("/oauth/client")
     public Result<Document> getClientInfo() {
         return Result.of(new Document("clientId", clientId).append("clientSecret", clientSecret));
-    }
-
-    private String getIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Real-IP");
-        return ip != null ? ip : request.getRemoteAddr();
     }
 }

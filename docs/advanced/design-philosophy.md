@@ -284,66 +284,48 @@ web 服务多出来一个未运行的状态，这是由于用户新建了流程�
 /** 流程状态服务，主要负责实时计算流程运行状态并监控其状态变更 */
 @Service
 public class FlowStatusService {
-    /** 所有需要执行的节点 */
-    private final Map<String, Set<String>> nodeMap = new ConcurrentHashMap<>();
     /** 正在运行的节点 */
-    private final Map<String, Set<String>> runMap = new ConcurrentHashMap<>();
+    private final Map<String, Set<String>> runningMap = new ConcurrentHashMap<>();
 
-    public void startRun(String flowId, List<FlowData> data, List<FlowData> starts) {
-        this.nodeMap.put(flowId, new ConcurrentHashSet<>());
-        this.runMap.put(flowId, new ConcurrentHashSet<>());
-        if (isNotEmpty(starts)) {
-            this.parseAllNodes(flowId, data, starts);
-        }
+    public void startRun(String flowId, List<FlowData> starts, List<FlowData> timer) {
+        this.runningMap.put(flowId, new ConcurrentHashSet<>());
+        forEach(starts, node -> this.runningMap.get(flowId).add(node.getId()));
+        forEach(timer, node -> this.runningMap.get(flowId).add(node.getId()));
     }
 
     /** 实时计算流程状态 */
     public String getFlowStatus(String flowId, Document message) {
         String nodeId = message.getString("nodeId");
+        if (nodeId == null) {
+            return flowInfoService.getFlowStatus(flowId);
+        }
         String status = message.getString("status");
         if (Node.Status.FAILED.name().equals(status)) {
-            nodeMap.get(flowId).remove(nodeId);
-            runMap.get(flowId).remove(nodeId);
+            runningMap.get(flowId).remove(nodeId);
             return status;
         } else if (Node.Status.FINISHED.name().equals(status)) {
-            nodeMap.get(flowId).remove(nodeId);
-            runMap.get(flowId).remove(nodeId);
-            if (nodeMap.get(flowId).isEmpty()) {
+            runningMap.get(flowId).remove(nodeId);
+            if (runningMap.get(flowId).isEmpty()) {
                 return status;
             }
         } else {
-            runMap.get(flowId).add(nodeId);
+            runningMap.get(flowId).add(nodeId);
         }
         return Node.Status.RUNNING.name();
     }
 
-    /** 解析出所有要执行的节点 */
-    private void parseAllNodes(String flowId, List<FlowData> data, List<FlowData> starts) {
-        forEach(
-                starts,
-                n -> {
-                    this.nodeMap.get(flowId).add(n.getId());
-                    parseNextNode(data, n, this.nodeMap.get(flowId));
-                });
-    }
-
-    /** 解析出当前节点之后的所有节点 */
-    private void parseNextNode(List<FlowData> data, FlowData currentNode, Set<String> nodeSet) {
-        List<String> ids =
-                filterMap(data, n -> currentNode.getId().equals(n.getFrom()), FlowData::getTo);
-        if (isNotEmpty(ids)) {
-            forEach(
-                    filter(data, n -> ids.contains(n.getId())),
-                    n -> {
-                        nodeSet.add(n.getId());
-                        parseNextNode(data, n, nodeSet);
-                    });
+    /** 判断当前流程状态是否已完成 */
+    public boolean isFinished(String flowId) {
+        if (!runningMap.containsKey(flowId)) {
+            String status = flowInfoService.getFlowStatus(flowId);
+            return Node.Status.FINISHED.name().equals(status);
         }
+        return runningMap.get(flowId).isEmpty();
     }
 }
 ```
 
-通过代码我们可以看到，计算流程的实时运行状态并不复杂，通过节点的运行状态可很便捷的计算出流程的运行状态。
+通过代码我们可以看到，计算流程的实时运行状态并不复杂，通过节点的运行状态可很便捷地计算出流程的运行状态。
 
 - 若节点运行失败，则当前流程状态为运行失败
 - 若节点运行中，则当前流程状态为运行中
@@ -366,9 +348,13 @@ public class FlowNodeWebsocket {
     /** 推送节点状态信息 */
     public void sendMessage(String flowId, Document message) {
         // 获取流程实时状态信息一起推送
-        String flowStatus = flowStatusService.getFlowStatus(flowId, message);
-        message.append("flowStatus", flowStatus);
-        // 向前端推送节点状态信息
+        String flowStatus = message.getString("flowStatus");
+        if (flowStatus == null) {
+            flowStatus =
+                    ApplicationContextUtil.getBean(FlowStatusService.class)
+                            .getFlowStatus(flowId, message);
+            message.append("flowStatus", flowStatus);
+        }
         if (SESSION_POOL.get(flowId) != null) {
             try {
                 synchronized (SESSION_POOL.get(flowId)) {
@@ -378,12 +364,11 @@ public class FlowNodeWebsocket {
                 log.error("Send websocket message failed:{}", e.getMessage());
             }
         }
-        // 向RabbitMQ中推送流程的实时运行状态信息
-        try {
-            Document payload = new Document("flowId", flowId).append("status", flowStatus);
-            rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY, payload);
-        } catch (Exception e) {
-            log.error("send flow status to rabbitmq failed:{}", e.getMessage());
+        // 向mq中推送流程的实时运行状态信息
+        ApplicationContextUtil.getBean(FlowStatusMqProducer.class)
+                .sendFlowStatus(flowId, flowStatus);
+        if (Node.Status.FINISHED.name().equals(flowStatus)) {
+            FlowLogs.info(flowId, "flow {} run finished", flowId);
         }
     }
 }

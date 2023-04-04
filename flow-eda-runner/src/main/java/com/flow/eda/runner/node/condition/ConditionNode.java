@@ -3,6 +3,7 @@ package com.flow.eda.runner.node.condition;
 import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
+import com.flow.eda.runner.utils.NodeParamsUtil;
 import com.flow.eda.runner.utils.PlaceholderUtil;
 import org.bson.Document;
 
@@ -16,7 +17,7 @@ public class ConditionNode extends AbstractNode {
     private String condition;
     private String value;
     private Boolean passed;
-    private Document output;
+    private NodeParamsUtil nodeParams;
 
     public ConditionNode(Document params) {
         super(params);
@@ -25,17 +26,7 @@ public class ConditionNode extends AbstractNode {
     @Override
     public void run(NodeFunction callback) {
         if (this.passed) {
-            Document input = getInput();
-            if (!input.isEmpty()) {
-                output.append("params", input);
-            }
-            output.putAll(output());
-            if (output.containsKey("input")) {
-                output.put("params", output.get("input"));
-            }
-            output.remove("input");
-            output.remove("payload");
-
+            Document output = this.nodeParams.output(this).get();
             setStatus(Status.FINISHED);
             callback.callback(output);
         }
@@ -56,12 +47,9 @@ public class ConditionNode extends AbstractNode {
         NodeVerify.notNull(this.value, "value");
 
         this.passed = this.meetConditions(params);
+
         if (this.passed) {
-            this.output = new Document();
-            this.output.putAll(params);
-            this.output.remove("field");
-            this.output.remove("condition");
-            this.output.remove("value");
+            this.nodeParams = new NodeParamsUtil(params).remove("field", "condition", "value");
         } else {
             // 条件未通过时，节点状态置为空
             setStatus(null);

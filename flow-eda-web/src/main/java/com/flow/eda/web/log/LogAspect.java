@@ -3,6 +3,7 @@ package com.flow.eda.web.log;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flow.eda.common.exception.FlowException;
 import com.flow.eda.common.exception.InternalException;
+import com.flow.eda.common.utils.RequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -61,7 +62,7 @@ public class LogAspect {
                 request.getRequestURI(),
                 request.getMethod(),
                 point.getSignature().getName(),
-                getIp(request),
+                RequestUtil.getIp(request),
                 response.getStatus(),
                 end - start,
                 args);
@@ -81,7 +82,7 @@ public class LogAspect {
                 auth.getName(),
                 request.getRequestURI(),
                 request.getMethod(),
-                getIp(request),
+                RequestUtil.getIp(request),
                 status,
                 e.getMessage());
     }
@@ -107,11 +108,6 @@ public class LogAspect {
             }
         }
         throw new InternalException("can not get HttpServletResponse");
-    }
-
-    private String getIp(HttpServletRequest request) {
-        String ip = request.getHeader("X-Real-IP");
-        return ip != null ? ip : request.getRemoteAddr();
     }
 
     /** 获取参数内容，截取前55位 */

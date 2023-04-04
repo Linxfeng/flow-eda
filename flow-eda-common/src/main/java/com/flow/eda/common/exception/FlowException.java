@@ -7,16 +7,14 @@ import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class FlowException extends RuntimeException {
-    private String error;
     private HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    private String error;
     private String message;
-    private List<ApiError.SubError> errors;
 
     public FlowException(String message) {
         this.message = message;
@@ -31,13 +29,6 @@ public class FlowException extends RuntimeException {
         this.httpStatus = httpStatus;
         this.error = error;
         this.message = message;
-    }
-
-    public FlowException(ApiError error) {
-        this.error = error.getError();
-        this.message = error.getMessage();
-        this.errors = error.getErrors();
-        this.httpStatus = error.getHttpStatus();
     }
 
     public static FlowException wrap(Throwable e) {

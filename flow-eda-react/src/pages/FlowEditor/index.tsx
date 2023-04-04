@@ -23,6 +23,7 @@ import { jsPlumb } from 'jsplumb';
 import React, { useEffect, useState } from 'react';
 import { history, Prompt, useParams } from 'umi';
 import './index.less';
+
 const { Panel } = Collapse;
 
 const FlowEditor: React.FC = () => {
@@ -59,7 +60,9 @@ const FlowEditor: React.FC = () => {
   const [logVisible, setLogVisible] = useState<boolean>(false);
   const [logContent, setLogContent] = useState<string[]>([]);
   const [wsMessage, setWsMessage] = useState<string>();
-  const [versions, setVersions] = useState<string[]>([]);
+  const [versions, setVersions] = useState<string[]>([
+    formatMsg('pages.flowList.editor.version.latest'),
+  ]);
   const [closeTips, setCloseTips] = useState<boolean>(true);
 
   /** 移动节点时，动态显示对齐辅助线 */

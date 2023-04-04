@@ -5,6 +5,7 @@ import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
 import com.flow.eda.runner.node.http.HttpDispatcherServlet;
 import com.flow.eda.runner.node.http.receive.HttpReceiveNode;
+import com.flow.eda.runner.utils.NodeParamsUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.springframework.util.StringUtils;
@@ -49,11 +50,7 @@ public class HttpResponseNode extends AbstractNode {
             }
             this.output = this.resData;
         } else {
-            this.output = new Document();
-            this.output.putAll(params);
-            this.output.remove("uri");
-            this.output.remove("method");
-            this.output.remove("resData");
+            this.output = new NodeParamsUtil(params).remove("uri", "method", "resData").get();
         }
     }
 

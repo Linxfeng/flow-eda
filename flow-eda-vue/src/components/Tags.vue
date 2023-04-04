@@ -3,14 +3,14 @@
     <ul>
       <li v-for="(item,index) in tagsList" :key="index" :class="{'active': isActive(item.path)}" class="tags-li">
         <router-link :to="item.path" class="tags-li-title">{{ item.title }}</router-link>
-        <span class="tags-li-icon" @click="closeTags(index)"><i class="el-icon-close"></i></span>
+        <span class="tags-li-icon" @click="closeTags(index)"><el-icon><Close /></el-icon></span>
       </li>
     </ul>
     <div class="tags-close-box">
       <el-dropdown @command="handleTags">
         <el-button size="small" type="primary">
           标签选项
-          <i class="el-icon-arrow-down el-icon--right"></i>
+          <el-icon><ArrowDown /></el-icon>
         </el-button>
         <template #dropdown>
           <el-dropdown-menu size="small">
@@ -189,6 +189,5 @@ export default {
   padding-top: 1px;
   text-align: center;
   background: #fff;
-  box-shadow: -3px 0 15px 3px rgba(0, 0, 0, 0.1);
 }
 </style>
