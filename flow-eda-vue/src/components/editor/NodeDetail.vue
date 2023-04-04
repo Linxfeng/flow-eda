@@ -106,9 +106,10 @@ export default {
       ps.forEach(p => {
         // 处理输入框+选择框=单个参数的情况，需要在form中拆成两个参数
         if (p.inType === 'select' && p.placeholder) {
-          if (form[p.key]) {
-            form[p.key + '-o'] = form[p.key].split(',')[1];
-            form[p.key] = form[p.key].split(',')[0];
+          const v = form[p.key];
+          if (v) {
+            form[p.key + '-o'] = v.substring(v.lastIndexOf(',') + 1);
+            form[p.key] = v.substring(0, v.lastIndexOf(','));
           } else {
             form[p.key + '-o'] = p.placeholder.split(',')[1];
           }
