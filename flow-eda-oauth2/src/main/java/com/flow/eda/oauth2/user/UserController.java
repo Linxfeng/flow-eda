@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class UserController {
     @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private OauthUserMapper oauthUserMapper;
+    @Autowired private OauthUserService oauthUserService;
     @Autowired private TokenExtractor tokenExtractor;
     @Autowired private TokenStore tokenStore;
 
@@ -47,7 +47,7 @@ public class UserController {
         String password = body.getString("password");
         CheckFieldUtil.missingProperty("password", password);
 
-        Object exist = oauthUserMapper.existUsername(username);
+        String exist = oauthUserService.existUsername(username);
         if (exist != null) {
             throw new ResourceAlreadyExistsException("username already exists");
         }
@@ -57,7 +57,7 @@ public class UserController {
             user.setClientId(clientId);
             user.setAuthorities(authorities);
             user.setRegisterIp(RequestUtil.getIp(request));
-            oauthUserMapper.insert(user);
+            oauthUserService.insert(user);
             log.info("Register user {} success", username);
         } catch (Exception e) {
             log.error("Register user {} failed: {}", username, e.getMessage());

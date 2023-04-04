@@ -17,5 +17,5 @@ public interface OauthUserMapper {
     OauthUser loadUserByUsername(String username, String clientId);
 
     @Select("SELECT username FROM oauth_user WHERE username=#{username} AND status=1 LIMIT 1")
-    Object existUsername(String username);
+    String existUsername(String username);
 }

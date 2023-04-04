@@ -23,7 +23,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final BasicAuthenticationConverter converter = new BasicAuthenticationConverter();
     @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private OauthUserMapper oauthUserMapper;
+    @Autowired private OauthUserService oauthUserService;
     @Autowired private JdbcClientDetailsService jdbcClientDetailsService;
 
     @Override
@@ -44,7 +44,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         } else {
             clientId = this.getClientIdByRequest();
         }
-        OauthUser oauthUser = oauthUserMapper.loadUserByUsername(username, clientId);
+        OauthUser oauthUser = oauthUserService.loadUserByUsername(username, clientId);
         if (oauthUser == null) {
             throw new UsernameNotFoundException("user not found");
         }
