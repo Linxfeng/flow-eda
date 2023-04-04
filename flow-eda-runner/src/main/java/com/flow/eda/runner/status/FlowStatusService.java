@@ -1,7 +1,6 @@
 package com.flow.eda.runner.status;
 
 import com.flow.eda.common.model.FlowData;
-import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.runner.node.Node;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class FlowStatusService {
     @Autowired private FlowStatusClient flowStatusClient;
 
     public void startRun(String flowId, List<FlowData> starts, List<FlowData> timer) {
-        this.runningMap.put(flowId, new ConcurrentHashSet<>());
+        this.runningMap.put(flowId, new HashSet<>());
         forEach(starts, node -> this.runningMap.get(flowId).add(node.getId()));
         forEach(timer, node -> this.runningMap.get(flowId).add(node.getId()));
     }
@@ -71,9 +70,7 @@ public class FlowStatusService {
 
     /** 添加运行中的节点 */
     public void addRunningNode(String flowId, String nodeId) {
-        if (runningMap.get(flowId) == null) {
-            runningMap.put(flowId, new ConcurrentHashSet<>());
-        }
+        runningMap.computeIfAbsent(flowId, k -> new HashSet<>());
         runningMap.get(flowId).add(nodeId);
     }
 
