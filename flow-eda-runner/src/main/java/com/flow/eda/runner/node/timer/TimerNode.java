@@ -67,17 +67,19 @@ public class TimerNode extends AbstractNode {
             NodeVerify.notNull(pd, "period");
             NodeVerify.isTrue(pd.contains(","), "period");
 
+            String type = pd.substring(pd.lastIndexOf(",") + 1);
+            String value = pd.substring(0, pd.lastIndexOf(","));
+
             // 解析cron表达式
-            if ("CRON".equals(pd.split(",")[1])) {
-                String cron = pd.split(",")[0];
-                if (!CronExpression.isValidExpression(cron)) {
+            if ("CRON".equals(type)) {
+                if (!CronExpression.isValidExpression(value)) {
                     throw new InvalidParameterException("The parameter cron expression is invalid");
                 }
-                this.cron = cron;
+                this.cron = value;
             } else {
-                this.period = Long.parseLong(pd.split(",")[0]);
+                this.period = Long.parseLong(value);
                 NodeVerify.isTrue(period > 0, "period");
-                this.unit = TimeUnit.valueOf(pd.split(",")[1]);
+                this.unit = TimeUnit.valueOf(type);
                 NodeVerify.notNull(unit, "period");
             }
 

@@ -50,24 +50,23 @@ public class LogContentWebsocket {
 
     /** 推送日志文件内容 */
     private void pushLogContent(String path, Session session) {
-        try {
-            String filePath = ROOT + path.replaceAll(":", "/");
-            BufferedReader in = new BufferedReader(new FileReader(filePath));
+        String filePath = ROOT + path.replaceAll(":", "/");
+        try (BufferedReader in = new BufferedReader(new FileReader(filePath))) {
+            String line;
             StringBuilder builder = new StringBuilder();
             int lines = 0;
-            while (in.ready()) {
-                builder.append(in.readLine()).append("\n");
+            while ((line = in.readLine()) != null) {
+                builder.append(line).append("\n");
                 lines++;
                 if (lines == LINES) {
                     this.sendMessage(session, builder.toString());
-                    builder = new StringBuilder();
+                    builder.setLength(0);
                     lines = 0;
                 }
             }
             if (lines > 0) {
                 this.sendMessage(session, builder.toString());
             }
-            in.close();
         } catch (IOException e) {
             log.error(e.getMessage());
         }

@@ -28,11 +28,11 @@ public class FlowDataRuntime {
                 Objects.requireNonNull(findFirst(data, n -> n.getFlowId() != null)).getFlowId();
         // 将流数据分为开始节点和定时器节点进行分别执行
         List<FlowData> starts = filter(data, this::isStartNode);
-        // 过滤掉非起始节点的定时器节点
+        // 获取作为起始节点的定时器节点
         List<FlowData> timers = filter(data, d -> isTimerNode(d) && isStart(d.getId(), data));
         FlowLogs.info(flowId, "start running flow {}", flowId);
-        // 用于实时计算流程运行状态
-        flowStatusService.startRun(flowId, data, starts, timers);
+        // 实时计算流程运行状态
+        flowStatusService.startRun(flowId, starts, timers);
         // 异步执行
         forEach(
                 starts,

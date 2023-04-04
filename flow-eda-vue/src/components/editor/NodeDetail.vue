@@ -36,12 +36,11 @@
           <span class="span-box">
               <el-tooltip content="参数为json格式，可传递至下一节点，使用${xx}接收，例如${httpResult.$0.name}"
                           placement="top">
-              <el-icon color="#c0c4cc"><QuestionFilled /></el-icon>
+              <el-icon color="#c0c4cc"><QuestionFilled/></el-icon>
               </el-tooltip>
               <span style="color: #606266"> 自定义参数：</span>
             </span>
-          <el-input v-model="detailForm.payload" autosize="" class="input" placeholder="{'a':'xx','b':'123'}"
-                    type="textarea"/>
+          <el-input v-model="detailForm.payload" autosize="" class="input" :placeholder="ph" type="textarea"/>
         </el-form-item>
         <el-form-item class="item" label="备注：" prop="remark">
           <el-input v-model="detailForm.remark" autosize="" class="input" type="textarea"/>
@@ -86,6 +85,7 @@ export default {
     const checkJson = (rule, value, callback) => {
       if (!value) {
         callback();
+        return;
       }
       if (value.startsWith("{") && value.endsWith("}")) {
         try {
@@ -106,9 +106,10 @@ export default {
       ps.forEach(p => {
         // 处理输入框+选择框=单个参数的情况，需要在form中拆成两个参数
         if (p.inType === 'select' && p.placeholder) {
-          if (form[p.key]) {
-            form[p.key + '-o'] = form[p.key].split(',')[1];
-            form[p.key] = form[p.key].split(',')[0];
+          const v = form[p.key];
+          if (v) {
+            form[p.key + '-o'] = v.substring(v.lastIndexOf(',') + 1);
+            form[p.key] = v.substring(0, v.lastIndexOf(','));
           } else {
             form[p.key + '-o'] = p.placeholder.split(',')[1];
           }
@@ -173,6 +174,7 @@ export default {
       rules,
       detailFormRef,
       optionFlows,
+      ph: `{"a":"xx","b":123}`,
       submitNode
     };
   }

@@ -26,6 +26,7 @@ import com.flow.eda.runner.node.subflow.SubflowNode;
 import com.flow.eda.runner.node.subflow.input.SubInputNode;
 import com.flow.eda.runner.node.subflow.output.SubOutputNode;
 import com.flow.eda.runner.node.timer.TimerNode;
+import com.flow.eda.runner.node.valve.ValveNode;
 import com.flow.eda.runner.node.ws.client.WsClientNode;
 import com.flow.eda.runner.node.ws.server.WsServerNode;
 import lombok.Getter;
@@ -44,6 +45,7 @@ public enum NodeTypeEnum {
     SEQUENCE("sequence", SequenceNode.class),
     SPLICE("splice", SpliceNode.class),
     SPLIT("split", SplitNode.class),
+    VALVE("valve", ValveNode.class),
 
     /** 解析节点 */
     JSON_PARSER("json_parser", JsonParserNode.class),

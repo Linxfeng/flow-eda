@@ -5,6 +5,7 @@ import com.flow.eda.runner.node.AbstractNode;
 import com.flow.eda.runner.node.NodeFunction;
 import com.flow.eda.runner.node.NodeVerify;
 import com.flow.eda.runner.runtime.FlowBlockNodePool;
+import com.flow.eda.runner.utils.NodeParamsUtil;
 import lombok.Getter;
 import org.bson.Document;
 import org.springframework.util.StringUtils;
@@ -21,7 +22,7 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
     private String sendAfterReceive;
     private Boolean fanout;
     private NodeFunction callback;
-    private Document output;
+    private NodeParamsUtil nodeParams;
 
     public WsServerNode(Document params) {
         super(params);
@@ -37,14 +38,8 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
 
         // 上游节点输出参数发送
         if (this.fanout) {
-            Document input = getInput();
-            if (!input.isEmpty()) {
-                output.append("params", input);
-            }
-            output.putAll(output());
-            output.remove("input");
-            output.remove("payload");
             // 根据path路径广播发送
+            Document output = this.nodeParams.output(this).remove("input", "payload").get();
             WsServerNodeHandler.sendMessage(path, output.toJson());
         }
     }
@@ -73,13 +68,14 @@ public class WsServerNode extends AbstractNode implements FlowBlockNodePool.Bloc
 
         // set output
         if (this.fanout) {
-            this.output = new Document();
-            this.output.putAll(params);
-            this.output.remove("path");
-            this.output.remove("query");
-            this.output.remove("sendAfterConnect");
-            this.output.remove("sendAfterReceive");
-            this.output.remove("fanout");
+            this.nodeParams =
+                    new NodeParamsUtil(params)
+                            .remove(
+                                    "path",
+                                    "query",
+                                    "sendAfterConnect",
+                                    "sendAfterReceive",
+                                    "fanout");
         }
     }
 
