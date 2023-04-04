@@ -55,17 +55,15 @@
         <el-table-column align="center" label="操作" width="220">
           <template #default="scope">
             <el-button
-              :icon="Search"
-              type="primary"
-              link
+              icon="el-icon-search"
+              type="text"
               @click="handleShow(scope.row.path)"
               >查看</el-button
             >
             <el-button
-              :icon="Delete"
+              icon="el-icon-delete"
               style="color: #ff0000"
-              type="primary"
-              link
+              type="text"
               @click="handleDelete(scope.row.path)"
             >
               删除
@@ -91,11 +89,9 @@ import { reactive, ref } from "vue";
 import { listLogs, deleteLogs } from "../api/logs.js";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { Delete, Search } from '@element-plus/icons-vue'
 
 export default {
   name: "Logs",
-  components: { Delete, Search },
   setup() {
     const username = localStorage.getItem("username");
 
@@ -196,8 +192,6 @@ export default {
       handleSelectionChange,
       handleDelete,
       delAllSelection,
-      Delete,
-      Search
     };
   },
 };

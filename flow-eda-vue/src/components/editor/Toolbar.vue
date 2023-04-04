@@ -6,7 +6,7 @@
         v-model="selectedVersion"
         class="m-2"
         placeholder="请选择版本"
-        size="default"
+        size="small"
         @change="switchVersion"
       >
         <el-option
