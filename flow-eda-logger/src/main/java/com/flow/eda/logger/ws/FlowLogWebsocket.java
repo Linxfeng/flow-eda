@@ -42,10 +42,11 @@ public class FlowLogWebsocket {
 
     /** 推送流程实时运行日志信息 */
     public void sendMessage(String flowId, String message) {
-        if (SESSION_POOL.get(flowId) != null) {
+        Session session = SESSION_POOL.get(flowId);
+        if (session != null && session.isOpen()) {
             try {
                 synchronized (SESSION_POOL.get(flowId)) {
-                    SESSION_POOL.get(flowId).getBasicRemote().sendText(message);
+                    session.getBasicRemote().sendText(message);
                 }
             } catch (Exception e) {
                 log.error("Send websocket message failed:{}", e.getMessage());
