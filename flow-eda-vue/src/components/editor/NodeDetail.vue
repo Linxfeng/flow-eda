@@ -85,7 +85,6 @@ export default {
     const checkJson = (rule, value, callback) => {
       if (!value) {
         callback();
-        return;
       }
       if (value.startsWith("{") && value.endsWith("}")) {
         try {

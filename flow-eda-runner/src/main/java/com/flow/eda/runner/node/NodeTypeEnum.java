@@ -1,7 +1,7 @@
 package com.flow.eda.runner.node;
 
-import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.common.exception.InternalException;
+import com.flow.eda.common.model.FlowData;
 import com.flow.eda.runner.node.condition.ConditionNode;
 import com.flow.eda.runner.node.delay.DelayNode;
 import com.flow.eda.runner.node.email.EmailNode;

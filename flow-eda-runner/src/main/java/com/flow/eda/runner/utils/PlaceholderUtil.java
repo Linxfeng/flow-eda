@@ -1,5 +1,6 @@
 package com.flow.eda.runner.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flow.eda.common.utils.CollectionUtil;
 import org.bson.Document;
 import org.springframework.util.StringUtils;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 /** 解析占位符${}的工具类 */
 public class PlaceholderUtil {
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final Pattern REGEX = Pattern.compile("\\$\\{([^}]*)}");
 
     /**

@@ -1,8 +1,6 @@
-import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import vueJsx from "@vitejs/plugin-vue-jsx";
 
-export default defineConfig({
+export default {
   server: {
     port: 8080,
     proxy: {
@@ -17,5 +15,5 @@ export default defineConfig({
       },
     },
   },
-  plugins: [vue(), vueJsx()],
-});
+  plugins: [vue()],
+};

@@ -1,8 +1,8 @@
 <template>
   <div class="header">
     <div class="collapse-btn" @click="collapseChange">
-      <el-icon v-if="!collapse"><Fold /></el-icon>
-      <el-icon v-else class="el-icon-s-unfold"><Expand /></el-icon>
+      <i v-if="!collapse" class="el-icon-s-fold"></i>
+      <i v-else class="el-icon-s-unfold"></i>
     </div>
     <div class="logo">流程管理系统</div>
     <div class="header-right">
@@ -13,7 +13,7 @@
         <el-dropdown class="user-name" trigger="click" @command="handleCommand">
           <span class="el-dropdown-link">
             {{ username }}
-            <el-icon><CaretBottom /></el-icon>
+            <i class="el-icon-caret-bottom"></i>
           </span>
           <template #dropdown>
             <el-dropdown-menu>

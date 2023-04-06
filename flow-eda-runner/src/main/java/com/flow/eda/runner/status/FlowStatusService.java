@@ -1,17 +1,12 @@
 package com.flow.eda.runner.status;
 
-import com.flow.eda.common.dubbo.api.FlowInfoService;
-import com.flow.eda.common.dubbo.model.FlowData;
+import com.flow.eda.common.model.FlowData;
 import com.flow.eda.runner.node.Node;
-import org.apache.dubbo.common.utils.ConcurrentHashSet;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -26,10 +21,10 @@ public class FlowStatusService {
     /** 流程运行结束后会发起通知 */
     private final Map<String, Consumer<String>> noticeMap = new ConcurrentHashMap<>();
 
-    @DubboReference private FlowInfoService flowInfoService;
+    @Autowired private FlowStatusClient flowStatusClient;
 
     public void startRun(String flowId, List<FlowData> starts, List<FlowData> timer) {
-        this.runningMap.put(flowId, new ConcurrentHashSet<>());
+        this.runningMap.put(flowId, new HashSet<>());
         forEach(starts, node -> this.runningMap.get(flowId).add(node.getId()));
         forEach(timer, node -> this.runningMap.get(flowId).add(node.getId()));
     }
@@ -38,7 +33,7 @@ public class FlowStatusService {
     public String getFlowStatus(String flowId, Document message) {
         String nodeId = message.getString("nodeId");
         if (nodeId == null) {
-            return flowInfoService.getFlowStatus(flowId);
+            return flowStatusClient.getFlowStatus(flowId).getResult();
         }
         String status = message.getString("status");
         if (Node.Status.FAILED.name().equals(status)) {
@@ -58,7 +53,7 @@ public class FlowStatusService {
     /** 判断当前流程状态是否已完成 */
     public boolean isFinished(String flowId) {
         if (!runningMap.containsKey(flowId)) {
-            String status = flowInfoService.getFlowStatus(flowId);
+            String status = flowStatusClient.getFlowStatus(flowId).getResult();
             return Node.Status.FINISHED.name().equals(status);
         }
         return runningMap.get(flowId).isEmpty();
@@ -75,9 +70,7 @@ public class FlowStatusService {
 
     /** 添加运行中的节点 */
     public void addRunningNode(String flowId, String nodeId) {
-        if (runningMap.get(flowId) == null) {
-            runningMap.put(flowId, new ConcurrentHashSet<>());
-        }
+        runningMap.computeIfAbsent(flowId, k -> new HashSet<>());
         runningMap.get(flowId).add(nodeId);
     }
 
@@ -91,7 +84,7 @@ public class FlowStatusService {
 
     /** 获取流程节点数据 */
     public List<FlowData> getFlowData(String flowId) {
-        return flowInfoService.getFlowData(flowId);
+        return flowStatusClient.getFlowData(flowId).getResult();
     }
 
     /** 清理缓存数据 */

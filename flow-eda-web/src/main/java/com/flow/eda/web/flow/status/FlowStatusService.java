@@ -1,11 +1,10 @@
 package com.flow.eda.web.flow.status;
 
-import com.flow.eda.common.dubbo.api.FlowDataService;
 import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.web.flow.Flow;
 import com.flow.eda.web.flow.FlowMapper;
 import com.flow.eda.web.flow.FlowRequest;
-import org.apache.dubbo.config.annotation.DubboReference;
+import com.flow.eda.web.flow.node.data.FlowDataClient;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,7 +17,7 @@ import java.util.Map;
 @Service
 public class FlowStatusService {
     private final Map<String, String> statusMap = new HashMap<>();
-    @DubboReference private FlowDataService flowDataService;
+    @Autowired private FlowDataClient flowDataClient;
     @Autowired private FlowMapper flowMapper;
 
     /** 刷新缓存中的流程状态 */
@@ -45,7 +44,7 @@ public class FlowStatusService {
             // 如果流程已执行完毕，则需要清理缓存数据
             if (!Flow.Status.RUNNING.name().equals(status)) {
                 statusMap.remove(flowId);
-                flowDataService.clearFlowData(flowId);
+                flowDataClient.clearFlowData(flowId);
             }
         }
     }
@@ -57,6 +56,6 @@ public class FlowStatusService {
         request.setStatus(Flow.Status.RUNNING);
         request.setUsername("test");
         List<Flow> flowList = flowMapper.findByRequest(request);
-        CollectionUtil.forEach(flowList, flow -> flowDataService.stopFlowData(flow.getId()));
+        CollectionUtil.forEach(flowList, flow -> flowDataClient.stopFlowData(flow.getId()));
     }
 }

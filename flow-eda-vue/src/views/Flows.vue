@@ -17,22 +17,22 @@
           <el-option key="FINISHED" label="运行完成" value="FINISHED" />
           <el-option key="FAILED" label="运行失败" value="FAILED" />
         </el-select>
-        <el-button :icon="Search" type="primary" @click="handleSearch"
+        <el-button icon="el-icon-search" type="primary" @click="handleSearch"
           >查询</el-button
         >
-        <el-button :icon="Refresh" type="primary" @click="cleanSearch"
+        <el-button icon="el-icon-refresh" type="primary" @click="cleanSearch"
           >重置</el-button
         >
         <el-button
           :disabled="!hasSelection"
-          :icon="Delete"
+          icon="el-icon-delete"
           style="float: right"
           type="primary"
           @click="delAllSelection"
           >批量删除
         </el-button>
         <el-button
-          :icon="Plus"
+          icon="el-icon-plus"
           style="float: right"
           type="primary"
           @click="handleAdd"
@@ -81,30 +81,27 @@
         <el-table-column align="center" label="操作" width="255">
           <template #default="scope">
             <el-button
-              :icon="Search"
-              type="primary"
-              link
+              icon="el-icon-search"
+              type="text"
               @click="handleShow(scope.row.id)"
               >查看</el-button
             >
             <el-button
-              :icon="Edit"
-              type="primary"
-              link
+              icon="el-icon-edit"
+              type="text"
               @click="handleEdit(scope.$index, scope.row)"
               >修改</el-button
             >
             <el-button
-              :icon="Tickets"
-              type="primary"
-              link
+              icon="el-icon-tickets"
+              type="text"
               @click="handleLogs(scope.row.id)"
               >日志</el-button
             >
             <el-button
-              :icon="Delete" 
-              type="danger"
-              link
+              icon="el-icon-delete"
+              style="color: #ff0000"
+              type="text"
               @click="handleDelete(scope.row.id)"
               >删除
             </el-button>
@@ -149,11 +146,9 @@ import { addFlow, deleteFlow, listFlow, updateFlow } from "../api/flow";
 import { generateUniqueID } from "../utils/util.js";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { Delete, Edit, Search, Tickets, Refresh, Plus } from '@element-plus/icons-vue'
 
 export default {
   name: "Flows",
-  components: { Delete, Edit, Tickets, Search, Refresh, Plus }, 
   setup() {
     const params = reactive({ page: 1 });
     const tableData = ref([]);
@@ -264,7 +259,7 @@ export default {
     const handleLogs = (id) => {
       const date = Moment().format("YYYY-MM-DD");
       const path = "/logs/running/" + id + "/" + date + ".log";
-      router.push({ path: "/logs/detail", query: { path } });
+      router.push({ path: "/logs/detail", query: { path: path } });
     };
 
     // 多选操作
@@ -342,12 +337,6 @@ export default {
       submitForm,
       statusFormat,
       dateFormat,
-      Delete,
-      Edit,
-      Tickets,
-      Search,
-      Refresh,
-      Plus
     };
   },
 };

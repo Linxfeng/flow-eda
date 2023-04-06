@@ -1,12 +1,10 @@
 package com.flow.eda.web.log;
 
-import com.flow.eda.common.dubbo.api.LogsService;
-import com.flow.eda.common.dubbo.model.Logs;
+import com.flow.eda.common.model.Logs;
 import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.common.utils.MergeBuilder;
 import com.flow.eda.web.flow.Flow;
 import com.flow.eda.web.flow.FlowMapper;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +14,12 @@ import static com.flow.eda.common.utils.CollectionUtil.filterMap;
 
 @Service
 public class LogService {
-    @DubboReference private LogsService logsService;
+    @Autowired private LogClient logClient;
     @Autowired private FlowMapper flowMapper;
 
     /** 获取日志文件信息列表 */
     public List<Logs> getLogList(LogRequest request, String username) {
-        List<Logs> list = logsService.getLogList(request.getType());
+        List<Logs> list = logClient.getLogList(request.getType().name()).getResult();
         List<String> ids;
         if (username != null) {
             // 根据用户进行过滤
@@ -42,7 +40,7 @@ public class LogService {
                     MergeBuilder.source(list, Logs::getFlow)
                             .target(flows, Flow::getId)
                             .mergeS((log, flow) -> log.setFlowName(flow.getName()));
-        } else if (LogsService.Type.RUNNING.equals(request.getType())) {
+        } else if ("RUNNING".equals(request.getType().name())) {
             list.clear();
         }
         // 根据日志的日期排序，降序
@@ -52,7 +50,7 @@ public class LogService {
 
     /** 删除日志文件 */
     public void deleteLogs(List<String> path) {
-        logsService.deleteLogFiles(path);
+        logClient.deleteLogFiles(path);
     }
 
     private int comparingDate(String date1, String date2) {

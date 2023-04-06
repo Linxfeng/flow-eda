@@ -5,16 +5,17 @@ import org.bson.Document;
 
 import java.util.Optional;
 
+import static com.flow.eda.runner.utils.PlaceholderUtil.OBJECT_MAPPER;
+
 /** 节点抽象类 */
 public abstract class AbstractNode implements Node {
-    /** 输入参数，由上个节点传递至此 */
-    private final Document input;
-
     private final String flowId;
     private final String nodeId;
 
     /** 节点自定义参数，可传递至下个节点 */
     private Document payload;
+    /** 输入参数，由上个节点传递至此 */
+    private Document input;
     /** 节点当前的运行状态 */
     private Status status = Status.RUNNING;
 
@@ -27,8 +28,14 @@ public abstract class AbstractNode implements Node {
         NodeVerify.notNull(params, "params");
         this.flowId = params.getString("flowId");
         this.nodeId = params.getString("nodeId");
-        this.payload = params.get("payload", Document.class);
-        this.input = params.get("input", Document.class);
+        Object p = params.get("payload");
+        if (p != null) {
+            this.payload = OBJECT_MAPPER.convertValue(p, Document.class);
+        }
+        Object i = params.get("input");
+        if (i != null) {
+            this.input = OBJECT_MAPPER.convertValue(i, Document.class);
+        }
         params.remove("flowId");
         params.remove("nodeId");
         // 解析${}占位符

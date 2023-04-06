@@ -1,6 +1,6 @@
 package com.flow.eda.runner.runtime;
 
-import com.flow.eda.common.dubbo.model.FlowData;
+import com.flow.eda.common.model.FlowData;
 import com.flow.eda.common.utils.CollectionUtil;
 import com.flow.eda.runner.node.Node;
 import com.flow.eda.runner.node.NodeTypeEnum;
