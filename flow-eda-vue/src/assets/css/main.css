@@ -59,6 +59,8 @@ a {
 .pagination {
     margin: 20px 0;
     text-align: right;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .el-button + .el-tooltip {
