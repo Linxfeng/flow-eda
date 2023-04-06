@@ -3,15 +3,11 @@ package com.flow.eda.runner.status;
 import com.flow.eda.common.dubbo.api.FlowInfoService;
 import com.flow.eda.common.dubbo.model.FlowData;
 import com.flow.eda.runner.node.Node;
-import org.apache.dubbo.common.utils.ConcurrentHashSet;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -29,7 +25,7 @@ public class FlowStatusService {
     @DubboReference private FlowInfoService flowInfoService;
 
     public void startRun(String flowId, List<FlowData> starts, List<FlowData> timer) {
-        this.runningMap.put(flowId, new ConcurrentHashSet<>());
+        this.runningMap.put(flowId, new HashSet<>());
         forEach(starts, node -> this.runningMap.get(flowId).add(node.getId()));
         forEach(timer, node -> this.runningMap.get(flowId).add(node.getId()));
     }
@@ -75,10 +71,7 @@ public class FlowStatusService {
 
     /** 添加运行中的节点 */
     public void addRunningNode(String flowId, String nodeId) {
-        if (runningMap.get(flowId) == null) {
-            runningMap.put(flowId, new ConcurrentHashSet<>());
-        }
-        runningMap.get(flowId).add(nodeId);
+        runningMap.computeIfAbsent(flowId, k -> new HashSet<>()).add(nodeId);
     }
 
     /** 移除运行中的节点 */
