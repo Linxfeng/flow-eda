@@ -63,8 +63,7 @@
             >
             <el-button
               :icon="Delete"
-              style="color: #ff0000"
-              type="primary"
+              type="danger"
               link
               @click="handleDelete(scope.row.path)"
             >
