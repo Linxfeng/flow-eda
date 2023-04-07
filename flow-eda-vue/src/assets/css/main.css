@@ -14,12 +14,41 @@ body,
 
 body {
     font-family: 'PingFang SC', "Helvetica Neue", Helvetica, "microsoft yahei", arial, STHeiTi, sans-serif;
+    --el-component-size: 42px;
+}
+
+.el-table__row {
+    height: 57.5px;
+}
+
+tr {
+    height: 40px;
+}
+
+.el-input__wrapper {
+    width: 91%;
+}
+
+.el-button.el-button--small {
+    min-height: 32px;
+    padding: 9px 15px;
+    border-radius: 3px;
+    margin-top: -2px;
+    font-size: 12px;
+}
+
+.toolbar .el-input__inner {
+    height: 32px;
+    padding: 0px 5px;
+}
+
+.el-button {
+    min-height: 40px;
 }
 
 a {
     text-decoration: none
 }
-
 
 .content-box {
     position: absolute;
@@ -63,8 +92,8 @@ a {
     justify-content: flex-end;
 }
 
-.el-button + .el-tooltip {
-    margin-left: 10px;
+.el-button+.el-tooltip {
+    margin-left: 0px;
 }
 
 .el-table tr:hover {
