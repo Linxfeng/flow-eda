@@ -6,6 +6,7 @@
           v-model="params.name"
           class="handle-input mr10"
           placeholder="名称"
+          @change="handleSearch"
         />
         <el-select
           v-model="params.status"
@@ -374,5 +375,9 @@ export default {
 
 .mr10 {
   margin-right: 10px;
+}
+
+.el-button.is-link{
+  padding: 0.2px;
 }
 </style>

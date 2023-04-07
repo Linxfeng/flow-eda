@@ -107,6 +107,7 @@ export default {
   padding: 0 21px;
   line-height: 70px;
   cursor: pointer;
+  margin-top: 3px;
 
   &:hover {
     background: rgb(40, 52, 70);

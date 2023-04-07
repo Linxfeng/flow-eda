@@ -11,12 +11,12 @@
             value="OPERATION"
           />
         </el-select>
-        <el-button icon="el-icon-search" type="primary" @click="handleSearch"
+        <el-button :icon="Search" type="primary" @click="handleSearch"
           >查询</el-button
         >
         <el-button
           :disabled="!hasSelection"
-          icon="el-icon-delete"
+          :icon="Delete"
           style="float: right"
           type="primary"
           @click="delAllSelection"
@@ -204,6 +204,7 @@ export default {
 </script>
 
 <style scoped>
+
 .handle-box {
   margin-bottom: 20px;
 }
