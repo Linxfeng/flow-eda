@@ -94,10 +94,10 @@ public class PostgresqlNode extends AbstractNode {
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = metaData.getColumnName(i);
                 Object value = resultSet.getObject(i);
-                if (value != null && !(value instanceof String)) {
-                    result.append(columnName, value.toString());
-                } else {
+                if (value == null || value instanceof Number || value instanceof String) {
                     result.append(columnName, value);
+                } else {
+                    result.append(columnName, value.toString());
                 }
             }
             list.add(result);
