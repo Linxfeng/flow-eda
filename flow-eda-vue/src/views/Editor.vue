@@ -29,7 +29,7 @@
               :style="{ background: item.background }"
               class="node"
               draggable="true"
-              @dragstart="drag(item)"
+              @dragstart="drag($event, item)"
               @mousemove="moveDes($event, item)"
               @mouseout="hideDes(item)"
             >
@@ -395,9 +395,30 @@ export default {
     };
 
     let currentItem = null;
-    const drag = (item) => {
-      currentItem = item;
-    };
+    
+    const drag = (event, item) => {
+      currentItem = item
+      // 克隆当前的 div
+      const target = event.target.cloneNode(true);
+      // 获取原始 div 的样式
+      const style = window.getComputedStyle(event.target);
+      // 将原始 div 的样式复制到克隆的元素
+      for (let i = 0; i < style.length; i++) {
+        target.style[style[i]] = style.getPropertyValue(style[i]);
+      }
+      // 设置克隆元素的位置，使其不可见
+      target.style.position = 'absolute';
+      target.style.top = '-9999px';
+      document.body.appendChild(target);  // 把克隆的元素添加到 body 中
+      // 获取 div 的宽度和高度
+      const rect = event.target.getBoundingClientRect();
+      const offsetX = rect.width / 2;  // 计算宽度的中心
+      const offsetY = rect.height / 2; // 计算高度的中心
+      // 使用克隆的元素作为拖动影像
+      event.dataTransfer.setDragImage(target, offsetX, offsetY);
+      // 清除克隆的元素
+      setTimeout(() => document.body.removeChild(target), 0);
+    }
 
     const drop = (event) => {
       const containerRect = jsPlumbInstance
