@@ -20,6 +20,7 @@
       <div class="nodes-wrap">
         <el-collapse
           v-for="menu in Object.keys(data.nodeTypeList)"
+          :key="menu"
           :model-value="menu"
         >
           <el-collapse-item :title="menu" :name="menu">
@@ -29,9 +30,11 @@
               :style="{ background: item.background }"
               class="node"
               draggable="true"
-              @dragstart="drag(item)"
+              @dragstart="drag($event, item)"
               @mousemove="moveDes($event, item)"
-              @mouseout="hideDes(item)"
+              @mouseout="hideDes"
+              @mousedown="hideDescription"
+              @mouseup="showDescriptionOnMouseUp"
             >
               <div class="svg">
                 <img :src="item.svg" alt="" style="padding: 4px" />
@@ -164,6 +167,7 @@ export default {
       data: "",
       left: "0px",
       top: "0px",
+      isMouseDown: false,
     });
 
     // 初始化节点类型
@@ -395,25 +399,45 @@ export default {
     };
 
     let currentItem = null;
-    const drag = (item) => {
+    const drag = (event, item) => {
       currentItem = item;
+
+      // 创建拖拽虚影
+      const dragImage = event.target.cloneNode(true);
+      dragImage.id = "";
+      Object.assign(dragImage.style, {
+        position: "absolute",
+        opacity: "0.9",
+        pointerEvents: "none",
+      });
+      document.body.appendChild(dragImage);
+
+      // 移除虚影元素
+      setTimeout(() => document.body.removeChild(dragImage), 0);
     };
 
     const drop = (event) => {
+      event.preventDefault();
+      if (!currentItem) {
+        return;
+      }
       const containerRect = jsPlumbInstance
         .getContainer()
         .getBoundingClientRect();
       const scale = jsPlumbInstance.getZoom();
-      let left = (event.pageX - containerRect.left - 60) / scale;
-      let top = (event.pageY - containerRect.top - 20) / scale;
-      let temp = {
+      const left = (event.pageX - containerRect.left - 60) / scale;
+      const top = (event.pageY - containerRect.top - 20) / scale;
+
+      const newNode = {
         id: generateUniqueID(8),
         nodeName: currentItem.typeName,
-        top: Math.round(top / 20) * 20 + "px",
-        left: Math.round(left / 20) * 20 + "px",
+        top: `${Math.round(top / 20) * 20}px`,
+        left: `${Math.round(left / 20) * 20}px`,
         nodeType: currentItem,
       };
-      addNode(temp);
+
+      addNode(newNode);
+      currentItem = null;
     };
 
     // dragover取消默认事件后，才会触发drag事件
@@ -537,14 +561,26 @@ export default {
 
     // 展示左侧节点类型的描述
     const moveDes = (e, type) => {
-      showDescription.show = true;
-      showDescription.data = type.description;
-      showDescription.left = e.pageX - 165 + "px";
-      showDescription.top = e.pageY - 114 + "px";
+      if (!showDescription.isMouseDown) {
+        showDescription.show = true;
+        showDescription.data = type.description;
+        showDescription.left = e.pageX - 165 + "px";
+        showDescription.top = e.pageY - 114 + "px";
+      }
     };
     const hideDes = () => {
       showDescription.show = false;
       showDescription.data = "";
+      showDescription.isMouseDown = false;
+    };
+
+    const hideDescription = () => {
+      showDescription.show = false;
+      showDescription.isMouseDown = true;
+    };
+
+    const showDescriptionOnMouseUp = () => {
+      showDescription.isMouseDown = false;
     };
 
     // 右侧栏展示节点详情
@@ -819,6 +855,8 @@ export default {
       importFlow,
       exportFlow,
       switchVersion,
+      hideDescription,
+      showDescriptionOnMouseUp,
     };
   },
 };
